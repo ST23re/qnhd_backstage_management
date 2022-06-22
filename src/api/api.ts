@@ -18,6 +18,27 @@ export function getInfo(data: any) {
     return request({
         url: '/user/info',
         method: 'get',
-        params: data,
+        params: data
+    })
+}
+export function getPostTypes(data: any) {
+    return request({
+        url: '/posttypes',
+        method: 'get',
+        params: data
+    })
+}
+export function getDepartments(data: any) {
+    return request({
+        url: '/departments',
+        method: 'get',
+        params: data
+    })
+}
+export function getPosts(data: any) {
+    return request({
+        url: '/posts',
+        method: 'get',
+        params: data
     })
 }

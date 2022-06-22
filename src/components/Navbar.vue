@@ -124,7 +124,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
-import { useInfo } from "@/store";
+import { useInfo, useGlobalData } from "@/store";
 import router from "@/router";
 // import { useRoute } from "vue-router";
 import { removeToken } from "@/utils/cookies";
@@ -141,20 +141,21 @@ import {
 } from "@element-plus/icons-vue";
 
 const Info = useInfo();
+const GlobalData = useGlobalData();
 
 const isCollapse = ref(false);
 const isHide = ref(false);
 
 const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
+  // console.log(key, keyPath);
 };
 const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
+  // console.log(key, keyPath);
 };
 
 const inAnimate = ref<boolean>(false);
 const handleSelect = () => {
-  if (width.value <= 560) isHide.value = true;
+  if (GlobalData.width <= 720) isHide.value = true;
   inAnimate.value = true;
 };
 const dropdown1 = ref();
@@ -184,30 +185,28 @@ const exit = () => {
 const nav = ref<HTMLElement>();
 const ver = ref<HTMLElement>();
 const hor = ref<HTMLElement>();
-var width = ref<number>(0);
-var height = ref<number>(0);
 var hor_width = ref<number>(0);
 function handleResize() {
-  width.value = nav.value?.clientWidth as number;
-  height.value = nav.value?.clientHeight as number;
+  GlobalData.width = nav.value?.clientWidth as number;
+  GlobalData.height = nav.value?.clientHeight as number;
   hor_width.value = hor.value?.clientWidth as number;
-  isHide.value = width.value <= 560;
+  isHide.value = GlobalData.width <= 720;
 }
 onMounted(() => handleResize());
 window.addEventListener("resize", () => handleResize());
 window.addEventListener("click", (e) => {
   let target = e.target as HTMLElement;
-  if (width.value <= 560 && !isHide.value)
+  if (GlobalData.width <= 720 && !isHide.value)
     if (!ver.value?.contains(target)) isHide.value = true;
 });
 const showMask = computed(() => {
-  return width.value <= 560 && !isHide.value;
+  return GlobalData.width <= 720 && !isHide.value;
 });
 const barHeight = computed(() => {
-  return `${height.value - 52}px`;
+  return `${GlobalData.height - 52}px`;
 });
 const showRoute = computed(() => {
-  return hor_width.value > 480;
+  return hor_width.value > 490;
 });
 </script>
 
@@ -297,7 +296,7 @@ const showRoute = computed(() => {
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 9;
 }
-@media all and (max-width: 560px) {
+@media all and (max-width: 720px) {
   .vertical {
     position: fixed;
     left: 0;
@@ -321,6 +320,7 @@ const showRoute = computed(() => {
 .page-view-holder {
   .page {
     height: calc(100vh - 50px);
+    overflow: hidden;
   }
 }
 </style>

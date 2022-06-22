@@ -73,7 +73,7 @@ const handler = (res: any) => {
       setToken(res.token);
       Info.$patch({ ...res.user, auth });
       ElMessage.success("登录成功");
-      router.push("/home");
+      router.push("/report");
     } else
       ElMessage({
         message: "账号无权限",
