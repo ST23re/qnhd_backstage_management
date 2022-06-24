@@ -55,3 +55,10 @@ export function getNormalTags(data:any){
         params: data
     })
 }
+export function getAllUsers(data:any){
+    return request({
+        url:'/users/common',
+        method: 'get',
+        params: data
+    })
+}

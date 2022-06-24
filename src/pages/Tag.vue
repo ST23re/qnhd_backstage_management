@@ -14,66 +14,66 @@
       </div>
     </div>
     <el-scrollbar :max-height="scrollbarHeight">
-      <div
-        v-for="tag in tagsList"
-        :key="tag.id??tag.tag_id"
-        class="tag"
-      >
-        <div class="title">
-          <div class="top"> 
-            <div class="ellipsis">
-              <text>{{tag.name}}</text>
+        <div
+          v-for="tag in tagsList"
+          :key="tag.id??tag.tag_id"
+          class="tag"
+        >
+          <div class="title">
+            <div class="top"> 
+              <div class="ellipsis">
+                <text>{{tag.name}}</text>
+              </div>
+              <div class="isHotTag" :class="tag.point?'hot_tag':'no_hot_tag'">
+                <text>{{tag.point?"热榜":""}}</text>
+              </div>
+              <div v-if="tag.point" class="hot_tag isHotTag">
+                <text>{{"热度: "+String(tag?.point)}}</text>
+              </div>
             </div>
-            <div class="isHotTag" :class="tag.point?'hot_tag':'no_hot_tag'">
-              <text>{{tag.point?"热榜":""}}</text>
-            </div>
-            <div v-if="tag.point" class="hot_tag isHotTag">
-              <text>{{"热度: "+String(tag?.point)}}</text>
+            <div class="bottom">
+              <text>{{"#id: "+(tag.id??tag.tag_id)}}</text>
             </div>
           </div>
-          <div class="bottom">
-            <text>{{"#id: "+(tag.id??tag.tag_id)}}</text>
+          <div class="operate">
+            <el-button :disabled="!tag.point">
+              <text :style="tag.point?'color:red;':'color:grey;'">
+                <el-icon><Warning/></el-icon>撤去热搜
+              </text>
+            </el-button>
+            <el-button>
+              <text style="color:red">
+                <el-icon><Delete/></el-icon>删除Tag
+              </text>
+            </el-button>
+            <div class="more">
+              <el-dropdown trigger="click">
+                <el-icon><MoreFilled/></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>
+                      <text style="width:100%;text-align:center">开盒</text>
+                    </el-dropdown-item>
+                    <el-dropdown-item divided>
+                      <text style="width:100%;text-align">空降热搜</text>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </div>
         </div>
-        <div class="operate">
-          <el-button :disabled="!tag.point">
-            <text :style="tag.point?'color:red;':'color:grey;'">
-              <el-icon><Warning/></el-icon>撤去热搜
-            </text>
-          </el-button>
-          <el-button>
-            <text style="color:red">
-              <el-icon><Delete/></el-icon>删除Tag
-            </text>
-          </el-button>
-          <div class="more">
-            <el-dropdown trigger="click">
-              <el-icon><MoreFilled/></el-icon>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item>
-                    <text style="width:100%;text-align:center">开盒</text>
-                  </el-dropdown-item>
-                  <el-dropdown-item divided>
-                    <text style="width:100%;text-align">空降热搜</text>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
+        <div class="pagination">
+          <el-pagination
+            background
+            layout="prev,pager,next"
+            v-model:current-page="current_page"
+            @current-change="pageHandler"
+            :total="total_num"
+            :hide-on-single-page="true"
+            :small="shrinkPager" 
+          />
         </div>
-      </div>
-      <div class="pagination">
-        <el-pagination
-          background
-          layout="prev,pager,next"
-          v-model:current-page="current_page"
-          @current-change="pageHandler"
-          :total="total_num"
-          :hide-on-single-page="true"
-          :small="shrinkPager" 
-        />
-      </div>
     </el-scrollbar>
   </div>
 </template>
@@ -95,6 +95,53 @@ const GlobalData = useGlobalData();
 var tags_query = reactive<Tags_query>({
   name:'',
 })
+type EChartsOption = proxy.$echarts.EChartsOption;
+var option: EChartsOption;
+/* option = reactive({
+   tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    top: '5%',
+    left: 'center'
+  },
+  series: [
+    {
+      name: 'Access From',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      avoidLabelOverlap: false,
+      itemStyle: {
+        borderRadius: 10,
+        borderColor: '#fff',
+        borderWidth: 2
+      },
+      label: {
+        show: false,
+        position: 'center'
+      },
+      emphasis: {
+        label: {
+          show: true,
+          fontSize: '40',
+          fontWeight: 'bold'
+        }
+      },
+      labelLine: {
+        show: false
+      },
+      data: [
+        { value: 1048, name: 'Search Engine' },
+        { value: 735, name: 'Direct' },
+        { value: 580, name: 'Email' },
+        { value: 484, name: 'Union Ads' },
+        { value: 300, name: 'Video Ads' }
+      ]
+    }
+  ]
+}) */
+/* const { proxy } = getCurrentInstance()
+const charts = ref<HTMLElement>(); */
 var filter = ref<HTMLElement>();
 var tags_total = ref<number>(0)
 var tagsList = reactive<Tags[]>([])//目前被显示的tag列表
@@ -167,11 +214,15 @@ function pageHandler(page:number){
 function adjustScrollHeight(){
   setTimeout(()=>{
     let filterHeight = filter.value?.clientHeight as number;
-    scrollbarHeight.value = GlobalData.height - GlobalData.height - filterHeight - 50;
+    console.log(filterHeight);
+    scrollbarHeight.value = GlobalData.height - filterHeight - 50;
+    console.log(scrollbarHeight.value);
   },50)
 }
 onMounted(()=>{
-  adjustScrollHeight;
+/*   var pieHotTags = proxy.$echarts.init(charts.value)
+  pieHotTags.setOption(option); */
+  adjustScrollHeight();
   showTags(1);
 })
 var shrinkPager = computed(()=>{
