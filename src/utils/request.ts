@@ -48,7 +48,7 @@ export function request(config: AxiosRequestConfig) {
         endLoading();
         if (response.status === 200) {
             const { data } = response;
-            if (data.code === 200) return data.data;
+            if (data.code === 200) return data.data;//褪去一层data
             else {
                 ElMessage({
                     message: data.msg,

@@ -42,3 +42,16 @@ export function getPosts(data: any) {
         params: data
     })
 }
+export function getHotTags(){
+    return request({
+        url: '/tags/hot',
+        method: 'get',
+    })
+}
+export function getNormalTags(data:any){
+    return request({
+        url: '/tags',
+        method: 'get',
+        params: data
+    })
+}
