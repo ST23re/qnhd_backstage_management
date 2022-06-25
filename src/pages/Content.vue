@@ -162,7 +162,7 @@
             ></el-button
           >
           <el-button color="#ffffff"
-            ><text style="color: #ef6947"
+            ><text style="color: #005187"
               ><el-icon><Switch /></el-icon>移动</text
             ></el-button
           >
@@ -185,15 +185,19 @@
         </div>
       </div>
       <div class="pagination">
+        <div style="flex: 8"></div>
         <el-pagination
           background
           layout="prev, pager, next"
+          :page-sizes="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
           :current-page.sync="posts_query.page"
           @update:current-page.sync="pageHandler"
           :total="posts_total"
           :hide-on-single-page="true"
           :small="shrinkPager"
+          :pager-count="shrinkPager ? 5 : 7"
         />
+        <div style="flex: 1"></div>
       </div>
     </el-scrollbar>
   </div>
@@ -286,6 +290,7 @@ function showPosts(info?: string) {
       let created_at = cTime(post.created_at);
       posts.push({ ...post, created_at });
     });
+    console.log(res);
   });
 }
 var filter = ref<HTMLElement>();
@@ -362,17 +367,17 @@ onMounted(() => {
   showPosts();
 });
 var shrinkPager = computed(() => {
-  return GlobalData.width < 490;
+  return GlobalData.width < 500;
 });
 window.addEventListener("resize", () => adjustScrollHeight());
 </script>
 
 <style lang="less" scoped>
 .post {
-  border-bottom: 1px solid #ebeef5;
-  margin: 3px 10px;
+  border-top: 1px dashed hwb(222 92% 4%);
+  margin: 0px 10px;
   padding: 5px 8px;
-  border-radius: 3px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   .title {
@@ -387,6 +392,8 @@ window.addEventListener("resize", () => adjustScrollHeight());
       font-size: 14px;
       padding: 0 5px;
       border-radius: 4px;
+      display: flex;
+      align-items: center;
       text {
         line-height: 20px;
         color: white;
@@ -416,6 +423,9 @@ window.addEventListener("resize", () => adjustScrollHeight());
       color: black;
     }
   }
+  .comment {
+    margin-right: 10px;
+  }
   .operate {
     margin-left: 8px;
     display: flex;
@@ -437,9 +447,6 @@ window.addEventListener("resize", () => adjustScrollHeight());
     }
   }
 }
-.post:hover {
-  box-shadow: 0px 0px 3px #c9c9c9;
-}
 .filter {
   padding: 5px 10px 0;
   margin-bottom: 3px;
@@ -448,7 +455,7 @@ window.addEventListener("resize", () => adjustScrollHeight());
   user-select: none;
   .input {
     flex: 1;
-    margin: 3px;
+    margin: 10px 5px 5px;
     padding: 2.5px;
     min-width: 270px;
     background-color: #005187;
@@ -499,7 +506,8 @@ window.addEventListener("resize", () => adjustScrollHeight());
   width: 110px;
   height: 37px;
   background-color: #005187;
-  margin: 3px;
+  box-shadow: 1px 1px 2px rgba(125, 159, 204, 0.5);
+  margin: 5px 5px 0;
   border-radius: 8px;
   color: white;
   font-size: 14px;
@@ -512,7 +520,7 @@ window.addEventListener("resize", () => adjustScrollHeight());
   display: flex;
   justify-content: center;
   position: relative;
-  margin: 10px 0;
+  margin: 15px 0 10px;
 }
 .top {
   background-image: linear-gradient(to right bottom, #ef6947, #cf4624);
@@ -537,7 +545,7 @@ window.addEventListener("resize", () => adjustScrollHeight());
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
-@media all and (max-width: 490px) {
+@media all and (max-width: 500px) {
   .post {
     .fav,
     .like,
@@ -549,8 +557,14 @@ window.addEventListener("resize", () => adjustScrollHeight());
     transform: scale(0.9) translateX(-5.5px);
     margin-right: -5.5px;
   }
+
   .filter-item {
     transform: scale(0.9);
+  }
+}
+@media all and (max-width: 370px) {
+  .pt {
+    display: none;
   }
 }
 </style>
