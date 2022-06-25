@@ -214,9 +214,7 @@ function pageHandler(page:number){
 function adjustScrollHeight(){
   setTimeout(()=>{
     let filterHeight = filter.value?.clientHeight as number;
-    console.log(filterHeight);
     scrollbarHeight.value = GlobalData.height - filterHeight - 50;
-    console.log(scrollbarHeight.value);
   },50)
 }
 onMounted(()=>{

@@ -19,8 +19,6 @@
         <el-collapse v-model="activeName" accordion>
           <el-collapse-item v-for="department in department_list" :key="department.id" :name="department.id">
             <template #title>
-<!--               <span class="department-title">{{department.name}}</span>&nbsp;&nbsp;
-              <span class="easy-description">{{department.introduction}}</span> -->
               <div class="department-tag">
                 <div class="department-title">
                   {{department.name}}
@@ -152,5 +150,8 @@ onMounted(()=>{
     font-size: 16px;
     color: gray;
   }
+}
+.department-tag:hover{
+  box-shadow: 0px 0px 3px #c9c9c9;
 }
 </style>

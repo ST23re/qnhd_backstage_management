@@ -41,7 +41,7 @@ const routes:Array<RouteRecordRaw> = [
                 component: () => import('@/pages/User.vue'),
                 children: [
                     {
-                        path: '/dairy',
+                        path: '/diary',//单词有错，我改一下
                         name: '用户记录',
                         component: () => import('@/pages/UserRecord.vue')
                     }

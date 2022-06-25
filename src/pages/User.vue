@@ -1,5 +1,6 @@
 <template>
   <div class="page">
+    <router-view/>
     <div class="search" ref="search">
       <div class="search-input">
         <el-input
@@ -21,13 +22,13 @@
       <div class="select-box">
         <div class="condition-box">
           <div class="change-all-condition" :style="block_style"></div>
-          <div class="all" @click="block_style.left = '0%',text_normal_color.color = 'white',text_blocked_color.color = 'black',text_banned_color.color = 'black'">
+          <div class="all" @click="block_style.left = '0%',text_normal_color.color = 'white',text_blocked_color.color = 'black',text_banned_color.color = 'black',condition_now=0,showUsers(1,0)">
             <span :style="text_normal_color">正常</span>
           </div>
-          <div class="blocked" @click="block_style.left = '33.33%',text_normal_color.color = 'black',text_blocked_color.color = 'white',text_banned_color.color = 'black' ">
+          <div class="blocked" @click="block_style.left = '33.33%',text_normal_color.color = 'black',text_blocked_color.color = 'white',text_banned_color.color = 'black',condition_now=1,showUsers(1,1)">
             <span :style="text_blocked_color">禁言</span>
           </div>
-          <div class="banned" @click="block_style.left = '66.66%',text_normal_color.color = 'black',text_blocked_color.color = 'black',text_banned_color.color = 'white'">
+          <div class="banned" @click="block_style.left = '66.66%',text_normal_color.color = 'black',text_blocked_color.color = 'black',text_banned_color.color = 'white',condition_now=2,showUsers(1,2)">
             <span :style="text_banned_color">封禁</span>
           </div>
         </div>
@@ -42,7 +43,7 @@
           <input type="checkbox" v-if="false">
         </transition>
         <div class="user-uid-header" ref="header">
-          <span>用户uid</span>
+          <span>用户昵称</span>
         </div>
         <div class="user-condition-header">
           <span>用户状态</span>
@@ -61,18 +62,12 @@
             <input type="checkbox" v-if="false">
           </transition>
           <div class="user-uid">
-            <span>{{user.id}}</span>
+            <span>{{user.nickname}}</span>
           </div>
           <div class="user-condition">
             <span>{{user.is_blocked ? "禁言" : user.is_banned ? "封禁" : "正常"}}</span>
           </div>
           <div class="operate-list">
-            <div class="user-info" v-if="!isMobile">
-              <el-button>
-                <el-icon><View/></el-icon>
-                <span>日志</span>
-              </el-button>
-            </div>
             <div class="block-user" v-if="!user.is_blocked">
               <el-button>
                 <el-icon><Mute/></el-icon>
@@ -82,14 +77,32 @@
             <div class="has-blocked" v-if="user.is_blocked">
               <span>已禁言</span>
             </div>
-            <div class="ban-user" v-if="!isMobile">
-              <el-button>
-                <el-icon><CircleClose/></el-icon>
-                <span>封禁</span>
-              </el-button>
-            </div>
-            <div class="more" v-if="isMobile">
-              <el-icon><MoreFilled/></el-icon>
+            <div class="more">
+              <el-dropdown trigger="click">
+                <el-icon><MoreFilled/></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <div @click="enterUserRecord">
+                      <el-dropdown-item>
+                        <el-icon><View/></el-icon>
+                        <text style="width:100%;text-align:center">查看日志</text>
+                      </el-dropdown-item>
+                    </div>
+                    <div>
+                      <el-dropdown-item divided>
+                        <el-icon><RefreshRight/></el-icon>
+                        <text style="width:100%;text-align">重置昵称</text>
+                      </el-dropdown-item>
+                    </div>
+                    <div>
+                      <el-dropdown-item divided>
+                        <el-icon><CircleClose/></el-icon>
+                        <text style="width:100%;text-align">封禁用户</text>
+                      </el-dropdown-item>
+                    </div>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </div>
         </div>
@@ -110,10 +123,11 @@
 </template>
 
 <script setup lang="ts">
-import { Search,CopyDocument,View,Mute,CircleClose,MoreFilled } from "@element-plus/icons-vue";
+import { Search,CopyDocument,View,Mute,CircleClose,MoreFilled,RefreshRight } from "@element-plus/icons-vue";
 import { ref,reactive,onMounted,computed } from "vue";
 import { getAllUsers } from "@/api/api";
 import { useGlobalData } from "@/store";
+import  router  from "@/router/index";
 interface Users_info{
   id:number,
   nickname:string,
@@ -131,8 +145,8 @@ interface Users_info{
   is_banned:boolean
 }
 interface User_query{
-  is_blocked?:string,
-  is_banned?:string,
+  is_blocked?:number,
+  is_banned?:number,
   page?:number,
   page_size?:number,
   page_disabled?:string,
@@ -144,6 +158,7 @@ var current_page = ref<number>(1);
 var search = ref<HTMLElement>()
 var scrollbarHeight = ref<number>(0);
 var total_num = ref<number>(0);
+var condition_now = ref<number>(0);//0表示全部,1表示禁言,2表示封禁
 var block_style = reactive({
   "left": "0%" 
 })
@@ -156,21 +171,32 @@ var text_blocked_color = reactive({
 var text_banned_color = reactive({
   "color": "black"
 })
-function showUsers(page?:any){
+function showUsers(page?:any,condition:number){
   userList.length = 0;
   user_query.page = page;
   user_query.page_size = 15;
   current_page = page;
+  user_query.is_blocked = 0;
+  user_query.is_banned = 0;
+  if(condition === 1){
+    user_query.is_blocked = 1;
+  }else if(condition === 2){
+    user_query.is_banned = 1;
+  }
   getAllUsers(user_query).then((res:any)=>{
     console.log(res)
-    total_num.value = 50000;
+    if(condition === 0){
+      total_num.value = 50000; //全部情况下暂时没有total总数的接口，所以先写成这样,其他两个状态有total属性
+    }else{
+      total_num.value = res.total;
+    }
     res.list.forEach(item=>{
       userList.push(item);
     })
   })
 }
 function pageHandler(page:any){
-  showUsers(page);
+  showUsers(page,condition_now.value);
 }
 function adjustScrollHeight(){
   setTimeout(()=>{
@@ -178,16 +204,21 @@ function adjustScrollHeight(){
     scrollbarHeight.value = GlobalData.height - searchHeight - 127;
   },50);
 }
+function enterUserRecord(){
+  router.push({
+    path:"/diary",
+  })
+}
 var shrinkPager = computed(()=>{
   return GlobalData.width < 490;
 })
-var isMobile = computed(()=>{
+/* var isMobile = computed(()=>{
   return GlobalData.width < 606;
-})
+}) */
 window.addEventListener("resize",()=>adjustScrollHeight())
 onMounted(()=>{
   adjustScrollHeight();
-  showUsers(1);
+  showUsers(1,0);
 })
 </script>
 
@@ -353,21 +384,10 @@ onMounted(()=>{
       justify-content: center;
       border-left: 1px solid #ebeef5;
       align-items: center;
-      .user-info{
-        .el-button{
-          border: none;
-          background-color: transparent;
-        }
-      }
       .block-user{
         .el-button{
           border: none;
-          background-color: transparent;
-        }
-      }
-      .ban-user{
-        .el-button{
-          border: none;
+          color: rgb(229, 81, 81);
           background-color: transparent;
         }
       }
@@ -397,6 +417,7 @@ onMounted(()=>{
   .el-icon{
     transform: rotate(90deg);
     cursor: pointer;
+    height: 32px;
   }
 }
 </style>
