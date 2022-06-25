@@ -206,7 +206,7 @@ const barHeight = computed(() => {
   return `${GlobalData.height - 52}px`;
 });
 const showRoute = computed(() => {
-  return hor_width.value > 490;
+  return hor_width.value > 500;
 });
 </script>
 
