@@ -55,6 +55,7 @@
         <div class="user-box"
           v-for="user in userList"
           :key="user.id"
+          :style="(user.is_blocked||user.is_banned)?'background-color:rgba(221,100,100,.3);':'background-color:white;'"
         >
           <transition name="checkbox">
             <input type="checkbox" v-if="false">
@@ -175,7 +176,6 @@ function adjustScrollHeight(){
   setTimeout(()=>{
     let searchHeight = search.value?.clientHeight as number;
     scrollbarHeight.value = GlobalData.height - searchHeight - 127;
-    console.log(scrollbarHeight.value)
   },50);
 }
 var shrinkPager = computed(()=>{
@@ -356,16 +356,19 @@ onMounted(()=>{
       .user-info{
         .el-button{
           border: none;
+          background-color: transparent;
         }
       }
       .block-user{
         .el-button{
           border: none;
+          background-color: transparent;
         }
       }
       .ban-user{
         .el-button{
           border: none;
+          background-color: transparent;
         }
       }
       .has-blocked{
