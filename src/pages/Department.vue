@@ -2,9 +2,9 @@
   <div class="page">
     <div class="search" ref="search">
       <div class="search-input">
-        <el-input />
+        <el-input v-model="department_query.name" placeholder="搜索部门" :clearable="true" @keyup.enter="searchDepartments"/>
       </div>
-      <div class="search-icon">
+      <div class="search-icon" @click="searchDepartments">
         <el-icon color="white" class="icon">
           <Search />
         </el-icon>
@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import { Search, Plus, CircleClose } from "@element-plus/icons-vue";
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted,watch } from "vue";
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getDepartments, postDepartments, deleteDepartments } from "@/api/api";
 import { useGlobalData } from "@/store";
@@ -166,6 +166,14 @@ function adjustScrollHeight() {
     scrollbarHeight.value = GlobalData.height - searchHeight - operateHeight - 10;
   }, 50);
 }
+function searchDepartments(){
+  showDepartments();
+}
+watch(department_query,(newVal)=>{
+  if(newVal.name == ''){
+    showDepartments();
+  }
+})
 window.addEventListener("resize", () => adjustScrollHeight())
 onMounted(() => {
   adjustScrollHeight();

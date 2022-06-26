@@ -2,9 +2,9 @@
   <div class="page">
     <div class="search" ref="search">
       <div class="search-input">
-        <el-input placeholder="搜索用户" :clearable="true" />
+        <el-input placeholder="搜索用户" :clearable="true" v-model="user_search.uid" @keyup.enter="showOneUser"/>
       </div>
-      <div class="search-icon">
+      <div class="search-icon" @click="showOneUser">
         <el-icon class="icon">
           <Search />
         </el-icon>
@@ -65,11 +65,22 @@
           <transition name="checkbox">
             <input type="checkbox" v-if="checkbox_show" class="checkbox">
           </transition>
-          <div class="user-uid">
-            <span>{{ user.nickname }}</span>
+          <div class="user-info">
+            <div class="user-nickname">
+              <span>{{ user.nickname }}</span>
+            </div>
+            <div class="user-uid">
+              <el-icon class="id-icon"><Postcard/></el-icon>
+              <span>{{"uid: "+user.id}}</span>
+            </div>
           </div>
           <div class="user-condition">
-            <span>{{ user.is_blocked ? "禁言" : user.is_banned ? "封禁" : "正常" }}</span>
+            <div class="is-blocked">
+              <span>{{ user.is_blocked ? "禁言" : user.is_banned ? "封禁" : "正常" }}</span>
+            </div>
+            <div class="blocked-info" v-if="user.is_blocked&&!isMobile">
+              <span>{{handleTime(user.bloced_start,user.blocked_over)}}</span>
+            </div>
           </div>
           <div class="operate-list">
             <div class="block-user" v-if="!user.is_blocked"
@@ -91,7 +102,7 @@
                 </el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <div @click="enterUserRecord">
+                    <div @click="user_diary.uid = String(user.id),user_diary.condition = user.is_blocked,user_diary.phone_number = Number(user.phone_number),user_diary.blocked_time = handleTime(user.bloced_start,user.blocked_over),enterUserRecord()">
                       <el-dropdown-item>
                         <el-icon>
                           <View />
@@ -178,9 +189,9 @@
 </template>
 
 <script setup lang="ts">
-import { Search, CopyDocument, View, Mute, CircleClose, MoreFilled, RefreshRight, DArrowLeft, } from "@element-plus/icons-vue";
-import { ref, reactive, onMounted, computed } from "vue";
-import { getAllUsers, postRefreshNickName, postBlocked,postBanned } from "@/api/api";
+import { Search, CopyDocument, View, Mute, CircleClose, MoreFilled, RefreshRight, DArrowLeft,Postcard } from "@element-plus/icons-vue";
+import { ref, reactive, onMounted, computed,watch } from "vue";
+import { getAllUsers, postRefreshNickName, postBlocked,postBanned,getOneUser } from "@/api/api";
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useGlobalData } from "@/store";
 import router from "@/router/index";
@@ -219,11 +230,29 @@ interface User_banned {
   uid: string,
   reason: string,
 }
+interface User_search{
+  uid:string,
+}
+interface User_diary{//传递到用户日志里的信息
+  uid:string,
+  phone_number:number|null,
+  condition:boolean,
+  blocked_time:string,
+}
 const GlobalData = useGlobalData();
 var user_query = reactive<User_query>({})
 var userList = reactive<Users_info[]>([])//用于存放当页展示的用户
 var user_uid = reactive<User_uid>({
   uid: '',
+})
+var user_search = reactive<User_search>({
+  uid:'',
+})
+var user_diary = reactive<User_diary>({
+  uid:'',
+  phone_number:null,
+  condition:false,
+  blocked_time:'',
 })
 var user_blocked = reactive<User_blocked>({
   uid: '',
@@ -277,6 +306,19 @@ function showUsers(condition: number, page?: any) {
       userList.push(item);
     })
   })
+}
+function showOneUser(){
+  total_num.value = 0;
+  let search_type = Number(user_search.uid);
+  if(typeof search_type == 'number'){
+    getOneUser(user_search).then((res:any)=>{
+      console.log(res);
+      userList.length = 0;
+      userList.push(res.user);
+    })
+  }else if(isNaN(search_type)){
+    userList.length = 0;//这里为搜索昵称,暂时不能写,数据量太大
+  }
 }
 function pageHandler(page: any) {
   showUsers(condition_now.value, page);
@@ -345,14 +387,45 @@ function adjustScrollHeight() {
 function enterUserRecord() {
   router.push({
     path: "/diary",
+    query:{
+      uid:user_diary.uid,
+      phone_number:user_diary.phone_number,
+      blocked_time:user_diary.blocked_time
+    }
   })
 }
+function handleTime(start:string,over:string){
+  if(start!=''&&over!=''){
+    return JSON.stringify(new Date(start))
+      .replace(/["Z]/g, "")
+      .split("T")[0] +
+    JSON.stringify(new Date(start))
+      .replace(/["Z]/g, "")
+      .split("T")[1]
+      .split(".")[0] +
+    "——" +
+    JSON.stringify(new Date(over))
+      .replace(/["Z]/g, "")
+      .split("T")[0] +
+    JSON.stringify(new Date(over))
+      .replace(/["Z]/g, "")
+      .split("T")[1]
+      .split(".")[0];
+  }else{
+    return '0';
+  }
+}
+watch(user_search,(newVal)=>{
+  if( newVal.uid == ''){
+    showUsers(0,1);
+  }
+})
 var shrinkPager = computed(() => {
   return GlobalData.width < 490;
 })
-/* var isMobile = computed(()=>{
-  return GlobalData.width < 606;
-}) */
+var isMobile = computed(()=>{
+  return GlobalData.width < 1128;
+})
 window.addEventListener("resize", () => adjustScrollHeight())
 onMounted(() => {
   adjustScrollHeight();
@@ -522,19 +595,40 @@ onMounted(() => {
     line-height: 32px;
     border-bottom: 1px solid #ebeef5;
 
-    .user-uid {
+    .user-info {
       flex-grow: 1;
       width: 33.33%;
       text-align: center;
       font-size: 18px;
       border-right: 1px solid #ebeef5;
+      display: flex;
+      flex-direction: column;
+      .user-uid{
+        height: 14px;
+        line-height: 14px;
+        font-size: 14px;
+        color: rgb(175,175,175);
+        .id-icon{
+          position: relative;
+          left: -1px;
+          top: 1.5px;
+        }
+      }
     }
 
     .user-condition {
+      display: flex;
+      flex-direction: column;
       flex-grow: 1;
       width: 33.33%;
+      align-self: center;
       text-align: center;
       font-size: 18px;
+      .blocked-info{
+        font-size: 14px;
+        line-height: 14px;
+        color: rgb(175,175,175);
+      }
     }
 
     .operate-list {

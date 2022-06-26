@@ -236,7 +236,7 @@
 </template>
 <script setup lang="ts">
 import { getHotTags, getNormalTags, increaseTagPoint, getClearHot, getDeleteTags,getTagDetail } from "@/api/api";
-import { reactive, onMounted, ref, computed } from "vue";
+import { reactive, onMounted, ref, computed,watch } from "vue";
 import { Search, Warning, Delete, MoreFilled,User,UserFilled,Iphone,Location,Tickets,OfficeBuilding,Message,Male,Female,Postcard,Reading,School,Star } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useGlobalData } from "@/store";
@@ -289,7 +289,8 @@ var tags_total = ref<number>(0)
 var tagsList = reactive<Tags[]>([])//目前被显示的tag列表
 var dumpTagsList = reactive<Tags[]>([])//存储所有tag
 var filterList = reactive<Tags[]>([])//经搜索过滤出来的新的总列表
-var hotTagList = reactive<Tags[]>([])
+var hotTagList = reactive<Tags[]>([])//存热榜id
+var hotTagList_name = reactive<Tags[]>([])//存热榜name和id
 var isHot = ref<boolean>(true)
 var total_num = ref<number>(0)
 var hotTag_num = ref<number>(0)
@@ -310,7 +311,7 @@ const iconStyle = computed(() => {
     marginRight: marginMap[size.value] || marginMap.default,
   }
 })
-function showTags(page: number) {
+function showTags(page?: number) {
   if (tags_query.name === "" && page === 1) {
     getHotTags().then((res: any) => {
       console.log(res.total);//有热榜总数total属性
@@ -320,6 +321,7 @@ function showTags(page: number) {
       res.list.forEach((item: any) => {
         tagsList.push(item)
         hotTagList.push(item.tag_id)
+        hotTagList_name.push(item)
       })
       let diffVal: number = 10 - hotTag_num.value;
       getNormalTags(tags_query).then((res: any) => {//ps:非热榜中tag与热榜中的tag有重复
@@ -359,6 +361,16 @@ function showTags(page: number) {
         temp--;
       }
     }
+  } else {//此处用于搜索
+    tagsList.length = 0;
+    total_num.value = 0;
+    let temp = hotTagList_name.concat(dumpTagsList);
+    filterList = temp.filter((tag:any)=>{
+      return tag.name.indexOf(tags_query.name) !== -1;
+    })
+    filterList.forEach((tag:any)=>{
+      tagsList.push(tag);
+    })
   }
 }
 function airbornePoint() {
@@ -481,6 +493,11 @@ var size = computed(()=>{
     return 650;
   }else{
     return '100';
+  }
+})
+watch(tags_query,(newVal)=>{
+  if(newVal.name == ''){
+    showTags(1);
   }
 })
 window.addEventListener("resize", () => adjustScrollHeight());

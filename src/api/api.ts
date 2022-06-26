@@ -104,6 +104,13 @@ export function getAllUsers(data:any){
         params: data
     })
 }
+export function getOneUser(data:any){
+    return request({
+        url:'/user/common',
+        method: 'get',
+        params: data
+    })
+}
 export function postRefreshNickName(data:any){
     return request({
         url: '/user/nickname/reset',
@@ -123,5 +130,26 @@ export function postBanned(data:any){
         url: '/banned',
         method: 'post',
         data: data
+    })
+}
+export function getUserPosts(data:any){
+    return request({
+        url:'/posts/user',
+        method:'get',
+        params:data,
+    })
+}
+export function getUserCriti(data:any){
+    return request({
+        url:'/floors/user',
+        method:'get',
+        params:data,
+    })
+}
+export function getUserDetail(data:any){
+    return request({
+        url:'/user/detail',
+        method:'get',
+        params:data,
     })
 }
