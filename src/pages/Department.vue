@@ -2,15 +2,19 @@
   <div class="page">
     <div class="search" ref="search">
       <div class="search-input">
-        <el-input/>
+        <el-input />
       </div>
       <div class="search-icon">
-        <el-icon color="white" class="icon"><Search/></el-icon>
+        <el-icon color="white" class="icon">
+          <Search />
+        </el-icon>
       </div>
     </div>
     <div class="operate" ref="operate">
-      <button class="operate-button">
-        <el-icon><Plus/></el-icon>
+      <button class="operate-button" @click="dialogFormVisible = true">
+        <el-icon>
+          <Plus />
+        </el-icon>
         <span>新增分区</span>
       </button>
     </div>
@@ -21,78 +25,169 @@
             <template #title>
               <div class="department-tag">
                 <div class="department-title">
-                  {{department.name}}
+                  <el-icon class="header-icon" @click="deleteDepartment(), department_delete.id = String(department.id)">
+                    <circle-close />
+                  </el-icon> {{ department.name }}
                 </div>
                 <div class="easy-description">
-                  {{department.introduction}}
+                  {{ department.introduction }}
                 </div>
               </div>
             </template>
             <div class="department-introduction">
-              {{department.introduction}}
+              {{ department.introduction }}
             </div>
           </el-collapse-item>
         </el-collapse>
       </el-scrollbar>
     </div>
+    <el-dialog v-model="dialogFormVisible" width="30vw" top="30vh" center>
+      <el-form :model="department_add" ref="form">
+        <el-form-item prop="name" label="部门名称:" :rules="{
+          required: true,
+          message: '部门名称不能为空',
+          trigger: 'blur',
+        }">
+          <el-input v-model="department_add.name" autocomplete="off" placeholder="请输入" style="width: 76.5%"></el-input>
+        </el-form-item>
+        <el-form-item prop="introduction" label="部门介绍:">
+          <el-input v-model="department_add.introduction" autocomplete="off" placeholder="请输入" style="width: 76.5%">
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="createDepartment()">确 定</el-button>
+        <el-button @click="
+  refuseDepartment();
+        ">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Search,Plus } from "@element-plus/icons-vue";
-import { ref,reactive,onMounted } from "vue";
-import { getDepartments } from "@/api/api";
+import { Search, Plus, CircleClose } from "@element-plus/icons-vue";
+import { ref, reactive, onMounted } from "vue";
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { getDepartments, postDepartments, deleteDepartments } from "@/api/api";
 import { useGlobalData } from "@/store";
-interface Department{
-  id:number,
-  name:string,
-  introduction?:string|null,
+interface Department {
+  id: number,
+  name: string,
+  introduction?: string | null,
 }
-interface Department_query{
-  name?:string,
+interface Department_query {
+  name?: string,
+}
+interface Department_add {
+  name: string,
+  introduction: string | null,
+}
+interface Department_delete {
+  id: string,
 }
 const activeName = ref('1');
 const GlobalData = useGlobalData();
 var department_query = reactive<Department_query>({});
 var department_list = reactive<Department[]>([]);
+var department_add = reactive<Department_add>({
+  name: '',
+  introduction: '',
+})
+var department_delete = reactive<Department_delete>({
+  id: '',
+})
 var scrollbarHeight = ref<number>(0);
 var search = ref<HTMLElement>();
 var operate = ref<HTMLElement>();
-function showDepartments(){
-  getDepartments(department_query).then((res:any)=>{
+var dialogFormVisible = ref<Boolean>(false);
+function showDepartments() {
+  department_list.length = 0;
+  getDepartments(department_query).then((res: any) => {
     console.log(res)
-    res.list.forEach(item=>{
+    res.list.forEach((item: any) => {
       department_list.push(item);
     })
   })
 }
-function adjustScrollHeight(){
-  setTimeout(()=>{
+function createDepartment() {
+  postDepartments(department_add).then((res: any) => {
+    dialogFormVisible.value = false;
+    ElMessage({
+      showClose: true,
+      message: '创建成功',
+      type: 'success',
+      duration: 1000,
+    })
+    showDepartments();
+  })
+}
+function refuseDepartment() {
+  dialogFormVisible.value = false;
+  ElMessage({
+    message: '取消操作',
+    duration: 1000,
+  });
+  department_add.name = '';
+  department_add.introduction = '';
+}
+function deleteDepartment() {
+  ElMessageBox.confirm(
+    '确定要删除这个部门吗？',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      deleteDepartments(department_delete).then((res: any) => {
+        ElMessage({
+          showClose: true,
+          message: '删除部门成功',
+          type: 'success',
+          duration: 1000,
+        })
+        showDepartments();
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消操作',
+        duration: 1000,
+      })
+    })
+}
+function adjustScrollHeight() {
+  setTimeout(() => {
     let searchHeight = search.value?.clientHeight as number;
     let operateHeight = operate.value?.clientHeight as number;
-    scrollbarHeight.value = GlobalData.height - searchHeight - operateHeight-10;
-  },50);
+    scrollbarHeight.value = GlobalData.height - searchHeight - operateHeight - 10;
+  }, 50);
 }
-window.addEventListener("resize",()=>adjustScrollHeight())
-onMounted(()=>{
+window.addEventListener("resize", () => adjustScrollHeight())
+onMounted(() => {
   adjustScrollHeight();
   showDepartments();
 })
 </script>
 
 <style lang="less" scoped>
-.search{
+.search {
   display: flex;
   margin: 2px 8px;
   padding: 1.5px;
   border: 2px solid #005187;
   background-color: #005187;
   border-radius: 8px;
-  .search-input{
+
+  .search-input {
     flex-grow: 1;
     outline: none;
   }
-  .search-icon{
+
+  .search-icon {
     display: flex;
     flex-shrink: 0;
     color: white;
@@ -100,16 +195,19 @@ onMounted(()=>{
     width: 48px;
     font-size: 20px;
     cursor: pointer;
-    .icon{
+
+    .icon {
       position: relative;
       left: 14px;
     }
   }
 }
-.operate{
+
+.operate {
   display: flex;
   margin: 4px 8px;
-  .operate-button{
+
+  .operate-button {
     padding: 8px;
     color: white;
     background-color: #005187;
@@ -117,27 +215,33 @@ onMounted(()=>{
     cursor: pointer;
     border: none;
     font-size: 16px;
-    box-shadow: 0px 0px 1px rgb(0, 0, 0,0.3);
+    box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
   }
-  :hover{
+
+  :hover {
     background-color: rgb(46, 101, 133);
   }
 }
-.department-list{
+
+.department-list {
   margin: 4px 8px;
-  .department-tag{
+
+  .department-tag {
     display: flex;
     justify-content: space-between;
-    .department-title{
+
+    .department-title {
       font-size: 16px;
       margin-right: 20px;
       text-overflow: ellipsis;
       display: -webkit-box;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
-      white-space: nowrap;/*设置不换行显示，全部显示完全 */
+      white-space: nowrap;
+      /*设置不换行显示，全部显示完全 */
     }
-    .easy-description{
+
+    .easy-description {
       color: gray;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -146,12 +250,18 @@ onMounted(()=>{
       -webkit-box-orient: vertical;
     }
   }
-  .department-introduction{
+
+  .department-introduction {
     font-size: 16px;
     color: gray;
   }
 }
-.department-tag:hover{
-  box-shadow: 0px 0px 3px #c9c9c9;
+
+.header-icon {
+  color: rgb(210, 79, 79);
+
+  :hover {
+    transform: scale(1.1);
+  }
 }
 </style>

@@ -1,34 +1,41 @@
 <template>
   <div class="page">
-    <router-view/>
     <div class="search" ref="search">
       <div class="search-input">
-        <el-input
-          placeholder="搜索用户"
-          :clearable="true"
-        />
+        <el-input placeholder="搜索用户" :clearable="true" />
       </div>
       <div class="search-icon">
-        <el-icon class="icon"><Search/></el-icon>
+        <el-icon class="icon">
+          <Search />
+        </el-icon>
       </div>
     </div>
     <div class="multiple-box">
       <div class="multiple-button-wrapper">
-        <button class="multiple-button">
-          <el-icon><CopyDocument/></el-icon>
-          <span>批量操作</span>
+        <button class="multiple-button" @click="checkbox_show = !checkbox_show">
+          <el-icon v-show="!checkbox_show">
+            <CopyDocument />
+          </el-icon>
+          <el-icon v-show="checkbox_show">
+            <DArrowLeft />
+          </el-icon>
+          <span v-show="!checkbox_show">批量操作</span>
+          <span v-show="checkbox_show">取消操作</span>
         </button>
       </div>
       <div class="select-box">
         <div class="condition-box">
           <div class="change-all-condition" :style="block_style"></div>
-          <div class="all" @click="block_style.left = '0%',text_normal_color.color = 'white',text_blocked_color.color = 'black',text_banned_color.color = 'black',condition_now=0,showUsers(1,0)">
+          <div class="all"
+            @click="block_style.left = '0%', text_normal_color.color = 'white', text_blocked_color.color = 'black', text_banned_color.color = 'black', condition_now = 0, showUsers(0, 1)">
             <span :style="text_normal_color">正常</span>
           </div>
-          <div class="blocked" @click="block_style.left = '33.33%',text_normal_color.color = 'black',text_blocked_color.color = 'white',text_banned_color.color = 'black',condition_now=1,showUsers(1,1)">
+          <div class="blocked"
+            @click="block_style.left = '33.33%', text_normal_color.color = 'black', text_blocked_color.color = 'white', text_banned_color.color = 'black', condition_now = 1, showUsers(1, 1)">
             <span :style="text_blocked_color">禁言</span>
           </div>
-          <div class="banned" @click="block_style.left = '66.66%',text_normal_color.color = 'black',text_blocked_color.color = 'black',text_banned_color.color = 'white',condition_now=2,showUsers(1,2)">
+          <div class="banned"
+            @click="block_style.left = '66.66%', text_normal_color.color = 'black', text_blocked_color.color = 'black', text_banned_color.color = 'white', condition_now = 2, showUsers(2, 1)">
             <span :style="text_banned_color">封禁</span>
           </div>
         </div>
@@ -40,7 +47,7 @@
     <div class="user-wrapper">
       <div class="user-list-header">
         <transition name="checkbox">
-          <input type="checkbox" v-if="false">
+          <input type="checkbox" v-if="checkbox_show" class="checkbox">
         </transition>
         <div class="user-uid-header" ref="header">
           <span>用户昵称</span>
@@ -53,24 +60,24 @@
         </div>
       </div>
       <el-scrollbar :max-height="scrollbarHeight">
-        <div class="user-box"
-          v-for="user in userList"
-          :key="user.id"
-          :style="(user.is_blocked||user.is_banned)?'background-color:rgba(221,100,100,.3);':'background-color:white;'"
-        >
+        <div class="user-box" v-for="user in userList" :key="user.id"
+          :style="(user.is_blocked || user.is_banned) ? 'background-color:rgba(221,100,100,.3);' : 'background-color:white;'">
           <transition name="checkbox">
-            <input type="checkbox" v-if="false">
+            <input type="checkbox" v-if="checkbox_show" class="checkbox">
           </transition>
           <div class="user-uid">
-            <span>{{user.nickname}}</span>
+            <span>{{ user.nickname }}</span>
           </div>
           <div class="user-condition">
-            <span>{{user.is_blocked ? "禁言" : user.is_banned ? "封禁" : "正常"}}</span>
+            <span>{{ user.is_blocked ? "禁言" : user.is_banned ? "封禁" : "正常" }}</span>
           </div>
           <div class="operate-list">
-            <div class="block-user" v-if="!user.is_blocked">
+            <div class="block-user" v-if="!user.is_blocked"
+              @click="dialogFormVisible1 = true, user_blocked.uid = String(user.id)">
               <el-button>
-                <el-icon><Mute/></el-icon>
+                <el-icon>
+                  <Mute />
+                </el-icon>
                 <span>禁言</span>
               </el-button>
             </div>
@@ -79,24 +86,32 @@
             </div>
             <div class="more">
               <el-dropdown trigger="click">
-                <el-icon><MoreFilled/></el-icon>
+                <el-icon>
+                  <MoreFilled />
+                </el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div @click="enterUserRecord">
                       <el-dropdown-item>
-                        <el-icon><View/></el-icon>
+                        <el-icon>
+                          <View />
+                        </el-icon>
                         <text style="width:100%;text-align:center">查看日志</text>
                       </el-dropdown-item>
                     </div>
-                    <div>
+                    <div @click="refreshNickname(), user_uid.uid = String(user.id)">
                       <el-dropdown-item divided>
-                        <el-icon><RefreshRight/></el-icon>
+                        <el-icon>
+                          <RefreshRight />
+                        </el-icon>
                         <text style="width:100%;text-align">重置昵称</text>
                       </el-dropdown-item>
                     </div>
-                    <div>
+                    <div @click="dialogFormVisible2=true,user_banned.uid = String(user.id)">
                       <el-dropdown-item divided>
-                        <el-icon><CircleClose/></el-icon>
+                        <el-icon>
+                          <CircleClose />
+                        </el-icon>
                         <text style="width:100%;text-align">封禁用户</text>
                       </el-dropdown-item>
                     </div>
@@ -107,60 +122,128 @@
           </div>
         </div>
         <div class="pagination">
-          <el-pagination
-            background
-            layout="prev,pager,next"
-            v-model:current-page="current_page"
-            @current-change="pageHandler"
-            :total="total_num"
-            :hide-on-single-page="true"
-            :small="shrinkPager" 
-          />
+          <el-pagination background layout="prev,pager,next" v-model:current-page="current_page"
+            @current-change="pageHandler" :total="total_num" :hide-on-single-page="true" :small="shrinkPager" />
         </div>
       </el-scrollbar>
     </div>
+    <el-dialog v-model="dialogFormVisible1" width="30vw" top="30vh" center>
+      <el-form :model="user_blocked" ref="form">
+        <el-form-item prop="day" label="禁言天数:" :rules="{
+          required: true,
+          message: '禁言天数不能为空',
+          trigger: 'blur',
+        }">
+          <el-select v-model="user_blocked.last" placeholder="请选择禁言天数" style="width: 76.5%">
+            <el-option label="One day" value="1" class="Select"></el-option>
+            <el-option label="Three days" value="3" class="Select"></el-option>
+            <el-option label="One week" value="7" class="Select"></el-option>
+            <el-option label="Two weeks" value="14" class="Select"></el-option>
+            <el-option label="Three weeks" value="21" class="Select"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="reason" label="禁言原因:" :rules="{
+          required: true,
+          message: '禁言原因不能为空',
+          trigger: 'blur',
+        }">
+          <el-input v-model="user_blocked.reason" autocomplete="off" placeholder="请输入" style="width: 76.5%"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="createBlocked()">确 定</el-button>
+        <el-button @click="
+  refuseBlocked();
+        ">取 消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog v-model="dialogFormVisible2" width="30vw" top="30vh" center>
+      <el-form :model="user_banned" ref="form">
+        <el-form-item prop="reason" label="封禁原因:" :rules="{
+          required: true,
+          message: '封禁原因不能为空',
+          trigger: 'blur',
+        }">
+          <el-input v-model="user_banned.reason" autocomplete="off" placeholder="请输入" style="width: 76.5%"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="createBanned()">确 定</el-button>
+        <el-button @click="
+  refuseBanned();
+        ">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Search,CopyDocument,View,Mute,CircleClose,MoreFilled,RefreshRight } from "@element-plus/icons-vue";
-import { ref,reactive,onMounted,computed } from "vue";
-import { getAllUsers } from "@/api/api";
+import { Search, CopyDocument, View, Mute, CircleClose, MoreFilled, RefreshRight, DArrowLeft, } from "@element-plus/icons-vue";
+import { ref, reactive, onMounted, computed } from "vue";
+import { getAllUsers, postRefreshNickName, postBlocked,postBanned } from "@/api/api";
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { useGlobalData } from "@/store";
-import  router  from "@/router/index";
-interface Users_info{
-  id:number,
-  nickname:string,
-  phone_number:string,
-  is_super:boolean,
-  is_sch_admin:boolean,
-  is_stu_admin:boolean,
-  is_user:boolean,
-  is_sch_dis_admin:boolean,
-  active:boolean,
-  is_blocked:boolean,
-  bloced_start:string,
-  blocked_remain:number,
-  blocked_over:string,
-  is_banned:boolean
+import router from "@/router/index";
+interface Users_info {
+  id: number,
+  nickname: string,
+  phone_number: string,
+  is_super: boolean,
+  is_sch_admin: boolean,
+  is_stu_admin: boolean,
+  is_user: boolean,
+  is_sch_dis_admin: boolean,
+  active: boolean,
+  is_blocked: boolean,
+  bloced_start: string,
+  blocked_remain: number,
+  blocked_over: string,
+  is_banned: boolean
 }
-interface User_query{
-  is_blocked?:number,
-  is_banned?:number,
-  page?:number,
-  page_size?:number,
-  page_disabled?:string,
+interface User_query {
+  is_blocked?: number,
+  is_banned?: number,
+  page?: number,
+  page_size?: number,
+  page_disabled?: string,
+}
+interface User_uid {
+  uid: string,
+}
+interface User_blocked {
+  uid: string,
+  last: string,
+  reason: string,
+}
+interface User_banned {
+  uid: string,
+  reason: string,
 }
 const GlobalData = useGlobalData();
 var user_query = reactive<User_query>({})
 var userList = reactive<Users_info[]>([])//用于存放当页展示的用户
+var user_uid = reactive<User_uid>({
+  uid: '',
+})
+var user_blocked = reactive<User_blocked>({
+  uid: '',
+  last: '',
+  reason: '',
+})
+var user_banned = reactive<User_banned>({
+  uid: '',
+  reason: '',
+})
 var current_page = ref<number>(1);
 var search = ref<HTMLElement>()
 var scrollbarHeight = ref<number>(0);
 var total_num = ref<number>(0);
 var condition_now = ref<number>(0);//0表示全部,1表示禁言,2表示封禁
+var checkbox_show = ref<boolean>(false);
+var dialogFormVisible1 = ref<boolean>(false);
+var dialogFormVisible2 = ref<boolean>(false);
 var block_style = reactive({
-  "left": "0%" 
+  "left": "0%"
 })
 var text_normal_color = reactive({
   "color": "white"
@@ -171,70 +254,127 @@ var text_blocked_color = reactive({
 var text_banned_color = reactive({
   "color": "black"
 })
-function showUsers(page?:any,condition:number){
+function showUsers(condition: number, page?: any) {
   userList.length = 0;
   user_query.page = page;
   user_query.page_size = 15;
   current_page = page;
   user_query.is_blocked = 0;
   user_query.is_banned = 0;
-  if(condition === 1){
+  if (condition === 1) {
     user_query.is_blocked = 1;
-  }else if(condition === 2){
+  } else if (condition === 2) {
     user_query.is_banned = 1;
   }
-  getAllUsers(user_query).then((res:any)=>{
+  getAllUsers(user_query).then((res: any) => {
     console.log(res)
-    if(condition === 0){
+    if (condition === 0) {
       total_num.value = 50000; //全部情况下暂时没有total总数的接口，所以先写成这样,其他两个状态有total属性
-    }else{
+    } else {
       total_num.value = res.total;
     }
-    res.list.forEach(item=>{
+    res.list.forEach((item: any) => {
       userList.push(item);
     })
   })
 }
-function pageHandler(page:any){
-  showUsers(page,condition_now.value);
+function pageHandler(page: any) {
+  showUsers(condition_now.value, page);
 }
-function adjustScrollHeight(){
-  setTimeout(()=>{
-    let searchHeight = search.value?.clientHeight as number;
-    scrollbarHeight.value = GlobalData.height - searchHeight - 127;
-  },50);
-}
-function enterUserRecord(){
-  router.push({
-    path:"/diary",
+function refreshNickname() {
+  postRefreshNickName(user_uid).then((res: any) => {
+    ElMessage({
+      showClose: true,
+      message: '重置昵称成功',
+      type: 'success',
+      duration: 1000,
+    })
   })
 }
-var shrinkPager = computed(()=>{
+function createBlocked() {
+  postBlocked(user_blocked).then((res: any) => {
+    console.log(res);
+    dialogFormVisible1.value = false;
+    ElMessage({
+      showClose: true,
+      message: '禁言成功',
+      type: 'success',
+      duration: 1000,
+    })
+    showUsers(current_page.value);
+  })
+}
+function refuseBlocked() {
+  dialogFormVisible1.value = false;
+  ElMessage({
+    message: '取消操作',
+    duration: 1000,
+  });
+  user_blocked.uid = '';
+  user_blocked.last = '';
+  user_blocked.reason = '';
+}
+function createBanned(){
+  postBanned(user_banned).then((res: any) => {
+    console.log(res);
+    dialogFormVisible2.value = false;
+    ElMessage({
+      showClose: true,
+      message: '封禁成功',
+      type: 'success',
+      duration: 1000,
+    })
+    showUsers(current_page.value);
+  })
+}
+function refuseBanned(){
+  dialogFormVisible2.value = false;
+  ElMessage({
+    message: '取消操作',
+    duration: 1000,
+  });
+  user_banned.uid = '';
+  user_banned.reason = '';
+}
+function adjustScrollHeight() {
+  setTimeout(() => {
+    let searchHeight = search.value?.clientHeight as number;
+    scrollbarHeight.value = GlobalData.height - searchHeight - 127;
+  }, 50);
+}
+function enterUserRecord() {
+  router.push({
+    path: "/diary",
+  })
+}
+var shrinkPager = computed(() => {
   return GlobalData.width < 490;
 })
 /* var isMobile = computed(()=>{
   return GlobalData.width < 606;
 }) */
-window.addEventListener("resize",()=>adjustScrollHeight())
-onMounted(()=>{
+window.addEventListener("resize", () => adjustScrollHeight())
+onMounted(() => {
   adjustScrollHeight();
-  showUsers(1,0);
+  showUsers(0, 1);
 })
 </script>
 
 <style lang="less" scoped>
-.search{
+.search {
   display: flex;
   margin: 2px 8px;
   padding: 1.5px;
   border: 2px solid #005187;
   background-color: #005187;
   border-radius: 8px;
-  .search-input{
+
+  .search-input {
     flex-grow: 1;
     outline: none;
   }
-  .search-icon{
+
+  .search-icon {
     display: flex;
     flex-shrink: 0;
     color: white;
@@ -242,18 +382,22 @@ onMounted(()=>{
     width: 48px;
     font-size: 20px;
     cursor: pointer;
-    .icon{
+
+    .icon {
       position: relative;
       left: 14px;
     }
   }
 }
-.multiple-box{
+
+.multiple-box {
   display: flex;
   margin: 4px 8px;
-  .multiple-button-wrapper{
+
+  .multiple-button-wrapper {
     flex-grow: 1;
-    .multiple-button{
+
+    .multiple-button {
       padding: 8px;
       color: white;
       background-color: #005187;
@@ -261,28 +405,33 @@ onMounted(()=>{
       cursor: pointer;
       border: none;
       font-size: 16px;
-      box-shadow: 0px 0px 1px rgb(0, 0, 0,0.3);
+      box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
     }
-    :hover{
+
+    :hover {
       background-color: rgb(46, 101, 133);
     }
   }
-  .select-box{
+
+  .select-box {
     display: flex;
     flex-direction: row-reverse;
-    .text-box{
+
+    .text-box {
       margin: 2px 4px;
       font-size: 18px;
       line-height: 32.8px;
     }
-    .condition-box{
-      box-shadow: 0px 0px 1px rgb(0, 0, 0,0.3);
+
+    .condition-box {
+      box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
       position: relative;
       display: flex;
       margin: 4px 0px 4px 8px;
       border: 1px solid black;
       border-radius: 5px;
-      .change-all-condition{
+
+      .change-all-condition {
         position: absolute;
         border-radius: 5px;
         background-color: #005187;
@@ -292,7 +441,8 @@ onMounted(()=>{
         left: 0%;
         transition: all 0.7s;
       }
-      .all{
+
+      .all {
         padding: 0 3px;
         font-size: 18px;
         border-right: 1px solid black;
@@ -300,14 +450,16 @@ onMounted(()=>{
         color: white;
         cursor: pointer;
       }
-      .blocked{
+
+      .blocked {
         padding: 0 3px;
         font-size: 18px;
         border-right: 1px solid black;
         border-radius: 5px;
         cursor: pointer;
       }
-      .banned{
+
+      .banned {
         padding: 0 3px;
         font-size: 18px;
         cursor: pointer;
@@ -315,26 +467,28 @@ onMounted(()=>{
     }
   }
 }
-.user-wrapper{
+
+.user-wrapper {
   margin: 4px 8px;
-  .user-list-header{
+
+  .user-list-header {
     display: flex;
-    background: linear-gradient(
-      to right bottom,
-      rgba(238,238,238,0.6),
-      rgba(238,238,238,0.3),
-      rgba(238,238,238,0.2),
-    );
+    background: linear-gradient(to right bottom,
+        rgba(238, 238, 238, 0.6),
+        rgba(238, 238, 238, 0.3),
+        rgba(238, 238, 238, 0.2),
+      );
     backdrop-filter: blur(11px);
     -webkit-backdrop-filter: blur(11px);
     border-top: 1px solid rgba(238, 238, 238, 0.8);
     border-left: 1px solid rgba(238, 238, 238, 0.8);
-    box-shadow: 0px 0px 1px rgb(0, 0, 0,0.3);
+    box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
     opacity: 0.9;
     border-radius: 8px 8px 0 0;
-    color: rgba(0,0,0,0.5);
+    color: rgba(0, 0, 0, 0.5);
     text-shadow: 0.2px 0.2px 0.2px;
-    .user-uid-header{
+
+    .user-uid-header {
       flex-grow: 1;
       width: 33.33%;
       font-size: 18px;
@@ -342,14 +496,16 @@ onMounted(()=>{
       margin: 3px 0;
       border-right: 1px solid white;
     }
-    .user-condition-header{
+
+    .user-condition-header {
       flex-grow: 1;
       width: 33.33%;
       font-size: 18px;
       text-align: center;
       margin: 3px 0;
     }
-    .operate-header{
+
+    .operate-header {
       flex-grow: 1;
       width: 33.33%;
       font-size: 18px;
@@ -358,44 +514,50 @@ onMounted(()=>{
       border-left: 1px solid white;
     }
   }
-  .user-box{
+
+  .user-box {
     display: flex;
     padding: 2px 0;
     margin: 1px 0;
     line-height: 32px;
     border-bottom: 1px solid #ebeef5;
-    .user-uid{
+
+    .user-uid {
       flex-grow: 1;
       width: 33.33%;
       text-align: center;
       font-size: 18px;
       border-right: 1px solid #ebeef5;
     }
-    .user-condition{
+
+    .user-condition {
       flex-grow: 1;
       width: 33.33%;
       text-align: center;
       font-size: 18px;
     }
-    .operate-list{
+
+    .operate-list {
       display: flex;
       width: 33.33%;
       flex-grow: 1;
       justify-content: center;
       border-left: 1px solid #ebeef5;
       align-items: center;
-      .block-user{
-        .el-button{
+
+      .block-user {
+        .el-button {
           border: none;
-          color: rgb(229, 81, 81);
+          color: rgb(210, 79, 79);
           background-color: transparent;
         }
       }
-      .has-blocked{
-        span{
-          color:grey;
-          font-size:16px;
-          margin:0 15px;
+
+      .has-blocked {
+        span {
+          color: grey;
+          font-size: 16px;
+          margin: 0 15px;
           overflow: hidden;
           display: -webkit-box;
           -webkit-line-clamp: 1;
@@ -404,20 +566,35 @@ onMounted(()=>{
       }
     }
   }
-  .pagination{
+
+  .pagination {
     display: flex;
     justify-content: center;
     margin: 10px 0;
   }
 }
-.user-box:hover{
+
+.user-box:hover {
   box-shadow: 0px 0px 3px #c9c9c9;
 }
-.more{
-  .el-icon{
+
+.more {
+  .el-icon {
     transform: rotate(90deg);
     cursor: pointer;
     height: 32px;
   }
+}
+
+.checkbox-enter,
+.checkbox-leave-to {
+  margin-left: -13px !important;
+  margin-right: 0px !important;
+}
+
+.checkbox-enter-to,
+.checkbox-leave {
+  margin-left: 20px !important;
+  margin-right: 20px !important;
 }
 </style>

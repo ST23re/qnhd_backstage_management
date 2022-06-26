@@ -35,6 +35,20 @@ export function getDepartments(data: any) {
         params: data
     })
 }
+export function postDepartments(data: any) {
+    return request({
+        url: '/department',
+        method: 'post',
+        data: data
+    })
+}
+export function deleteDepartments(data: any) {
+    return request({
+        url: '/department/delete',
+        method: 'get',
+        params: data
+    })
+}
 export function getPosts(data: any) {
     return request({
         url: '/posts',
@@ -55,10 +69,59 @@ export function getNormalTags(data:any){
         params: data
     })
 }
+export function increaseTagPoint(data:any){
+    return request({
+        url: '/tag/point',
+        method: 'post',
+        data: data
+    })
+}
+export function getTagDetail(data:any){
+    return request({
+        url:'/tag/detail',
+        method:'get',
+        params:data,
+    })
+}
+export function getClearHot(data:any){
+    return request({
+        url: '/tag/clear',
+        method: 'get',
+        params: data,
+    })
+}
+export function getDeleteTags(data:any){
+    return request({
+        url: '/tag/delete',
+        method: 'get',
+        params: data,
+    })
+}
 export function getAllUsers(data:any){
     return request({
         url:'/users/common',
         method: 'get',
         params: data
+    })
+}
+export function postRefreshNickName(data:any){
+    return request({
+        url: '/user/nickname/reset',
+        method: 'post',
+        data: data
+    })
+}
+export function postBlocked(data:any){
+    return request({
+        url: '/blocked',
+        method: 'post',
+        data: data
+    })
+}
+export function postBanned(data:any){
+    return request({
+        url: '/banned',
+        method: 'post',
+        data: data
     })
 }
