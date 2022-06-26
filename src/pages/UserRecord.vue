@@ -35,6 +35,7 @@
         <el-card class="box-card">
           <template #header>
             <div class="card-header">
+              <el-icon><Document/></el-icon>
               <span>用户发帖记录</span>
             </div>
           </template>
@@ -55,6 +56,7 @@
         <el-card class="box-card">
           <template #header>
             <div class="card-header">
+              <el-icon class="icon"><ChatDotRound/></el-icon>
               <span>用户评论记录</span>
             </div>
           </template>
@@ -222,7 +224,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue';
-import { ArrowLeftBold, View, User,UserFilled,Iphone,Location,Tickets,OfficeBuilding,Message,Male,Female,Postcard,Reading,School,Star} from "@element-plus/icons-vue";
+import { ArrowLeftBold, View, User,UserFilled,Iphone,Location,Tickets,OfficeBuilding,Message,Male,Female,Postcard,Reading,School,Star,ChatDotRound,Document} from "@element-plus/icons-vue";
 import { getUserPosts, getUserCriti, getUserDetail } from "@/api/api";
 import router from '@/router';
 import { useGlobalData } from "@/store";
@@ -388,7 +390,6 @@ onMounted(() => {
 .info-box {
   display: flex;
   justify-content: space-around;
-
   .not-mobile-box {
     width: 48%;
     height: 80%;

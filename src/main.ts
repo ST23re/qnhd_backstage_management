@@ -7,11 +7,13 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import './assets/reset.less'
 import Navbar from '@/components/Navbar.vue'
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const app = createApp(App);
 
 app.config.globalProperties.$echarts = echarts
 app.component('Navbar', Navbar)
+.component("font-awesome-icon", FontAwesomeIcon)
 .use(router).use(pinia)
 .use(ElementPlus)
 .mount('#app');

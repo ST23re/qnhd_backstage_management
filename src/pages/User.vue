@@ -22,8 +22,16 @@
           <span v-show="!checkbox_show">批量操作</span>
           <span v-show="checkbox_show">取消操作</span>
         </button>
+        <button class="multiple-button" style="marginLeft:10px;backgroundColor: rgb(210,79,79);" v-show="checkbox_show">
+          <el-icon><Mute/></el-icon>
+          <span>禁言</span>
+        </button>
+        <button class="multiple-button" style="marginLeft:10px;" v-show="checkbox_show">
+          <el-icon><Delete/></el-icon>
+          <span>清空</span>
+        </button>
       </div>
-      <div class="select-box">
+      <div class="select-box" v-show="!checkbox_show">
         <div class="condition-box">
           <div class="change-all-condition" :style="block_style"></div>
           <div class="all"
@@ -83,7 +91,7 @@
             </div>
           </div>
           <div class="operate-list">
-            <div class="block-user" v-if="!user.is_blocked"
+            <div class="block-user" v-if="!(user.is_blocked||user.is_banned)"
               @click="dialogFormVisible1 = true, user_blocked.uid = String(user.id)">
               <el-button>
                 <el-icon>
@@ -92,7 +100,7 @@
                 <span>禁言</span>
               </el-button>
             </div>
-            <div class="has-blocked" v-if="user.is_blocked">
+            <div class="has-blocked" v-if="user.is_blocked||user.is_banned">
               <span>已禁言</span>
             </div>
             <div class="more">
@@ -138,14 +146,14 @@
         </div>
       </el-scrollbar>
     </div>
-    <el-dialog v-model="dialogFormVisible1" width="30vw" top="30vh" center>
+    <el-dialog v-model="dialogFormVisible1" top="30vh" center>
       <el-form :model="user_blocked" ref="form">
         <el-form-item prop="day" label="禁言天数:" :rules="{
           required: true,
           message: '禁言天数不能为空',
           trigger: 'blur',
         }">
-          <el-select v-model="user_blocked.last" placeholder="请选择禁言天数" style="width: 76.5%">
+          <el-select v-model="user_blocked.last" placeholder="请选择禁言天数">
             <el-option label="One day" value="1" class="Select"></el-option>
             <el-option label="Three days" value="3" class="Select"></el-option>
             <el-option label="One week" value="7" class="Select"></el-option>
@@ -158,38 +166,42 @@
           message: '禁言原因不能为空',
           trigger: 'blur',
         }">
-          <el-input v-model="user_blocked.reason" autocomplete="off" placeholder="请输入" style="width: 76.5%"></el-input>
+          <el-input v-model="user_blocked.reason" autocomplete="off" placeholder="请输入"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="createBlocked()">确 定</el-button>
-        <el-button @click="
-  refuseBlocked();
-        ">取 消</el-button>
-      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="refuseBlocked()">取消</el-button>
+          <el-button type="primary" @click="createBlocked()"
+            >确定</el-button
+          >
+        </span>
+      </template>
     </el-dialog>
-    <el-dialog v-model="dialogFormVisible2" width="30vw" top="30vh" center>
+    <el-dialog v-model="dialogFormVisible2" top="30vh" center>
       <el-form :model="user_banned" ref="form">
         <el-form-item prop="reason" label="封禁原因:" :rules="{
           required: true,
           message: '封禁原因不能为空',
           trigger: 'blur',
         }">
-          <el-input v-model="user_banned.reason" autocomplete="off" placeholder="请输入" style="width: 76.5%"></el-input>
+          <el-input v-model="user_banned.reason" autocomplete="off" placeholder="请输入"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="createBanned()">确 定</el-button>
-        <el-button @click="
-  refuseBanned();
-        ">取 消</el-button>
-      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="refuseBanned()">取消</el-button>
+          <el-button type="primary" @click="createBanned()"
+            >确定</el-button
+          >
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Search, CopyDocument, View, Mute, CircleClose, MoreFilled, RefreshRight, DArrowLeft,Postcard } from "@element-plus/icons-vue";
+import { Search, CopyDocument, View, Mute, CircleClose, MoreFilled, RefreshRight, DArrowLeft,Postcard,Delete } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted, computed,watch } from "vue";
 import { getAllUsers, postRefreshNickName, postBlocked,postBanned,getOneUser } from "@/api/api";
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -424,7 +436,7 @@ var shrinkPager = computed(() => {
   return GlobalData.width < 490;
 })
 var isMobile = computed(()=>{
-  return GlobalData.width < 1128;
+  return GlobalData.width < 1160;
 })
 window.addEventListener("resize", () => adjustScrollHeight())
 onMounted(() => {
@@ -481,9 +493,6 @@ onMounted(() => {
       box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
     }
 
-    :hover {
-      background-color: rgb(46, 101, 133);
-    }
   }
 
   .select-box {
@@ -516,7 +525,7 @@ onMounted(() => {
       }
 
       .all {
-        padding: 0 3px;
+        padding: 0px 8px;
         font-size: 18px;
         border-right: 1px solid black;
         border-radius: 5px;
@@ -525,7 +534,7 @@ onMounted(() => {
       }
 
       .blocked {
-        padding: 0 3px;
+        padding: 0px 8px;
         font-size: 18px;
         border-right: 1px solid black;
         border-radius: 5px;
@@ -533,7 +542,7 @@ onMounted(() => {
       }
 
       .banned {
-        padding: 0 3px;
+        padding: 0px 8px;
         font-size: 18px;
         cursor: pointer;
       }
@@ -679,16 +688,19 @@ onMounted(() => {
     height: 32px;
   }
 }
-
+/* .checkbox-enter-active,
+.checkbox-leave-active {
+  transition: margin 0.6s;
+} */
 .checkbox-enter,
 .checkbox-leave-to {
-  margin-left: -13px !important;
+  margin-left: -30px !important;
   margin-right: 0px !important;
 }
 
 .checkbox-enter-to,
 .checkbox-leave {
-  margin-left: 20px !important;
-  margin-right: 20px !important;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
 }
 </style>

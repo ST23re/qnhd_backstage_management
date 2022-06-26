@@ -20,8 +20,9 @@
             <div class="isHotTag" :class="tag.point ? 'hot_tag' : 'no_hot_tag'">
               <text>{{ tag.point ? "热榜" : "" }}</text>
             </div>
-            <div v-if="tag.point" class="hot_tag isHotTag">
-              <text>{{ "热度: " + String(tag?.point) }}</text>
+            <div v-if="tag.point" class="">
+            <font-awesome-icon :icon="faFireAlt" class="icon" color="red"></font-awesome-icon>
+              <text>{{ tag?.point }}</text>
             </div>
           </div>
           <div class="bottom">
@@ -29,20 +30,28 @@
           </div>
         </div>
         <div class="operate">
-          <el-button :disabled="!tag.point" @click="clearHot(), tags_id.id = Number(tag.tag_id)">
-            <text :style="tag.point ? 'color:red;' : 'color:grey;'">
-              <el-icon>
-                <Warning />
-              </el-icon>撤去热搜
-            </text>
-          </el-button>
-          <el-button @click="deleteTags(), tags_id.id = Number(tag.tag_id)">
-            <text style="color:red">
-              <el-icon>
-                <Delete />
-              </el-icon>删除Tag
-            </text>
-          </el-button>
+          <el-popconfirm title="确定撤去该热搜吗？" @confirm="clearHot()" @cancel="refuse()">
+            <template #reference>
+              <el-button :disabled="!tag.point" @click="tags_id.id = Number(tag.tag_id)">
+                <text :style="tag.point ? 'color:red;' : 'color:grey;'">
+                  <el-icon>
+                    <Warning />
+                  </el-icon>撤去热搜
+                </text>
+              </el-button>
+            </template>
+          </el-popconfirm>
+          <el-popconfirm title="确定删除该tag吗？" @confirm="deleteTags()" @cancel="refuse()">
+            <template #reference>
+              <el-button @click="tags_id.id = Number(tag.tag_id??tag.id)">
+                <text style="color:red">
+                  <el-icon>
+                    <Delete />
+                  </el-icon>删除Tag
+                </text>
+              </el-button>
+            </template>
+          </el-popconfirm>
           <div class="more">
             <el-dropdown trigger="click">
               <el-icon>
@@ -50,7 +59,7 @@
               </el-icon>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <div @click="drawer = true,tags_id.id = Number(tag.id ?? tag.tag_id),openBox()">
+                  <div @click="drawer = true, tags_id.id = Number(tag.id ?? tag.tag_id), openBox()">
                     <el-dropdown-item>
                       <text style="width:100%;text-align:center">开盒</text>
                     </el-dropdown-item>
@@ -71,7 +80,7 @@
           @current-change="pageHandler" :total="total_num" :hide-on-single-page="true" :small="shrinkPager" />
       </div>
     </el-scrollbar>
-    <el-dialog v-model="dialogFormVisible2" width="30vw" top="30vh" center>
+    <el-dialog v-model="dialogFormVisible2" top="30vh" center>
       <el-form :model="tags_point" ref="form">
         <el-form-item prop="point" label="热度增量:" :rules="{
           required: true,
@@ -81,10 +90,12 @@
           <el-input v-model="tags_point.point" autocomplete="off" placeholder="请输入"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="airbornePoint">确 定</el-button>
-        <el-button @click="refuseHot">取 消</el-button>
-      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="refuseHot">取消</el-button>
+          <el-button type="primary" @click="airbornePoint">确定</el-button>
+        </span>
+      </template>
     </el-dialog>
     <el-drawer v-model="drawer" :size="size" :show-close="false">
       <template #title>
@@ -98,7 +109,7 @@
                 姓名
               </div>
             </template>
-            {{user_detail.realname}}
+            {{ user_detail.realname }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -109,21 +120,21 @@
                 学号
               </div>
             </template>
-            {{user_detail.userNumber}}
+            {{ user_detail.userNumber }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon :style="iconStyle" v-if="user_detail.gender=='男'">
+                <el-icon :style="iconStyle" v-if="user_detail.gender == '男'">
                   <Male />
                 </el-icon>
-                <el-icon :style="iconStyle" v-if="user_detail.gender=='女'">
+                <el-icon :style="iconStyle" v-if="user_detail.gender == '女'">
                   <Female />
                 </el-icon>
                 性别
               </div>
             </template>
-            {{user_detail.gender}}
+            {{ user_detail.gender }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -134,7 +145,7 @@
                 电话
               </div>
             </template>
-            {{user_detail.telephone}}
+            {{ user_detail.telephone }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -145,7 +156,7 @@
                 邮箱
               </div>
             </template>
-            {{user_detail.email}}
+            {{ user_detail.email }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -156,7 +167,7 @@
                 住址
               </div>
             </template>
-            {{user_detail.campus}}
+            {{ user_detail.campus }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -167,7 +178,7 @@
                 专业
               </div>
             </template>
-            <el-tag size="small">{{user_detail.major}}</el-tag>
+            <el-tag size="small">{{ user_detail.major }}</el-tag>
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -178,7 +189,7 @@
                 学院
               </div>
             </template>
-            {{user_detail.department}}
+            {{ user_detail.department }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -189,7 +200,7 @@
                 身份证号
               </div>
             </template>
-            {{user_detail.idNumber}}
+            {{ user_detail.idNumber }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -200,7 +211,7 @@
                 昵称
               </div>
             </template>
-            {{user_detail.nickname}}
+            {{ user_detail.nickname }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -211,7 +222,7 @@
                 身份
               </div>
             </template>
-            {{user_detail.role}}
+            {{ user_detail.role }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -222,7 +233,7 @@
                 学生类型
               </div>
             </template>
-            {{user_detail.stuType}}
+            {{ user_detail.stuType }}
           </el-descriptions-item>
         </el-descriptions>
       </template>
@@ -235,11 +246,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { getHotTags, getNormalTags, increaseTagPoint, getClearHot, getDeleteTags,getTagDetail } from "@/api/api";
-import { reactive, onMounted, ref, computed,watch } from "vue";
-import { Search, Warning, Delete, MoreFilled,User,UserFilled,Iphone,Location,Tickets,OfficeBuilding,Message,Male,Female,Postcard,Reading,School,Star } from "@element-plus/icons-vue";
+import { getHotTags, getNormalTags, increaseTagPoint, getClearHot, getDeleteTags, getTagDetail } from "@/api/api";
+import { reactive, onMounted, ref, computed, watch } from "vue";
+import { Search, Warning, Delete, MoreFilled, User, UserFilled, Iphone, Location, Tickets, OfficeBuilding, Message, Male, Female, Postcard, Reading, School, Star } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useGlobalData } from "@/store";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faFireAlt } from "@fortawesome/free-solid-svg-icons/faFireAlt";
+library.add(faFireAlt)
 interface Tags {
   tag_id?: string,
   id?: string,
@@ -256,21 +270,21 @@ interface Tags_point {
 interface Tags_pointDelete {
   id: number | null,
 }
-interface User_detail{
-  avatar?:string,
-  campus?:string,
-  department?:string,
-  email?:string,
-  gender?:string,
-  idNumber?:string,
-  major?:string,
-  nickname?:string,
-  realname?:string,
-  role?:string,
-  stuType?:string,
-  telephone?:string,
-  token?:string,
-  userNumber?:string
+interface User_detail {
+  avatar?: string,
+  campus?: string,
+  department?: string,
+  email?: string,
+  gender?: string,
+  idNumber?: string,
+  major?: string,
+  nickname?: string,
+  realname?: string,
+  role?: string,
+  stuType?: string,
+  telephone?: string,
+  token?: string,
+  userNumber?: string
 }
 const GlobalData = useGlobalData();
 var tags_query = reactive<Tags_query>({
@@ -365,10 +379,10 @@ function showTags(page?: number) {
     tagsList.length = 0;
     total_num.value = 0;
     let temp = hotTagList_name.concat(dumpTagsList);
-    filterList = temp.filter((tag:any)=>{
+    filterList = temp.filter((tag: any) => {
       return tag.name.indexOf(tags_query.name) !== -1;
     })
-    filterList.forEach((tag:any)=>{
+    filterList.forEach((tag: any) => {
       tagsList.push(tag);
     })
   }
@@ -387,61 +401,34 @@ function airbornePoint() {
     })
   })
 }
-function clearHot() {
-  ElMessageBox.confirm(
-    '确定要撤去该热搜吗？',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  )
-    .then(() => {
-      getClearHot(tags_id).then((res: any) => {
-        ElMessage({
-          showClose: true,
-          message: '撤去热搜成功',
-          type: 'success',
-          duration: 1000,
-        })
-        showTags(1);
-      })
+const clearHot = () => {
+  getClearHot(tags_id).then((res: any) => {
+    ElMessage({
+      showClose: true,
+      message: '撤去热搜成功',
+      type: 'success',
+      duration: 1000,
     })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '取消操作',
-        duration: 1000,
-      })
-    })
+    showTags(1);
+  })
 }
-function deleteTags() {
-  ElMessageBox.confirm(
-    '确定要删除这个tag吗？',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  )
-    .then(() => {
-      getDeleteTags(tags_id).then((res: any) => {
-        ElMessage({
-          showClose: true,
-          message: '删除tag成功',
-          type: 'success',
-          duration: 1000,
-        })
-        showTags(current_page.value);
-      })
+const refuse = () => {
+  ElMessage({
+    type: 'info',
+    message: '取消操作',
+    duration: 1000,
+  })
+}
+const deleteTags = () => {
+  getDeleteTags(tags_id).then((res: any) => {
+    ElMessage({
+      showClose: true,
+      message: '删除tag成功',
+      type: 'success',
+      duration: 1000,
     })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '取消操作',
-        duration: 1000,
-      })
-    })
+    showTags(current_page.value);
+  })
 }
 function refuseHot() {
   dialogFormVisible2.value = false;
@@ -456,8 +443,8 @@ function pageHandler(page: number) {
   console.log(page);
   showTags(page);
 }
-function openBox(){
-  getTagDetail(tags_id).then((res:any)=>{
+function openBox() {
+  getTagDetail(tags_id).then((res: any) => {
     let list = res.detail;
     user_detail.campus = list.campus;
     user_detail.department = list.department;
@@ -488,15 +475,15 @@ onMounted(() => {
 var shrinkPager = computed(() => {
   return GlobalData.width < 490;
 })
-var size = computed(()=>{
-  if(GlobalData.width > 650){
+var size = computed(() => {
+  if (GlobalData.width > 650) {
     return 650;
-  }else{
+  } else {
     return '100';
   }
 })
-watch(tags_query,(newVal)=>{
-  if(newVal.name == ''){
+watch(tags_query, (newVal) => {
+  if (newVal.name == '') {
     showTags(1);
   }
 })
