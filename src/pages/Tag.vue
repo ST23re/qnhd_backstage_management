@@ -21,7 +21,7 @@
               <text>{{ tag.point ? "热榜" : "" }}</text>
             </div>
             <div v-if="tag.point" class="">
-            <font-awesome-icon :icon="faFireAlt" class="icon" color="red"></font-awesome-icon>
+            <font-awesome-icon :icon="faFireAlt" class="icon" color="rgba(245, 65, 65, 0.915)"></font-awesome-icon>
               <text>{{ tag?.point }}</text>
             </div>
           </div>
@@ -35,7 +35,7 @@
               <el-button :disabled="!tag.point" @click="tags_id.id = Number(tag.tag_id)">
                 <text :style="tag.point ? 'color:red;' : 'color:grey;'">
                   <el-icon>
-                    <Warning />
+                    <Warning color="red"/>
                   </el-icon>撤去热搜
                 </text>
               </el-button>
@@ -46,7 +46,7 @@
               <el-button @click="tags_id.id = Number(tag.tag_id??tag.id)">
                 <text style="color:red">
                   <el-icon>
-                    <Delete />
+                    <Delete color="red"/>
                   </el-icon>删除Tag
                 </text>
               </el-button>
@@ -66,7 +66,7 @@
                   </div>
                   <div @click="dialogFormVisible2 = true, tags_point.id = Number(tag.id ?? tag.tag_id)">
                     <el-dropdown-item divided>
-                      <text style="width:100%;text-align">空降热搜</text>
+                      <span style="width:100%;text-align">增加热度</span>
                     </el-dropdown-item>
                   </div>
                 </el-dropdown-menu>
@@ -76,7 +76,7 @@
         </div>
       </div>
       <div class="pagination">
-        <el-pagination background layout="prev,pager,next" v-model:current-page="current_page"
+        <el-pagination background layout="prev,pager,next" v-model:current-page="current_page" pager-count=5
           @current-change="pageHandler" :total="total_num" :hide-on-single-page="true" :small="shrinkPager" />
       </div>
     </el-scrollbar>
@@ -322,16 +322,17 @@ const iconStyle = computed(() => {
     small: '4px',
   }
   return {
-    marginRight: marginMap[size.value] || marginMap.default,
+    marginRight: marginMap.default,
   }
 })
-function showTags(page?: number) {
+function showTags(page: number) {
   if (tags_query.name === "" && page === 1) {
     getHotTags().then((res: any) => {
       console.log(res.total);//有热榜总数total属性
       hotTag_num.value = res.total;
       tagsList.length = 0;
       hotTagList.length = 0;
+      hotTagList_name.length = 0
       res.list.forEach((item: any) => {
         tagsList.push(item)
         hotTagList.push(item.tag_id)
@@ -364,7 +365,8 @@ function showTags(page?: number) {
   } else if (tags_query.name === "" && page !== 1) {
     let temp: number = reverse_index.value - (page - 2) * 10;
     tagsList.length = 0;
-    if (page !== last_page.value) {
+    console.log(tagsList.length)
+    if (page !== last_page.value || (page=== last_page.value)&&(last_page_num.value==0)) {
       for (let i = 0; i < 10; i++) {
         tagsList.push(dumpTagsList[temp]);
         temp--;
@@ -389,13 +391,12 @@ function showTags(page?: number) {
 }
 function airbornePoint() {
   increaseTagPoint(tags_point).then((res: any) => {
-    //返回token鉴权失败，待解决
     dialogFormVisible2.value = false;
     showTags(1);
     tags_point.point = '';
     ElMessage({
       showClose: true,
-      message: '空降热搜成功',
+      message: '增加热度成功',
       type: 'success',
       duration: 1000,
     })
@@ -427,13 +428,26 @@ const deleteTags = () => {
       type: 'success',
       duration: 1000,
     })
-    showTags(current_page.value);
+    if(current_page.value==1){
+      showTags(1);
+    }else{
+      dumpTagsList.length = 0
+      getNormalTags(tags_query).then((res:any)=>{//用于刷新dumpTagsList的值
+        res.list.forEach((tag:any)=>{
+          dumpTagsList.push(tag);
+        })
+        dumpTagsList = res.list.filter((item: any) => {
+          return !hotTagList.includes(item.id);
+        })
+        showTags(current_page.value);
+      })
+    }
   })
 }
 function refuseHot() {
   dialogFormVisible2.value = false;
   ElMessage({
-    message: '取消空降热搜',
+    message: '取消增加热度',
     duration: 1000,
   });
   tags_point.id = null;

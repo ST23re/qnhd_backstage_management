@@ -4,13 +4,13 @@
       <div class="button-box">
         <el-button type="primary" class="goback-button" @click="goback">
           <el-icon>
-            <ArrowLeftBold />
+            <ArrowLeftBold color="#ffffff"/>
           </el-icon>
           <span>返回上页</span>
         </el-button>
         <el-button type="primary" class="openbox-button" @click="openBox">
           <el-icon>
-            <View />
+            <View color="#ffffff"/>
           </el-icon>
           <span>用户开盒</span>
         </el-button>
@@ -211,6 +211,28 @@
             </template>
             {{ user_detail.stuType }}
           </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <Mute />
+                </el-icon>
+                历史禁言次数
+              </div>
+            </template>
+            {{ user_detail.blocked_num }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <CircleClose />
+                </el-icon>
+                历史删帖次数
+              </div>
+            </template>
+            {{ user_detail.deleted_num }}
+          </el-descriptions-item>
         </el-descriptions>
       </template>
       <template #footer>
@@ -224,8 +246,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue';
-import { ArrowLeftBold, View, User,UserFilled,Iphone,Location,Tickets,OfficeBuilding,Message,Male,Female,Postcard,Reading,School,Star,ChatDotRound,Document} from "@element-plus/icons-vue";
-import { getUserPosts, getUserCriti, getUserDetail } from "@/api/api";
+import { ArrowLeftBold, View,CircleClose, User,UserFilled,Iphone,Location,Tickets,OfficeBuilding,Mute,Message,Male,Female,Postcard,Reading,School,Star,ChatDotRound,Document} from "@element-plus/icons-vue";
+import { getUserPosts, getUserCriti, getUserDetail,getBlockedNum } from "@/api/api";
 import router from '@/router';
 import { useGlobalData } from "@/store";
 interface Post_history {
@@ -250,7 +272,9 @@ interface User_detail {
   stuType?: string,
   telephone?: string,
   token?: string,
-  userNumber?: string
+  userNumber?: string,
+  blocked_num?: string,
+  deleted_num?:string,
 }
 const GlobalData = useGlobalData();
 const iconStyle = computed(() => {
@@ -260,7 +284,7 @@ const iconStyle = computed(() => {
     small: '4px',
   }
   return {
-    marginRight: marginMap[size.value] || marginMap.default,
+    marginRight: marginMap.default,
   }
 })
 var user_detail = reactive<User_detail>({})
@@ -282,6 +306,11 @@ var criti_history = reactive({
   uid: uid.value,
   type: '0',
   page_disable: '1',
+})
+var user_deletedPost = reactive({
+  uid:uid.value,
+  type:1,
+  page_disable:1
 })
 var size = computed(()=>{
   if(GlobalData.width > 650){
@@ -320,6 +349,14 @@ function openBox() {
     user_detail.stuType = list.stuType;
     user_detail.telephone = list.telephone;
     user_detail.userNumber = list.userNumber;
+  })
+  getBlockedNum({"uid":uid.value}).then((res:any)=>{
+    console.log(res.total)
+    user_detail.blocked_num = res.total
+  })
+  getUserPosts(user_deletedPost).then((res:any)=>{
+    console.log(res)
+    user_detail.deleted_num = res.list.length
   })
 }
 function handleTime(time: string) {

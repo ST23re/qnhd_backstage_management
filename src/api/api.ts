@@ -1,4 +1,5 @@
 import { request } from '@/utils/request'
+import exp from 'constants'
 
 export function login_twt(data: any) {
     return request({
@@ -123,6 +124,13 @@ export function postBlocked(data:any){
         url: '/blocked',
         method: 'post',
         data: data
+    })
+}
+export function getBlockedNum(data:any){
+    return request({
+        url:'/blocked',
+        method:'get',
+        params:data
     })
 }
 export function postBanned(data:any){

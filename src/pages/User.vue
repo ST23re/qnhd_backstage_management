@@ -12,31 +12,31 @@
     </div>
     <div class="multiple-box">
       <div class="multiple-button-wrapper">
-        <button class="multiple-button" @click="checkbox_show = !checkbox_show">
+        <el-button type="primary" class="multiple-button" @click="checkbox_show = !checkbox_show">
           <el-icon v-show="!checkbox_show">
-            <CopyDocument />
+            <CopyDocument color="#ffffff" />
           </el-icon>
           <el-icon v-show="checkbox_show">
             <DArrowLeft />
           </el-icon>
           <span v-show="!checkbox_show">批量操作</span>
           <span v-show="checkbox_show">取消操作</span>
-        </button>
-        <button class="multiple-button" style="marginLeft:10px;backgroundColor: rgb(210,79,79);" v-show="checkbox_show">
-          <el-icon><Mute/></el-icon>
+        </el-button>
+        <el-button type="primary" class="multiple-button" style="marginLeft:10px;backgroundColor: rgb(210,79,79);" v-show="checkbox_show" @click="createMultiple">
+          <el-icon><Mute color="#ffffff"/></el-icon>
           <span>禁言</span>
-        </button>
-        <button class="multiple-button" style="marginLeft:10px;" v-show="checkbox_show">
-          <el-icon><Delete/></el-icon>
+        </el-button>
+        <el-button type="primary" class="multiple-button" style="marginLeft:10px;" v-show="checkbox_show" @click="cleanMultiple">
+          <el-icon><Delete color="#ffffff"/></el-icon>
           <span>清空</span>
-        </button>
+        </el-button>
       </div>
       <div class="select-box" v-show="!checkbox_show">
         <div class="condition-box">
           <div class="change-all-condition" :style="block_style"></div>
           <div class="all"
             @click="block_style.left = '0%', text_normal_color.color = 'white', text_blocked_color.color = 'black', text_banned_color.color = 'black', condition_now = 0, showUsers(0, 1)">
-            <span :style="text_normal_color">正常</span>
+            <span :style="text_normal_color">全部</span>
           </div>
           <div class="blocked"
             @click="block_style.left = '33.33%', text_normal_color.color = 'black', text_blocked_color.color = 'white', text_banned_color.color = 'black', condition_now = 1, showUsers(1, 1)">
@@ -55,7 +55,7 @@
     <div class="user-wrapper">
       <div class="user-list-header">
         <transition name="checkbox">
-          <input type="checkbox" v-if="checkbox_show" class="checkbox">
+          <input type="checkbox" v-if="checkbox_show" class="checkbox" v-model="checkbox_allSelected">
         </transition>
         <div class="user-uid-header" ref="header">
           <span>用户昵称</span>
@@ -71,14 +71,13 @@
         <div class="user-box" v-for="user in userList" :key="user.id"
           :style="(user.is_blocked || user.is_banned) ? 'background-color:rgba(221,100,100,.3);' : 'background-color:white;'">
           <transition name="checkbox">
-            <input type="checkbox" v-if="checkbox_show" class="checkbox">
+            <input type="checkbox" v-if="checkbox_show" class="checkbox" v-model="user.checkedBtn" @change="calCheckedNum">
           </transition>
           <div class="user-info">
             <div class="user-nickname">
               <span>{{ user.nickname }}</span>
             </div>
             <div class="user-uid">
-              <el-icon class="id-icon"><Postcard/></el-icon>
               <span>{{"uid: "+user.id}}</span>
             </div>
           </div>
@@ -95,7 +94,7 @@
               @click="dialogFormVisible1 = true, user_blocked.uid = String(user.id)">
               <el-button>
                 <el-icon>
-                  <Mute />
+                  <Mute color="red"/>
                 </el-icon>
                 <span>禁言</span>
               </el-button>
@@ -118,7 +117,7 @@
                         <text style="width:100%;text-align:center">查看日志</text>
                       </el-dropdown-item>
                     </div>
-                    <div @click="refreshNickname(), user_uid.uid = String(user.id)">
+                    <div @click="user_uid.uid = String(user.id),refreshNickname() ">
                       <el-dropdown-item divided>
                         <el-icon>
                           <RefreshRight />
@@ -141,7 +140,7 @@
           </div>
         </div>
         <div class="pagination">
-          <el-pagination background layout="prev,pager,next" v-model:current-page="current_page"
+          <el-pagination background layout="prev,pager,next" v-model:current-page="current_page" pager-count=5
             @current-change="pageHandler" :total="total_num" :hide-on-single-page="true" :small="shrinkPager" />
         </div>
       </el-scrollbar>
@@ -201,7 +200,7 @@
 </template>
 
 <script setup lang="ts">
-import { Search, CopyDocument, View, Mute, CircleClose, MoreFilled, RefreshRight, DArrowLeft,Postcard,Delete } from "@element-plus/icons-vue";
+import { Search, CopyDocument, View, Mute, CircleClose, MoreFilled, RefreshRight, DArrowLeft,Delete } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted, computed,watch } from "vue";
 import { getAllUsers, postRefreshNickName, postBlocked,postBanned,getOneUser } from "@/api/api";
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -211,6 +210,7 @@ interface Users_info {
   id: number,
   nickname: string,
   phone_number: string,
+  checkedBtn:boolean,
   is_super: boolean,
   is_sch_admin: boolean,
   is_stu_admin: boolean,
@@ -283,6 +283,9 @@ var condition_now = ref<number>(0);//0表示全部,1表示禁言,2表示封禁
 var checkbox_show = ref<boolean>(false);
 var dialogFormVisible1 = ref<boolean>(false);
 var dialogFormVisible2 = ref<boolean>(false);
+var checkbox_allSelected = ref<boolean>(false);
+var multipleSelection = reactive<Users_info[]>([])
+var isMul_flag = ref<number>(0)
 var block_style = reactive({
   "left": "0%"
 })
@@ -299,7 +302,7 @@ function showUsers(condition: number, page?: any) {
   userList.length = 0;
   user_query.page = page;
   user_query.page_size = 15;
-  current_page = page;
+  current_page.value = page;
   user_query.is_blocked = 0;
   user_query.is_banned = 0;
   if (condition === 1) {
@@ -308,15 +311,21 @@ function showUsers(condition: number, page?: any) {
     user_query.is_banned = 1;
   }
   getAllUsers(user_query).then((res: any) => {
-    console.log(res)
     if (condition === 0) {
       total_num.value = 50000; //全部情况下暂时没有total总数的接口，所以先写成这样,其他两个状态有total属性
     } else {
       total_num.value = res.total;
     }
-    res.list.forEach((item: any) => {
-      userList.push(item);
+    res.list = res.list.map((item:any)=>{
+      return {
+        ...item,
+        checkedBtn:false,
+      }
     })
+    res.list.forEach((item:any)=>{
+      userList.push(item)
+    })
+    console.log(userList)
   })
 }
 function showOneUser(){
@@ -332,6 +341,20 @@ function showOneUser(){
     userList.length = 0;//这里为搜索昵称,暂时不能写,数据量太大
   }
 }
+function createMultiple(){
+  if(multipleSelection.length!=0){
+    isMul_flag.value = 1;
+    dialogFormVisible1.value = true
+  }
+}
+function calCheckedNum(){
+  multipleSelection = []
+  userList.forEach((item:any)=>{
+    if(item.checkedBtn){
+      multipleSelection.push(item)
+    }
+  })
+}
 function pageHandler(page: any) {
   showUsers(condition_now.value, page);
 }
@@ -343,11 +366,32 @@ function refreshNickname() {
       type: 'success',
       duration: 1000,
     })
+    showUsers(0,current_page.value)
   })
 }
 function createBlocked() {
-  postBlocked(user_blocked).then((res: any) => {
-    console.log(res);
+  if(!isMul_flag.value){
+    postBlocked(user_blocked).then((res: any) => {
+      console.log(res);
+      dialogFormVisible1.value = false;
+      ElMessage({
+        showClose: true,
+        message: '禁言成功',
+        type: 'success',
+        duration: 1000,
+      })
+      user_blocked.last =''
+      user_blocked.reason = ''
+      showUsers(0,current_page.value);
+    })
+  }else{
+    let len = multipleSelection.length
+    for(let i=0;i<len;i++){
+      user_blocked.uid = String(multipleSelection[i].id)
+      postBlocked(user_blocked).then((res:any)=>{
+        console.log(res)
+      })
+    }
     dialogFormVisible1.value = false;
     ElMessage({
       showClose: true,
@@ -355,8 +399,12 @@ function createBlocked() {
       type: 'success',
       duration: 1000,
     })
-    showUsers(current_page.value);
-  })
+    user_blocked.last =''
+    user_blocked.reason = ''
+    checkbox_show.value = false
+    isMul_flag.value = 0;
+    showUsers(0,current_page.value);
+  }
 }
 function refuseBlocked() {
   dialogFormVisible1.value = false;
@@ -406,6 +454,13 @@ function enterUserRecord() {
     }
   })
 }
+function cleanMultiple(){
+  userList.forEach((element:any)=>{
+    element.checkedBtn = false;
+  })
+  checkbox_allSelected.value = false;
+  multipleSelection = [];
+}
 function handleTime(start:string,over:string){
   if(start!=''&&over!=''){
     return JSON.stringify(new Date(start))
@@ -430,6 +485,19 @@ function handleTime(start:string,over:string){
 watch(user_search,(newVal)=>{
   if( newVal.uid == ''){
     showUsers(0,1);
+  }
+})
+watch(checkbox_allSelected,(newVal)=>{
+  if(newVal){
+    userList.forEach((element:any)=>{
+      element.checkedBtn = true;
+      multipleSelection = userList;
+    })
+  }else{
+    userList.forEach((element:any)=>{
+      element.checkedBtn = false;
+      multipleSelection = [];
+    })
   }
 })
 var shrinkPager = computed(() => {
@@ -483,7 +551,7 @@ onMounted(() => {
     flex-grow: 1;
 
     .multiple-button {
-      padding: 8px;
+      padding: 8px 13px;
       color: white;
       background-color: #005187;
       border-radius: 5px;
@@ -703,4 +771,5 @@ onMounted(() => {
   margin-left: 0px !important;
   margin-right: 0px !important;
 }
+
 </style>

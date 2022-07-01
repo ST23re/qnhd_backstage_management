@@ -45,10 +45,9 @@ export function request(config: AxiosRequestConfig) {
     })
     instance.interceptors.response.use((response: AxiosResponse<any>) => {
         endLoading();
-        console.log(response)
         if (response.status === 200) {
             const { data } = response;
-            if (data.code === 200) return data.data;//褪去一层data
+            if (data.code === 200) return data.data;
             else {
                 ElMessage({
                     message: data.msg,

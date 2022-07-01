@@ -7,14 +7,14 @@
       </div>
       <div class="search-icon" @click="searchDepartments">
         <el-icon color="white" class="icon">
-          <Search />
+          <Search color="#ffffff"/>
         </el-icon>
       </div>
     </div>
     <div class="operate" ref="operate">
       <button class="operate-button" @click="dialogFormVisible = true">
         <el-icon>
-          <Plus />
+          <Plus color="#ffffff"/>
         </el-icon>
         <span>新增分区</span>
       </button>
@@ -29,7 +29,7 @@
                   <el-popconfirm title="确定删除该部门吗？" @confirm="deleteDepartment()" @cancel="refuse()">
                     <template #reference>
                       <el-icon class="header-icon" @click="department_delete.id = String(department.id)">
-                        <circle-close />
+                        <circle-close color="rgb(210, 79, 79)"/>
                       </el-icon>
                     </template>
                   </el-popconfirm>
