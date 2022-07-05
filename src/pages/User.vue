@@ -47,9 +47,6 @@
             <span :style="text_banned_color">封禁</span>
           </div>
         </div>
-        <div class="text-box">
-          <span>筛选状态:</span>
-        </div>
       </div>
     </div>
     <div class="user-wrapper">
@@ -545,7 +542,7 @@ onMounted(() => {
 
 .multiple-box {
   display: flex;
-  margin: 4px 8px;
+  margin: 5.5px 8px;
 
   .multiple-button-wrapper {
     flex-grow: 1;
@@ -619,7 +616,7 @@ onMounted(() => {
 }
 
 .user-wrapper {
-  margin: 4px 8px;
+  margin: 5.5px 8px;
 
   .user-list-header {
     display: flex;

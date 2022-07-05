@@ -35,7 +35,7 @@
               <el-button :disabled="!tag.point" @click="tags_id.id = Number(tag.tag_id)">
                 <text :style="tag.point ? 'color:red;' : 'color:grey;'">
                   <el-icon>
-                    <Warning color="red"/>
+                    <Warning/>
                   </el-icon>撤去热搜
                 </text>
               </el-button>

@@ -12,12 +12,12 @@
       </div>
     </div>
     <div class="operate" ref="operate">
-      <button class="operate-button" @click="dialogFormVisible = true">
+      <el-button type="primary" class="operate-button" @click="dialogFormVisible = true">
         <el-icon>
           <Plus color="#ffffff"/>
         </el-icon>
         <span>新增分区</span>
-      </button>
+      </el-button>
     </div>
     <div class="department-list">
       <el-scrollbar :max-height="scrollbarHeight">
