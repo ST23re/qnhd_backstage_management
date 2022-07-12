@@ -161,3 +161,32 @@ export function getUserDetail(data:any){
         params:data,
     })
 }
+// 公告管理 notice_
+export function notice_delete(data:any){
+    return request({
+        url:'/notice/delete',
+        method:'get',
+        params:data,
+    })
+}
+export function notice_notices(data:any){
+    return request({
+        url:'/notices',
+        method:'get',
+        params:data,
+    })
+}
+export function notice_modify(data:any){
+    return request({
+        url:'/notice/modify',
+        method:'post',
+        data,
+    })
+}
+export function notice_notice(data:any){
+    return request({
+        url:'/notice',
+        method:'post',
+        data,
+    })
+}
