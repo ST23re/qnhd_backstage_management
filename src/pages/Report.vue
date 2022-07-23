@@ -127,7 +127,7 @@
       <div style="display: flex">
         <button
           class="filter-btn btn-ori"
-          style="width: 125px"
+          style="width: auto; padding: 0 10px"
           @click="filter.sort == 0 ? (filter.sort = 1) : (filter.sort = 0)"
           v-if="!is_batch"
         >
@@ -141,14 +141,14 @@
         </button>
         <button
           class="filter-btn btn-ori"
-          style="width: 125px"
+          style="width: auto; padding: 0 10px"
           @click="
             filter.solved == 1 ? (filter.solved = 2) : (filter.solved = 1)
           "
           v-if="!is_batch"
         >
           <text :class="{ white: filter.solved == 1 }">未处理</text>
-          <text style="width: 21px"></text>
+          <text style="width: 18px"></text>
           <text :class="{ white: filter.solved == 2 }">已处理</text>
           <div
             class="decro"
@@ -158,14 +158,14 @@
         <div style="flex: 1"></div>
         <button
           class="filter-btn btn-ori adjust"
-          style="width: 72px"
+          style="width: auto; padding-right: 12px"
           @click="is_batch = true"
           v-if="!is_batch && filter.solved != 2"
         >
           <el-icon class="icon"><CopyDocument color="#ffffff" /></el-icon>
           批量
         </button>
-        <button class="filter-btn btn-ori" style="width: 85px" v-if="is_batch">
+        <button class="filter-btn btn-ori" style="width: auto" v-if="is_batch">
           <el-checkbox
             v-model="checkPage"
             @change="handleCheckPage"
@@ -182,7 +182,7 @@
           <template #reference>
             <button
               class="filter-btn btn-ori"
-              style="color: #f56c6c; width: 95px"
+              style="color: #f56c6c; width: auto"
               :style="{
                 cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
               }"
@@ -205,7 +205,7 @@
           <template #reference>
             <button
               class="filter-btn btn-ori"
-              style="color: #005187; width: 90px"
+              style="color: #005187; width: auto"
               :style="{
                 cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
               }"
@@ -223,7 +223,7 @@
         </el-popconfirm>
         <button
           class="filter-btn btn-ori"
-          style="width: 64px"
+          style="width: auto; padding: 0 12px"
           @click="cancelBatch"
           v-if="is_batch"
         >
@@ -502,7 +502,12 @@
                   <template #reference>
                     <button
                       class="filter-btn btn-ori"
-                      style="color: #f56c6c; background-color: transparent"
+                      style="
+                        color: #f56c6c;
+                        background-color: transparent;
+                        box-shadow: none;
+                        width: auto;
+                      "
                     >
                       <el-icon style="margin-right: 3px; font-size: 16px"
                         ><Delete color="#f56c6c"
@@ -528,7 +533,11 @@
                   <template #reference>
                     <button
                       class="filter-btn btn-ori"
-                      style="background-color: transparent"
+                      style="
+                        background-color: transparent;
+                        width: auto;
+                        box-shadow: none;
+                      "
                     >
                       <img
                         style="width: 16px; margin-right: 3px"
