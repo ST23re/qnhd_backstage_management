@@ -6,7 +6,7 @@
       </div>
       <div class="search-icon" @click="showOneUser">
         <el-icon class="icon">
-          <Search />
+          <Search color="#ffffff"/>
         </el-icon>
       </div>
     </div>
@@ -17,7 +17,7 @@
             <CopyDocument color="#ffffff" />
           </el-icon>
           <el-icon v-show="checkbox_show">
-            <DArrowLeft />
+            <DArrowLeft color="#ffffff"/>
           </el-icon>
           <span v-show="!checkbox_show">批量操作</span>
           <span v-show="checkbox_show">取消操作</span>
@@ -591,24 +591,29 @@ onMounted(() => {
 
       .all {
         padding: 0px 8px;
-        font-size: 18px;
+        font-size: 14px;
         border-right: 1px solid black;
         border-radius: 5px;
+        background-color: #F4F4F5;
         color: white;
         cursor: pointer;
       }
 
       .blocked {
         padding: 0px 8px;
-        font-size: 18px;
+        font-size: 14px;
         border-right: 1px solid black;
+        background-color: #F4F4F5;
         border-radius: 5px;
+        color: #606266;
         cursor: pointer;
       }
 
       .banned {
         padding: 0px 8px;
-        font-size: 18px;
+        background-color: #F4F4F5;
+        font-size: 14px;
+        color: #606266;
         cursor: pointer;
       }
     }
