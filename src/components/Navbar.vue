@@ -19,7 +19,7 @@
         </div>
         <el-divider />
         <el-scrollbar :max-height="barHeight">
-          <el-sub-menu index="1">
+          <el-sub-menu index="1" v-if="Info.is_super">
             <template #title>
               <el-icon><SetUp /></el-icon>
               <span v-show="!isCollapse">高级</span>
@@ -31,7 +31,6 @@
             <el-menu-item-group>
               <template #title><span>Sensitive</span></template>
               <el-menu-item index="/tag">tag 标签管理</el-menu-item>
-              <el-menu-item index="/word">敏感词条</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group>
               <template #title><span>Others</span></template>
@@ -323,6 +322,10 @@ const showRoute = computed(() => {
     overflow: hidden;
   }
 }
+.el-divider {
+  margin: 0;
+  border-top: 1px solid #015e9c;
+}
 </style>
 <style lang="less">
 .el-menu-vertical-demo,
@@ -336,10 +339,6 @@ const showRoute = computed(() => {
 }
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 210px;
-}
-.el-divider {
-  margin: 0;
-  border-top: 1px solid #015e9c;
 }
 .el-menu-item,
 .el-sub-menu__title {

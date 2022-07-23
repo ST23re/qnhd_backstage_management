@@ -13,7 +13,7 @@ function returnCompleteTime(date: Date) {
       (`${date.getSeconds() < 10 ? '0' : ''}` + date.getSeconds())
     );
   }
-export default function timeFromNow(inputTime: string) {
+export function timeFromNow(inputTime: string) {
     let now = new Date(),
       past = new Date(inputTime);
     let gap = now.getTime() - past.getTime();
@@ -32,3 +32,7 @@ export default function timeFromNow(inputTime: string) {
       ? `${dMinutes}分钟前`
       : `${dSeconds}秒前`;
   }
+export function cTime(inputTime: string) {
+  let time = new Date(inputTime);
+  return time.getTime();
+}
