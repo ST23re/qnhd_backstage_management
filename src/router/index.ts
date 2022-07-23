@@ -36,9 +36,14 @@ const routes:Array<RouteRecordRaw> = [
                 component: () => import('@/pages/Content.vue')
             },
             {
+                path: 'detail',
+                name: '详情',
+                component: () => import('@/pages/Detail.vue')
+            },
+            {
                 path: 'user',
                 name: '用户管理',
-                component: () => import('@/pages/User.vue'),
+                component: () => import('@/pages/User.vue')
             },
             {
                 path: 'diary',
@@ -64,11 +69,6 @@ const routes:Array<RouteRecordRaw> = [
                 path: 'tag',
                 name: 'tag 标签管理',
                 component: () => import('@/pages/Tag.vue')
-            },
-            {
-                path: 'word',
-                name: '敏感词条',
-                component: () => import('@/pages/Word.vue')
             },
             {
                 path: 'department',

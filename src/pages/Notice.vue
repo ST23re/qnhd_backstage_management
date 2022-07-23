@@ -22,13 +22,13 @@
             href=""
             @click.prevent="
               currentPage = 'page2';
-              currentIndex = index
+              currentIndex = index;
             "
             >{{ item.title }}</a
           >
           <div class="Poster_Info">{{ item.sender }}</div>
           <div class="PostTime_Info">
-            {{ item.created_at.split('T')[0].replace(/-/g, '/') }}
+            {{ item.created_at.split("T")[0].replace(/-/g, "/") }}
           </div>
           <a class="DeleteBtn" href="" @click.prevent="DeleteNotice(index)"
             >删除</a
@@ -78,13 +78,13 @@
           @imgDel="handleEditorImgDel"
         /> -->
         <MdEditor
-            toolbarsExclude="['link', 'mermaid', 'katex', 'github']"
-            v-model="val_markdown"
-            @onUploadImg="handleEditorImgAdd"
-            ref="md"
-            placeholder="请输入正文 (必填)"
-            class="myEditor"
-            fontSize="14px"
+          toolbarsExclude="['link', 'mermaid', 'katex', 'github']"
+          v-model="val_markdown"
+          @onUploadImg="handleEditorImgAdd"
+          ref="md"
+          placeholder="请输入正文 (必填)"
+          class="myEditor"
+          fontSize="14px"
         />
       </div>
       <div class="UrlSet FlexBoth">
@@ -145,13 +145,13 @@
           @imgDel="handleEditorImgDel"
         /> -->
         <MdEditor
-            toolbarsExclude="['link', 'mermaid', 'katex', 'github']"
-            v-model="val_markdown"
-            @onUploadImg="handleEditorImgAdd"
-            ref="md"
-            placeholder="请输入正文 (必填)"
-            class="myEditor"
-            fontSize="14px"
+          toolbarsExclude="['link', 'mermaid', 'katex', 'github']"
+          v-model="val_markdown"
+          @onUploadImg="handleEditorImgAdd"
+          ref="md"
+          placeholder="请输入正文 (必填)"
+          class="myEditor"
+          fontSize="14px"
         />
       </div>
       <div class="UrlSet FlexBoth">
@@ -172,52 +172,57 @@
 </template>
 
 <script>
-import * as Vue from 'vue'
-import { notice_delete,notice_notices,notice_modify,notice_notice } from '../api/api'
-import axios from 'axios'
-import MdEditor from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';
+import * as Vue from "vue";
+import {
+  notice_delete,
+  notice_notices,
+  notice_modify,
+  notice_notice,
+} from "../api/api";
+import axios from "axios";
+import MdEditor from "md-editor-v3";
+import "md-editor-v3/lib/style.css";
 // let Myindex,id
 
 export default {
-  name: 'NoticeControl',
+  name: "NoticeControl",
   components: {
     MdEditor,
   },
   data() {
     return {
-      currentIndex: '',
-      currentPage: 'page0',
+      currentIndex: "",
+      currentPage: "page0",
       historyNotice_list: [],
-      val_title: '',
-      val_sender: '',
-      val_markdown: '',
-      val_url: '',
-      val_time: '',
+      val_title: "",
+      val_sender: "",
+      val_markdown: "",
+      val_url: "",
+      val_time: "",
       elBtn_load: false,
-    }
+    };
   },
   methods: {
     handleEditorImgDel() {
-      console.log(9)
+      console.log(9);
     },
     handleEditorImgAdd(pos, $file) {
-      let formdata = new FormData()
-      formdata.append('images', $file)
+      let formdata = new FormData();
+      formdata.append("images", $file);
       //   formdata.append("token", localStorage.getItem('token'))
       axios({
-        url: 'https://www.zrzz.site:7015/upload/image',
-        method: 'post',
+        url: "https://www.zrzz.site:7015/upload/image",
+        method: "post",
         data: formdata,
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { "Content-Type": "multipart/form-data" },
       }).then((res) => {
         if (res.code === 200) {
           let url =
-            'https://www.zrzz.site:7015/download/thumb/' + res.data.urls[0]
-          this.$refs.md.$img2Url(pos, url)
+            "https://www.zrzz.site:7015/download/thumb/" + res.data.urls[0];
+          this.$refs.md.$img2Url(pos, url);
         }
-        console.log(res)
-      })
+        console.log(res);
+      });
     },
     EditNotice() {
       notice_modify({
@@ -227,76 +232,72 @@ export default {
         content: this.val_markdown,
         url: this.val_url,
       }).then((v) => {
-          this.$message.success('修改成功')
-          this.currentPage = 'page0'
-      })
+        this.$message.success("修改成功");
+        this.currentPage = "page0";
+      });
     },
     PublishNotice() {
-      this.elBtn_load = true
-      notice_notice(
-        {
-          sender: this.val_sender,
-          title: this.val_title,
-          content: this.val_markdown,
-          url: this.val_url,
-        },
-      ).then((v) => {
-          this.$message.success('发布成功')
-          this.currentPage = 'page0'
-          this.elBtn_load = false
-      })
+      this.elBtn_load = true;
+      notice_notice({
+        sender: this.val_sender,
+        title: this.val_title,
+        content: this.val_markdown,
+        url: this.val_url,
+      }).then((v) => {
+        this.$message.success("发布成功");
+        this.currentPage = "page0";
+        this.elBtn_load = false;
+      });
     },
     DeleteNotice(index) {
       notice_delete({
         id: this.historyNotice_list[index].id,
         //   token: localStorage.getItem('token')
       }).then((v) => {
-          this.$message.success('删除成功')
-          this.historyNotice_list.splice(index, 1)
-          this.currentPage = 'page0'
-      })
+        this.$message.success("删除成功");
+        this.historyNotice_list.splice(index, 1);
+        this.currentPage = "page0";
+      });
     },
   },
   watch: {
     currentPage(newer) {
-      if (newer == 'page0') {
-        this.val_title = ''
-        this.val_sender = ''
-        this.val_markdown = ''
-        this.val_url = ''
-        this.val_time = ''
+      if (newer == "page0") {
+        this.val_title = "";
+        this.val_sender = "";
+        this.val_markdown = "";
+        this.val_url = "";
+        this.val_time = "";
         notice_notices().then((v) => {
-            this.historyNotice_list = v.list
-            // v.total
-          
-        })
-      } else if (newer == 'page1') {
-        this.val_time = new Date().getTime()
-      } else if (newer == 'page2') {
-        this.val_title = this.historyNotice_list[this.currentIndex].title
-        this.val_sender = this.historyNotice_list[this.currentIndex].sender
-        this.val_markdown = this.historyNotice_list[this.currentIndex].content
-        this.val_url = this.historyNotice_list[this.currentIndex].url
+          this.historyNotice_list = v.list;
+          // v.total
+        });
+      } else if (newer == "page1") {
+        this.val_time = new Date().getTime();
+      } else if (newer == "page2") {
+        this.val_title = this.historyNotice_list[this.currentIndex].title;
+        this.val_sender = this.historyNotice_list[this.currentIndex].sender;
+        this.val_markdown = this.historyNotice_list[this.currentIndex].content;
+        this.val_url = this.historyNotice_list[this.currentIndex].url;
         this.val_time = new Date(
           this.historyNotice_list[this.currentIndex].created_at
-        )
+        );
       }
     },
   },
   computed: {
     val_timeComputed() {
-      return new Date(this.val_time)
+      return new Date(this.val_time);
     },
   },
   mounted() {
     notice_notices().then((v) => {
       // console.log(v)
-      this.historyNotice_list = v.list
+      this.historyNotice_list = v.list;
       // v.total
-      
-    })
+    });
   },
-}
+};
 </script>
 
 <style scoped>

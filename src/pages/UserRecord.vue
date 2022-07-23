@@ -4,29 +4,33 @@
       <div class="button-box">
         <el-button type="primary" class="goback-button" @click="goback">
           <el-icon>
-            <ArrowLeftBold color="#ffffff"/>
+            <ArrowLeftBold color="#ffffff" />
           </el-icon>
           <span>返回上页</span>
         </el-button>
         <el-button type="primary" class="openbox-button" @click="openBox">
           <el-icon>
-            <View color="#ffffff"/>
+            <View color="#ffffff" />
           </el-icon>
           <span>用户开盒</span>
         </el-button>
       </div>
       <div class="select-box" v-if="isMobile">
         <div class="user-post">
-          <span style="fontSize: 14px;">发帖</span>
+          <span style="fontsize: 14px">发帖</span>
         </div>
         <div class="mobile-select">
-          <el-switch v-model="isUserCriti" class="ml-2"
-            style="--el-switch-on-color: rgb(108, 231, 231); --el-switch-off-color: rgb(108, 231, 231)" />
+          <el-switch
+            v-model="isUserCriti"
+            class="ml-2"
+            style="
+              --el-switch-on-color: rgb(108, 231, 231);
+              --el-switch-off-color: rgb(108, 231, 231);
+            "
+          />
         </div>
         <div class="user-critisize">
-          <span style="fontSize: 14px;">
-            评论
-          </span>
+          <span style="fontsize: 14px"> 评论 </span>
         </div>
       </div>
     </div>
@@ -35,16 +39,22 @@
         <el-card class="box-card">
           <template #header>
             <div class="card-header">
-              <el-icon><Document/></el-icon>
+              <el-icon><Document /></el-icon>
               <span>用户发帖记录</span>
             </div>
           </template>
           <el-scrollbar :max-height="scrollbarHeight">
             <el-timeline>
-              <el-timeline-item :timestamp="handleTime(post.created_at)" placement="top" v-for="post in postList"
-                :key="post.id">
+              <el-timeline-item
+                :timestamp="handleTime(post.created_at)"
+                placement="top"
+                v-for="post in postList"
+                :key="post.id"
+              >
                 <el-card>
-                  <a href="???">{{ post.title }}</a>
+                  <div class="jump-to-detail" @click="() => detail(post.id, 0)">
+                    {{ post.title }}
+                  </div>
                   <p>{{ post.content }}</p>
                 </el-card>
               </el-timeline-item>
@@ -52,20 +62,29 @@
           </el-scrollbar>
         </el-card>
       </div>
-      <div :class="box_isMobile" v-if="!isMobile||isUserCriti">
+      <div :class="box_isMobile" v-if="!isMobile || isUserCriti">
         <el-card class="box-card">
           <template #header>
             <div class="card-header">
-              <el-icon class="icon"><ChatDotRound/></el-icon>
+              <el-icon class="icon"><ChatDotRound /></el-icon>
               <span>用户评论记录</span>
             </div>
           </template>
           <el-scrollbar :max-height="scrollbarHeight">
             <el-timeline>
-              <el-timeline-item :timestamp="handleTime(criti.created_at)" placement="top" v-for="criti in critiList"
-                :key="criti.id">
+              <el-timeline-item
+                :timestamp="handleTime(criti.created_at)"
+                placement="top"
+                v-for="criti in critiList"
+                :key="criti.id"
+              >
                 <el-card>
-                  <a href="??">{{ criti.content }}</a>
+                  <div
+                    class="jump-to-detail"
+                    @click="() => detail(criti.post_id, criti.id)"
+                  >
+                    {{ criti.content }}
+                  </div>
                 </el-card>
               </el-timeline-item>
             </el-timeline>
@@ -245,49 +264,74 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue';
-import { ArrowLeftBold, View,CircleClose, User,UserFilled,Iphone,Location,Tickets,OfficeBuilding,Mute,Message,Male,Female,Postcard,Reading,School,Star,ChatDotRound,Document} from "@element-plus/icons-vue";
-import { getUserPosts, getUserCriti, getUserDetail,getBlockedNum } from "@/api/api";
-import router from '@/router';
-import { useGlobalData } from "@/store";
+import { ref, reactive, onMounted, computed } from "vue";
+import {
+  ArrowLeftBold,
+  View,
+  CircleClose,
+  User,
+  UserFilled,
+  Iphone,
+  Location,
+  Tickets,
+  OfficeBuilding,
+  Mute,
+  Message,
+  Male,
+  Female,
+  Postcard,
+  Reading,
+  School,
+  Star,
+  ChatDotRound,
+  Document,
+} from "@element-plus/icons-vue";
+import {
+  getUserPosts,
+  getUserCriti,
+  getUserDetail,
+  getBlockedNum,
+} from "@/api/api";
+import router from "@/router";
+import { useGlobalData, usePost } from "@/store";
 interface Post_history {
-  uid: string,
-  type: string,
-  page_disable: string,
-  page?: string,
-  page_size?: string,
-  page_base?: string,
+  uid: string;
+  type: string;
+  page_disable: string;
+  page?: string;
+  page_size?: string;
+  page_base?: string;
 }
 interface User_detail {
-  avatar?: string,
-  campus?: string,
-  department?: string,
-  email?: string,
-  gender?: string,
-  idNumber?: string,
-  major?: string,
-  nickname?: string,
-  realname?: string,
-  role?: string,
-  stuType?: string,
-  telephone?: string,
-  token?: string,
-  userNumber?: string,
-  blocked_num?: string,
-  deleted_num?:string,
+  avatar?: string;
+  campus?: string;
+  department?: string;
+  email?: string;
+  gender?: string;
+  idNumber?: string;
+  major?: string;
+  nickname?: string;
+  realname?: string;
+  role?: string;
+  stuType?: string;
+  telephone?: string;
+  token?: string;
+  userNumber?: string;
+  blocked_num?: string;
+  deleted_num?: string;
 }
 const GlobalData = useGlobalData();
 const iconStyle = computed(() => {
   const marginMap = {
-    large: '8px',
-    default: '6px',
-    small: '4px',
-  }
+    large: "8px",
+    default: "6px",
+    small: "4px",
+  };
   return {
     marginRight: marginMap.default,
-  }
-})
-var user_detail = reactive<User_detail>({})
+  };
+});
+var user_detail = reactive<User_detail>({});
 var search = ref<HTMLElement>();
 var isUserCriti = ref<boolean>(false);
 var postList = reactive<any[]>([]);
@@ -295,46 +339,46 @@ var critiList = reactive<any[]>([]);
 var scrollbarHeight = ref<number>(0);
 var drawer = ref<boolean>(false);
 var uid = computed(() => {
-  return router.currentRoute.value.query.uid
-})
+  return router.currentRoute.value.query.uid;
+});
 var post_history = reactive({
   uid: uid.value,
-  type: '0',
-  page_disable: '1',
-})
+  type: "0",
+  page_disable: "1",
+});
 var criti_history = reactive({
   uid: uid.value,
-  type: '0',
-  page_disable: '1',
-})
+  type: "0",
+  page_disable: "1",
+});
 var user_deletedPost = reactive({
-  uid:uid.value,
-  type:1,
-  page_disable:1
-})
-var size = computed(()=>{
-  if(GlobalData.width > 650){
+  uid: uid.value,
+  type: 1,
+  page_disable: 1,
+});
+var size = computed(() => {
+  if (GlobalData.width > 650) {
     return 650;
-  }else{
-    return '100';
+  } else {
+    return "100";
   }
-})
-var isMobile = computed(()=>{
+});
+var isMobile = computed(() => {
   return GlobalData.width < 967;
-})
+});
 var box_isMobile = ref({
-  'mobile-box':isMobile,
-  'not-mobile-box':true,
-  get 'not-mobilbe-box'(){
+  "mobile-box": isMobile,
+  "not-mobile-box": true,
+  get "not-mobilbe-box"() {
     return !isMobile;
-  }
-})
+  },
+});
 function goback() {
   router.go(-1);
 }
 function openBox() {
   drawer.value = true;
-  getUserDetail({ "uid": uid.value }).then((res: any) => {
+  getUserDetail({ uid: uid.value }).then((res: any) => {
     console.log(res);
     let list = res.detail;
     user_detail.campus = list.campus;
@@ -349,24 +393,25 @@ function openBox() {
     user_detail.stuType = list.stuType;
     user_detail.telephone = list.telephone;
     user_detail.userNumber = list.userNumber;
-  })
-  getBlockedNum({"uid":uid.value}).then((res:any)=>{
-    console.log(res.total)
-    user_detail.blocked_num = res.total
-  })
-  getUserPosts(user_deletedPost).then((res:any)=>{
-    console.log(res)
-    user_detail.deleted_num = res.list.length
-  })
+  });
+  getBlockedNum({ uid: uid.value }).then((res: any) => {
+    console.log(res.total);
+    user_detail.blocked_num = res.total;
+  });
+  getUserPosts(user_deletedPost).then((res: any) => {
+    console.log(res);
+    user_detail.deleted_num = res.list.length;
+  });
 }
 function handleTime(time: string) {
-  return JSON.stringify(new Date(time))
-    .replace(/["Z]/g, "")
-    .split("T")[0] + '  ' +
+  return (
+    JSON.stringify(new Date(time)).replace(/["Z]/g, "").split("T")[0] +
+    "  " +
     JSON.stringify(new Date(time))
       .replace(/["Z]/g, "")
       .split("T")[1]
       .split(".")[0]
+  );
 }
 function adjustScrollHeight() {
   setTimeout(() => {
@@ -374,20 +419,32 @@ function adjustScrollHeight() {
     scrollbarHeight.value = GlobalData.height - searchHeight - 140;
   }, 50);
 }
-window.addEventListener("resize", () => adjustScrollHeight())
+window.addEventListener("resize", () => adjustScrollHeight());
 onMounted(() => {
   adjustScrollHeight();
   getUserPosts(post_history).then((res: any) => {
     res.list.forEach((post: any) => {
       postList.push(post);
-    })
-  })
+    });
+  });
   getUserCriti(criti_history).then((res: any) => {
     res.list.forEach((criti: any) => {
       critiList.push(criti);
-    })
-  })
-})
+    });
+  });
+});
+
+const postParam = usePost();
+function detail(post_id: number, floor_id: number) {
+  postParam.$patch((state) => {
+    state.user_record_post_id = post_id;
+    state.user_record_floor_id = floor_id;
+  });
+  router.push({
+    path: "/detail",
+    query: { id: post_id },
+  });
+}
 </script>
 
 <style lang="less" scoped>
@@ -432,9 +489,14 @@ onMounted(() => {
     height: 80%;
   }
 
-  .mobile-box{
+  .mobile-box {
     width: 96%;
     height: 80%;
   }
+}
+.jump-to-detail {
+  color: #005187;
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>

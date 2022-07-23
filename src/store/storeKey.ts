@@ -1,4 +1,5 @@
 export const enum Names {
     UseInfo = 'UseInfo',
-    UseGlobalData = 'UseGlobalData'
+    UseGlobalData = 'UseGlobalData',
+    UsePost = 'UsePost',
 }

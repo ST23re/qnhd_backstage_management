@@ -2,7 +2,12 @@
   <div class="page" ref="page">
     <div class="filter" ref="filter">
       <div class="input">
-        <el-input v-model="tags_query.name" placeholder="搜索Tag" :clearable="true" @keyup.enter="showTags" />
+        <el-input
+          v-model="tags_query.name"
+          placeholder="搜索Tag"
+          :clearable="true"
+          @keyup.enter="showTags"
+        />
         <div class="icon-holder">
           <el-icon @click="showTags">
             <Search color="#ffffff" />
@@ -21,7 +26,11 @@
               <text>{{ tag.point ? "热榜" : "" }}</text>
             </div>
             <div v-if="tag.point" class="">
-            <font-awesome-icon :icon="faFireAlt" class="icon" color="rgba(245, 65, 65, 0.915)"></font-awesome-icon>
+              <font-awesome-icon
+                :icon="faFireAlt"
+                class="icon"
+                color="rgba(245, 65, 65, 0.915)"
+              ></font-awesome-icon>
               <text>{{ tag?.point }}</text>
             </div>
           </div>
@@ -30,24 +39,31 @@
           </div>
         </div>
         <div class="operate">
-          <el-popconfirm title="确定撤去该热搜吗？" @confirm="clearHot()" @cancel="refuse()">
+          <el-popconfirm
+            title="确定撤去该热搜吗？"
+            @confirm="clearHot()"
+            @cancel="refuse()"
+          >
             <template #reference>
-              <el-button :disabled="!tag.point" @click="tags_id.id = Number(tag.tag_id)">
+              <el-button
+                :disabled="!tag.point"
+                @click="tags_id.id = Number(tag.tag_id)"
+              >
                 <text :style="tag.point ? 'color:red;' : 'color:grey;'">
-                  <el-icon>
-                    <Warning/>
-                  </el-icon>撤去热搜
+                  <el-icon> <Warning /> </el-icon>撤去热搜
                 </text>
               </el-button>
             </template>
           </el-popconfirm>
-          <el-popconfirm title="确定删除该tag吗？" @confirm="deleteTags()" @cancel="refuse()">
+          <el-popconfirm
+            title="确定删除该tag吗？"
+            @confirm="deleteTags()"
+            @cancel="refuse()"
+          >
             <template #reference>
-              <el-button @click="tags_id.id = Number(tag.tag_id??tag.id)">
-                <text style="color:red">
-                  <el-icon>
-                    <Delete color="red"/>
-                  </el-icon>删除Tag
+              <el-button @click="tags_id.id = Number(tag.tag_id ?? tag.id)">
+                <text style="color: red">
+                  <el-icon> <Delete color="red" /> </el-icon>删除Tag
                 </text>
               </el-button>
             </template>
@@ -59,12 +75,23 @@
               </el-icon>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <div @click="drawer = true, tags_id.id = Number(tag.id ?? tag.tag_id), openBox()">
+                  <div
+                    @click="
+                      (drawer = true),
+                        (tags_id.id = Number(tag.id ?? tag.tag_id)),
+                        openBox()
+                    "
+                  >
                     <el-dropdown-item>
-                      <text style="width:100%;text-align:center">开盒</text>
+                      <text style="width: 100%; text-align: center">开盒</text>
                     </el-dropdown-item>
                   </div>
-                  <div @click="dialogFormVisible2 = true, tags_point.id = Number(tag.id ?? tag.tag_id)">
+                  <div
+                    @click="
+                      (dialogFormVisible2 = true),
+                        (tags_point.id = Number(tag.id ?? tag.tag_id))
+                    "
+                  >
                     <el-dropdown-item divided>
                       <span style="width:100%;text-align">增加热度</span>
                     </el-dropdown-item>
@@ -76,18 +103,34 @@
         </div>
       </div>
       <div class="pagination">
-        <el-pagination background layout="prev,pager,next" v-model:current-page="current_page" pager-count=5
-          @current-change="pageHandler" :total="total_num" :hide-on-single-page="true" :small="shrinkPager" />
+        <el-pagination
+          background
+          layout="prev,pager,next"
+          v-model:current-page="current_page"
+          pager-count="5"
+          @current-change="pageHandler"
+          :total="total_num"
+          :hide-on-single-page="true"
+          :small="shrinkPager"
+        />
       </div>
     </el-scrollbar>
     <el-dialog v-model="dialogFormVisible2" top="30vh" center>
       <el-form :model="tags_point" ref="form">
-        <el-form-item prop="point" label="热度增量:" :rules="{
-          required: true,
-          message: '热度增量不能为空',
-          trigger: 'blur',
-        }">
-          <el-input v-model="tags_point.point" autocomplete="off" placeholder="请输入"></el-input>
+        <el-form-item
+          prop="point"
+          label="热度增量:"
+          :rules="{
+            required: true,
+            message: '热度增量不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <el-input
+            v-model="tags_point.point"
+            autocomplete="off"
+            placeholder="请输入"
+          ></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -246,68 +289,93 @@
   </div>
 </template>
 <script setup lang="ts">
-import { getHotTags, getNormalTags, increaseTagPoint, getClearHot, getDeleteTags, getTagDetail } from "@/api/api";
+import {
+  getHotTags,
+  getNormalTags,
+  increaseTagPoint,
+  getClearHot,
+  getDeleteTags,
+  getTagDetail,
+} from "@/api/api";
 import { reactive, onMounted, ref, computed, watch } from "vue";
-import { Search, Warning, Delete, MoreFilled, User, UserFilled, Iphone, Location, Tickets, OfficeBuilding, Message, Male, Female, Postcard, Reading, School, Star } from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {
+  Search,
+  Warning,
+  Delete,
+  MoreFilled,
+  User,
+  UserFilled,
+  Iphone,
+  Location,
+  Tickets,
+  OfficeBuilding,
+  Message,
+  Male,
+  Female,
+  Postcard,
+  Reading,
+  School,
+  Star,
+} from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { useGlobalData } from "@/store";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faFireAlt } from "@fortawesome/free-solid-svg-icons/faFireAlt";
-library.add(faFireAlt)
+library.add(faFireAlt);
 interface Tags {
-  tag_id?: string,
-  id?: string,
-  point?: number,
-  name: string
+  tag_id?: string;
+  id?: string;
+  point?: number;
+  name: string;
 }
 interface Tags_query {
-  name: string,
+  name: string;
 }
 interface Tags_point {
-  id: number | null,
-  point: string,
+  id: number | null;
+  point: string;
 }
 interface Tags_pointDelete {
-  id: number | null,
+  id: number | null;
 }
 interface User_detail {
-  avatar?: string,
-  campus?: string,
-  department?: string,
-  email?: string,
-  gender?: string,
-  idNumber?: string,
-  major?: string,
-  nickname?: string,
-  realname?: string,
-  role?: string,
-  stuType?: string,
-  telephone?: string,
-  token?: string,
-  userNumber?: string
+  avatar?: string;
+  campus?: string;
+  department?: string;
+  email?: string;
+  gender?: string;
+  idNumber?: string;
+  major?: string;
+  nickname?: string;
+  realname?: string;
+  role?: string;
+  stuType?: string;
+  telephone?: string;
+  token?: string;
+  userNumber?: string;
 }
 const GlobalData = useGlobalData();
 var tags_query = reactive<Tags_query>({
-  name: '',
-})
+  name: "",
+});
 var tags_point = reactive<Tags_point>({
   id: null,
-  point: '',
-})
+  point: "",
+});
 var tags_id = reactive<Tags_pointDelete>({
   id: null,
-})
-var user_detail = reactive<User_detail>({})
+});
+var user_detail = reactive<User_detail>({});
 var filter = ref<HTMLElement>();
-var tags_total = ref<number>(0)
-var tagsList = reactive<Tags[]>([])//目前被显示的tag列表
-var dumpTagsList = reactive<Tags[]>([])//存储所有tag
-var filterList = reactive<Tags[]>([])//经搜索过滤出来的新的总列表
-var hotTagList = reactive<Tags[]>([])//存热榜id
-var hotTagList_name = reactive<Tags[]>([])//存热榜name和id
-var isHot = ref<boolean>(true)
-var total_num = ref<number>(0)
-var hotTag_num = ref<number>(0)
+var tags_total = ref<number>(0);
+var tagsList = reactive<Tags[]>([]); //目前被显示的tag列表
+var dumpTagsList = reactive<Tags[]>([]); //存储所有tag
+var filterList = reactive<Tags[]>([]); //经搜索过滤出来的新的总列表
+var hotTagList = reactive<Tags[]>([]); //存热榜id
+var hotTagList_name = reactive<Tags[]>([]); //存热榜name和id
+var isHot = ref<boolean>(true);
+var total_num = ref<number>(0);
+var hotTag_num = ref<number>(0);
 var scrollbarHeight = ref<number>(0);
 var reverse_index = ref<number>(0);
 var current_page = ref<number>(1);
@@ -317,33 +385,34 @@ var dialogFormVisible2 = ref<boolean>(false);
 var drawer = ref<boolean>(false);
 const iconStyle = computed(() => {
   const marginMap = {
-    large: '8px',
-    default: '6px',
-    small: '4px',
-  }
+    large: "8px",
+    default: "6px",
+    small: "4px",
+  };
   return {
     marginRight: marginMap.default,
-  }
-})
+  };
+});
 function showTags(page: number) {
   if (tags_query.name === "" && page === 1) {
     getHotTags().then((res: any) => {
-      console.log(res.total);//有热榜总数total属性
+      console.log(res.total); //有热榜总数total属性
       hotTag_num.value = res.total;
       tagsList.length = 0;
       hotTagList.length = 0;
-      hotTagList_name.length = 0
+      hotTagList_name.length = 0;
       res.list.forEach((item: any) => {
-        tagsList.push(item)
-        hotTagList.push(item.tag_id)
-        hotTagList_name.push(item)
-      })
+        tagsList.push(item);
+        hotTagList.push(item.tag_id);
+        hotTagList_name.push(item);
+      });
       let diffVal: number = 10 - hotTag_num.value;
-      getNormalTags(tags_query).then((res: any) => {//ps:非热榜中tag与热榜中的tag有重复
+      getNormalTags(tags_query).then((res: any) => {
+        //ps:非热榜中tag与热榜中的tag有重复
         console.log(res);
         total_num.value = res.total;
         if (res.total % 10 != 0) {
-          last_page.value = (res.total - res.total % 10) / 10 + 1;
+          last_page.value = (res.total - (res.total % 10)) / 10 + 1;
           last_page_num.value = res.total % 10;
         } else {
           last_page.value = res.total / 10;
@@ -351,22 +420,25 @@ function showTags(page: number) {
         dumpTagsList.length = 0;
         res.list.forEach((item: any) => {
           dumpTagsList.push(item);
-        })
+        });
         dumpTagsList = res.list.filter((item: any) => {
           return !hotTagList.includes(item.id);
-        })
+        });
         reverse_index.value = dumpTagsList.length - 1;
         for (let i = 0; i < diffVal; i++) {
           tagsList.push(dumpTagsList[reverse_index.value]);
           reverse_index.value--;
         }
-      })
-    })
+      });
+    });
   } else if (tags_query.name === "" && page !== 1) {
     let temp: number = reverse_index.value - (page - 2) * 10;
     tagsList.length = 0;
-    console.log(tagsList.length)
-    if (page !== last_page.value || (page=== last_page.value)&&(last_page_num.value==0)) {
+    console.log(tagsList.length);
+    if (
+      page !== last_page.value ||
+      (page === last_page.value && last_page_num.value == 0)
+    ) {
       for (let i = 0; i < 10; i++) {
         tagsList.push(dumpTagsList[temp]);
         temp--;
@@ -377,81 +449,83 @@ function showTags(page: number) {
         temp--;
       }
     }
-  } else {//此处用于搜索
+  } else {
+    //此处用于搜索
     tagsList.length = 0;
     total_num.value = 0;
     let temp = hotTagList_name.concat(dumpTagsList);
     filterList = temp.filter((tag: any) => {
       return tag.name.indexOf(tags_query.name) !== -1;
-    })
+    });
     filterList.forEach((tag: any) => {
       tagsList.push(tag);
-    })
+    });
   }
 }
 function airbornePoint() {
   increaseTagPoint(tags_point).then((res: any) => {
     dialogFormVisible2.value = false;
     showTags(1);
-    tags_point.point = '';
+    tags_point.point = "";
     ElMessage({
       showClose: true,
-      message: '增加热度成功',
-      type: 'success',
+      message: "增加热度成功",
+      type: "success",
       duration: 1000,
-    })
-  })
+    });
+  });
 }
 const clearHot = () => {
   getClearHot(tags_id).then((res: any) => {
     ElMessage({
       showClose: true,
-      message: '撤去热搜成功',
-      type: 'success',
+      message: "撤去热搜成功",
+      type: "success",
       duration: 1000,
-    })
+    });
     showTags(1);
-  })
-}
+  });
+};
 const refuse = () => {
   ElMessage({
-    type: 'info',
-    message: '取消操作',
+    type: "info",
+    message: "取消操作",
     duration: 1000,
-  })
-}
+  });
+};
 const deleteTags = () => {
   getDeleteTags(tags_id).then((res: any) => {
     ElMessage({
       showClose: true,
-      message: '删除tag成功',
-      type: 'success',
+      message: "删除tag成功",
+      type: "success",
       duration: 1000,
-    })
-    if(current_page.value==1){
+    });
+    if (current_page.value == 1) {
       showTags(1);
-    }else{
-      dumpTagsList.length = 0
-      getNormalTags(tags_query).then((res:any)=>{//用于刷新dumpTagsList的值
-        res.list.forEach((tag:any)=>{
+    } else {
+      dumpTagsList.length = 0;
+      getNormalTags(tags_query).then((res: any) => {
+        //用于刷新dumpTagsList的值
+        res.list.forEach((tag: any) => {
           dumpTagsList.push(tag);
-        })
+        });
         dumpTagsList = res.list.filter((item: any) => {
           return !hotTagList.includes(item.id);
-        })
+        });
         showTags(current_page.value);
-      })
+      });
     }
-  })
-}
+  });
+};
 function refuseHot() {
   dialogFormVisible2.value = false;
   ElMessage({
-    message: '取消增加热度',
+    message: "取消增加热度",
     duration: 1000,
   });
   tags_point.id = null;
-  tags_point.point = '';
+  tags_point.point = "";
 }
 function pageHandler(page: number) {
   console.log(page);
@@ -472,35 +546,35 @@ function openBox() {
     user_detail.stuType = list.stuType;
     user_detail.telephone = list.telephone;
     user_detail.userNumber = list.userNumber;
-  })
+  });
 }
 function adjustScrollHeight() {
   setTimeout(() => {
     let filterHeight = filter.value?.clientHeight as number;
     scrollbarHeight.value = GlobalData.height - filterHeight - 50;
-  }, 50)
+  }, 50);
 }
 onMounted(() => {
   /*   var pieHotTags = proxy.$echarts.init(charts.value)
     pieHotTags.setOption(option); */
   adjustScrollHeight();
   showTags(1);
-})
+});
 var shrinkPager = computed(() => {
   return GlobalData.width < 490;
-})
+});
 var size = computed(() => {
   if (GlobalData.width > 650) {
     return 650;
   } else {
-    return '100';
+    return "100";
   }
-})
+});
 watch(tags_query, (newVal) => {
-  if (newVal.name == '') {
+  if (newVal.name == "") {
     showTags(1);
   }
-})
+});
 window.addEventListener("resize", () => adjustScrollHeight());
 </script>
 

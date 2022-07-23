@@ -69,6 +69,7 @@ const Info = useInfo();
 const handler = (res: any) => {
   if (res) {
     let auth = estimateAuth(res.user);
+    console.log(auth);
     if (auth !== "user") {
       setToken(res.token);
       Info.$patch({ ...res.user, auth });

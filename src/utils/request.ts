@@ -29,18 +29,15 @@ export function request(config: AxiosRequestConfig) {
         baseURL: config.baseURL || import.meta.env.MODE === 'development' ? '/api/v1/b' : import.meta.env.VITE_REQUEST_BASE_URL,
         //for replacement, config = { baseURL: 'env.VITE_IMAGE_BASE_URL', url: '/upload/image' || '/download/thumb' || '/download/origin' }
         timeout: 5000,
-/*         transformRequest: (data, config) => {
-            if (config?.method === 'post') return qs.stringify(data);
-            else return data;
-        } */
     })
     instance.interceptors.request.use((config) => {
         startLoading();
-        config.params = {
-            ...config.params,
-            token: getToken()
-        }
-        if(config.method === 'post')config.data = qs.stringify(config.data);
+        if (config.method === 'get' || config.method === 'post')
+            config.params = {
+                ...config.params,
+                token: getToken()
+            }
+        if (config.method === 'post') config.data = qs.stringify(config.data);
         return config;
     })
     instance.interceptors.response.use((response: AxiosResponse<any>) => {

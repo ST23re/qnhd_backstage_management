@@ -2,19 +2,27 @@
   <div class="page">
     <div class="search" ref="search">
       <div class="search-input">
-        <el-input v-model="department_query.name" placeholder="搜索部门" :clearable="true"
-          @keyup.enter="searchDepartments" />
+        <el-input
+          v-model="department_query.name"
+          placeholder="搜索部门"
+          :clearable="true"
+          @keyup.enter="searchDepartments"
+        />
       </div>
       <div class="search-icon" @click="searchDepartments">
         <el-icon color="white" class="icon">
-          <Search color="#ffffff"/>
+          <Search color="#ffffff" />
         </el-icon>
       </div>
     </div>
     <div class="operate" ref="operate">
-      <el-button type="primary" class="operate-button" @click="dialogFormVisible = true">
+      <el-button
+        type="primary"
+        class="operate-button"
+        @click="dialogFormVisible = true"
+      >
         <el-icon>
-          <Plus color="#ffffff"/>
+          <Plus color="#ffffff" />
         </el-icon>
         <span>新增分区</span>
       </el-button>
@@ -22,18 +30,29 @@
     <div class="department-list">
       <el-scrollbar :max-height="scrollbarHeight">
         <el-collapse v-model="activeName" accordion>
-          <el-collapse-item v-for="department in department_list" :key="department.id" :name="department.id">
+          <el-collapse-item
+            v-for="department in department_list"
+            :key="department.id"
+            :name="department.id"
+          >
             <template #title>
               <div class="department-tag">
                 <div class="department-title">
-                  <el-popconfirm title="确定删除该部门吗？" @confirm="deleteDepartment()" @cancel="refuse()">
+                  <el-popconfirm
+                    title="确定删除该部门吗？"
+                    @confirm="deleteDepartment()"
+                    @cancel="refuse()"
+                  >
                     <template #reference>
-                      <el-icon class="header-icon" @click="department_delete.id = String(department.id)">
-                        <circle-close color="rgb(210, 79, 79)"/>
+                      <el-icon
+                        class="header-icon"
+                        @click="department_delete.id = String(department.id)"
+                      >
+                        <circle-close color="rgb(210, 79, 79)" />
                       </el-icon>
                     </template>
                   </el-popconfirm>
-                   {{ department.name }}
+                  {{ department.name }}
                 </div>
                 <div class="easy-description">
                   {{ department.introduction }}
@@ -49,19 +68,35 @@
     </div>
     <el-dialog v-model="dialogFormVisible" top="30vh" center>
       <el-form :model="department_add" ref="form">
-        <el-form-item prop="name" label="部门名称:" :rules="{
-          required: true,
-          message: '部门名称不能为空',
-          trigger: 'blur',
-        }">
-          <el-input v-model="department_add.name" autocomplete="off" placeholder="请输入"></el-input>
+        <el-form-item
+          prop="name"
+          label="部门名称:"
+          :rules="{
+            required: true,
+            message: '部门名称不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <el-input
+            v-model="department_add.name"
+            autocomplete="off"
+            placeholder="请输入"
+          ></el-input>
         </el-form-item>
-        <el-form-item prop="introduction" label="部门介绍:" :rules="{
-          required: true,
-          message: '部门介绍不能为空',
-          trigger: 'blur',
-        }">
-          <el-input v-model="department_add.introduction" autocomplete="off" placeholder="请输入">
+        <el-form-item
+          prop="introduction"
+          label="部门介绍:"
+          :rules="{
+            required: true,
+            message: '部门介绍不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <el-input
+            v-model="department_add.introduction"
+            autocomplete="off"
+            placeholder="请输入"
+          >
           </el-input>
         </el-form-item>
       </el-form>
@@ -78,35 +113,35 @@
 <script setup lang="ts">
 import { Search, Plus, CircleClose } from "@element-plus/icons-vue";
 import { ref, reactive, onMounted, watch } from "vue";
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from "element-plus";
 import { getDepartments, postDepartments, deleteDepartments } from "@/api/api";
 import { useGlobalData } from "@/store";
 interface Department {
-  id: number,
-  name: string,
-  introduction?: string | null,
+  id: number;
+  name: string;
+  introduction?: string | null;
 }
 interface Department_query {
-  name?: string,
+  name?: string;
 }
 interface Department_add {
-  name: string,
-  introduction: string | null,
+  name: string;
+  introduction: string | null;
 }
 interface Department_delete {
-  id: string,
+  id: string;
 }
-const activeName = ref('1');
+const activeName = ref("1");
 const GlobalData = useGlobalData();
 var department_query = reactive<Department_query>({});
 var department_list = reactive<Department[]>([]);
 var department_add = reactive<Department_add>({
-  name: '',
-  introduction: '',
-})
+  name: "",
+  introduction: "",
+});
 var department_delete = reactive<Department_delete>({
-  id: '',
-})
+  id: "",
+});
 var scrollbarHeight = ref<number>(0);
 var search = ref<HTMLElement>();
 var operate = ref<HTMLElement>();
@@ -114,71 +149,72 @@ var dialogFormVisible = ref<Boolean>(false);
 function showDepartments() {
   department_list.length = 0;
   getDepartments(department_query).then((res: any) => {
-    console.log(res)
+    console.log(res);
     res.list.forEach((item: any) => {
       department_list.push(item);
-    })
-  })
+    });
+  });
 }
 function createDepartment() {
   postDepartments(department_add).then((res: any) => {
     dialogFormVisible.value = false;
     ElMessage({
       showClose: true,
-      message: '创建成功',
-      type: 'success',
+      message: "创建成功",
+      type: "success",
       duration: 1000,
-    })
+    });
     showDepartments();
-  })
+  });
 }
 function refuseDepartment() {
   dialogFormVisible.value = false;
   ElMessage({
-    message: '取消操作',
+    message: "取消操作",
     duration: 1000,
   });
-  department_add.name = '';
-  department_add.introduction = '';
+  department_add.name = "";
+  department_add.introduction = "";
 }
 const deleteDepartment = () => {
   deleteDepartments(department_delete).then((res: any) => {
     ElMessage({
       showClose: true,
-      message: '删除部门成功',
-      type: 'success',
+      message: "删除部门成功",
+      type: "success",
       duration: 1000,
-    })
+    });
     showDepartments();
-  })
-}
+  });
+};
 const refuse = () => {
   ElMessage({
-    type: 'info',
-    message: '取消操作',
+    type: "info",
+    message: "取消操作",
     duration: 1000,
-  })
-}
+  });
+};
 function adjustScrollHeight() {
   setTimeout(() => {
     let searchHeight = search.value?.clientHeight as number;
     let operateHeight = operate.value?.clientHeight as number;
-    scrollbarHeight.value = GlobalData.height - searchHeight - operateHeight - 10;
+    scrollbarHeight.value =
+      GlobalData.height - searchHeight - operateHeight - 10;
   }, 50);
 }
 function searchDepartments() {
   showDepartments();
 }
 watch(department_query, (newVal) => {
-  if (newVal.name == '') {
+  if (newVal.name == "") {
     showDepartments();
   }
-})
-window.addEventListener("resize", () => adjustScrollHeight())
+});
+window.addEventListener("resize", () => adjustScrollHeight());
 onMounted(() => {
   adjustScrollHeight();
   showDepartments();
-})
+});
 </script>
 
 <style lang="less" scoped>
