@@ -1065,15 +1065,6 @@ const router = useRouter();
 const GlobalData = useGlobalData();
 const postParam = usePost();
 
-onMounted(() => {
-  postParam.$patch((state) => {
-    state.prosecuted_post_id = 0;
-    state.prosecuted_floor_id = 0;
-    state.user_record_post_id = 0;
-    state.user_record_floor_id = 0;
-  });
-});
-
 var detail = reactive({
   post: <Post>{},
   replies: <Reply[]>[],
