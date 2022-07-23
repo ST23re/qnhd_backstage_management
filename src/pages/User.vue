@@ -688,14 +688,15 @@ onMounted(() => {
     flex-grow: 1;
 
     .multiple-button {
+      height: 37px;
       padding: 8px 13px;
       color: white;
       background-color: #005187;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
       border: none;
       font-size: 16px;
-      box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
+      box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
     }
   }
 
@@ -710,16 +711,16 @@ onMounted(() => {
     }
 
     .condition-box {
-      box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
+      box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
       position: relative;
       display: flex;
-      margin: 4px 0px 4px 8px;
-      border: 1px solid black;
-      border-radius: 5px;
+      border: none;
+      outline: none;
+      border-radius: 8px;
 
       .change-all-condition {
         position: absolute;
-        border-radius: 5px;
+        border-radius: 8px;
         background-color: #005187;
         height: 100%;
         width: 33.33%;
@@ -729,29 +730,37 @@ onMounted(() => {
       }
 
       .all {
-        padding: 0px 8px;
-        font-size: 14px;
-        border-right: 1px solid black;
-        border-radius: 5px;
-        background-color: #F4F4F5;
+        height: 34px;
+        line-height: 34px;
+        border: none;
+        outline: none;
+        padding: 0px 12px;
+        font-size: 16px;
+        border-radius: 8px;
         color: white;
         cursor: pointer;
       }
 
       .blocked {
-        padding: 0px 8px;
-        font-size: 14px;
-        border-right: 1px solid black;
-        background-color: #F4F4F5;
-        border-radius: 5px;
+        height: 34px;
+        line-height: 34px;
+        border: none;
+        outline: none;
+        padding: 0px 12px;
+        font-size: 16px;
+        border-radius: 8px;
         color: #606266;
         cursor: pointer;
       }
 
       .banned {
-        padding: 0px 8px;
-        background-color: #F4F4F5;
-        font-size: 14px;
+        height: 34px;
+        line-height: 34px;
+        border: none;
+        outline: none;
+        padding: 0px 12px;
+        border-radius: 8px;
+        font-size: 16px;
         color: #606266;
         cursor: pointer;
       }

@@ -68,7 +68,17 @@
               </el-button>
             </template>
           </el-popconfirm>
-          <div class="more">
+            <el-button @click="(drawer=true),(tags_id.id = Number(tag.id??tag.tag_id)),openBox()" v-show="!isMobile">
+              <text style="color:grey;">
+                <el-icon ><View color="grey" /></el-icon>用户开盒
+              </text>
+            </el-button>
+            <el-button @click="(dialogFormVisible2 = true),(tags_point.id = Number(tag.id??tag.tag_id))" v-show="!isMobile">
+              <text style="color:grey;">
+                <el-icon><Plus color="grey"/></el-icon>增加热度
+              </text>
+            </el-button>
+          <div class="more" v-if="isMobile">
             <el-dropdown trigger="click">
               <el-icon>
                 <MoreFilled />
@@ -83,7 +93,8 @@
                     "
                   >
                     <el-dropdown-item>
-                      <text style="width: 100%; text-align: center">开盒</text>
+                      <el-icon ><View color="grey" /></el-icon>
+                      <text style="width: 100%; text-align: center">用户开盒</text>
                     </el-dropdown-item>
                   </div>
                   <div
@@ -93,6 +104,7 @@
                     "
                   >
                     <el-dropdown-item divided>
+                      <el-icon><Plus color="grey"/></el-icon>
                       <span style="width:100%;text-align">增加热度</span>
                     </el-dropdown-item>
                   </div>
@@ -304,6 +316,8 @@ import {
   Delete,
   MoreFilled,
   User,
+  View,
+  Plus,
   UserFilled,
   Iphone,
   Location,
@@ -383,6 +397,9 @@ var last_page = ref<number>(0);
 var last_page_num = ref<number>(0);
 var dialogFormVisible2 = ref<boolean>(false);
 var drawer = ref<boolean>(false);
+var isMobile = computed(() => {
+  return GlobalData.width < 800;
+});
 const iconStyle = computed(() => {
   const marginMap = {
     large: "8px",
