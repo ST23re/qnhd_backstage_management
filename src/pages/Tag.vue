@@ -50,9 +50,7 @@
                 @click="tags_id.id = Number(tag.tag_id)"
               >
                 <text :style="tag.point ? 'color:red;' : 'color:grey;'">
-                  <el-icon>
-                    <Warning /> </el-icon
-                  >撤去热搜
+                  <el-icon> <Warning /> </el-icon>撤去热搜
                 </text>
               </el-button>
             </template>
@@ -65,9 +63,7 @@
             <template #reference>
               <el-button @click="tags_id.id = Number(tag.tag_id ?? tag.id)">
                 <text style="color: red">
-                  <el-icon>
-                    <Delete color="red" /> </el-icon
-                  >删除Tag
+                  <el-icon> <Delete color="red" /> </el-icon>删除Tag
                 </text>
               </el-button>
             </template>

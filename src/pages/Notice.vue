@@ -1,5 +1,5 @@
 <template>
-  <div id="root" class="page">
+  <div id="root">
     <!-- <transition-group name="ani1"> -->
     <div id="page0" class="diyScrollbar" v-if="currentPage == 'page0'">
       <div class="Box1">

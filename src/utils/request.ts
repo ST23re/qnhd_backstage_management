@@ -2,8 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 // import router from '@/router';
 import { getToken } from './cookies';
 import { ElLoading, ElMessage } from 'element-plus';
-import qs from 'querystring';
-
+import qs, { stringify } from 'querystring';
 let loading: any;
 let requestCount: number = 0;
 interface Options {
