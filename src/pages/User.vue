@@ -69,7 +69,7 @@
             <div
               class="blocked"
               @click="
-                (block_style.left = '32%'),
+                (block_style.left = '33.3%'),
                   (text_normal_color.color = 'black'),
                   (text_blocked_color.color = 'white'),
                   (text_banned_color.color = 'black'),
