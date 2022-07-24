@@ -65,7 +65,10 @@
                     <el-dropdown-item @click="diary(detail.post.uid)">
                       用户日志
                     </el-dropdown-item>
-                    <el-dropdown-item @click="resetName(detail.post.uid, 0)">
+                    <el-dropdown-item
+                      @click="resetName(detail.post.uid, 0)"
+                      divided
+                    >
                       重置昵称
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -432,6 +435,7 @@
                   :preview-src-list="cal_images(detail.post.image_urls)"
                   :initial-index="index"
                   fit="cover"
+                  preview-teleported="true"
                 />
               </div>
             </div>
@@ -506,6 +510,7 @@
                     :preview-src-list="cal_images(reply.image_urls)"
                     :initial-index="index"
                     fit="cover"
+                    preview-teleported="true"
                   />
                 </div>
               </div>
@@ -699,6 +704,7 @@
                       :initial-index="0"
                       fit="cover"
                       :infinite="false"
+                      preview-teleported="true"
                     />
                   </div>
                 </div>
@@ -847,6 +853,7 @@
                         :initial-index="0"
                         fit="cover"
                         :infinite="false"
+                        preview-teleported="true"
                       />
                     </div>
                   </div>
@@ -1870,9 +1877,6 @@ function diary(uid: number) {
   background-image: linear-gradient(to right bottom, #4096e3, #3b60ec);
   box-shadow: 0 0 1px #3b60ec;
   opacity: 0.8;
-}
-.el-image {
-  border-radius: 5px;
 }
 .is-deleted {
   text {

@@ -3,11 +3,11 @@
     <div class="filter" style="display: flex" v-if="!shrinkPager">
       <button
         class="filter-btn btn-ori"
-        style="width: 150px"
+        style="width: auto; padding: 0 10px"
         @click="filter.sort == 0 ? (filter.sort = 1) : (filter.sort = 0)"
       >
         <text :class="{ white: filter.sort == 0 }">次数最多</text>
-        <text style="width: 18px"></text>
+        <text style="width: 20px"></text>
         <text :class="{ white: filter.sort == 1 }">时间最近</text>
         <div
           class="decro"
@@ -16,11 +16,11 @@
       </button>
       <button
         class="filter-btn btn-ori"
-        style="width: 125px"
+        style="width: auto; padding: 0 10px"
         @click="filter.solved == 1 ? (filter.solved = 2) : (filter.solved = 1)"
       >
         <text :class="{ white: filter.solved == 1 }">未处理</text>
-        <text style="width: 21px"></text>
+        <text style="width: 20px"></text>
         <text :class="{ white: filter.solved == 2 }">已处理</text>
         <div
           class="decro"
@@ -40,14 +40,18 @@
       </div>
       <button
         class="filter-btn btn-ori adjust"
-        style="width: 100px"
+        style="width: auto; padding: 0 13px 0 7px"
         @click="is_batch = true"
         v-if="!is_batch && filter.solved != 2"
       >
         <el-icon class="icon"><CopyDocument color="#ffffff" /></el-icon>
         批量操作
       </button>
-      <button class="filter-btn btn-ori" style="width: 85px" v-if="is_batch">
+      <button
+        class="filter-btn btn-ori"
+        style="width: auto; padding: 0 10px"
+        v-if="is_batch"
+      >
         <el-checkbox
           v-model="checkPage"
           @change="handleCheckPage"
@@ -64,7 +68,7 @@
         <template #reference>
           <button
             class="filter-btn btn-ori"
-            style="color: #f56c6c; width: 95px"
+            style="color: #f56c6c; width: auto; padding: 0 10px"
             :style="{
               cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
             }"
@@ -87,7 +91,7 @@
         <template #reference>
           <button
             class="filter-btn btn-ori"
-            style="color: #005187; width: 115px"
+            style="color: #005187; width: auto; padding: 0 10px"
             :style="{
               cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
             }"
@@ -105,7 +109,7 @@
       </el-popconfirm>
       <button
         class="filter-btn btn-ori"
-        style="width: 64px"
+        style="width: auto; padding: 0 10px"
         @click="cancelBatch"
         v-if="is_batch"
       >
@@ -165,7 +169,11 @@
           <el-icon class="icon"><CopyDocument color="#ffffff" /></el-icon>
           批量
         </button>
-        <button class="filter-btn btn-ori" style="width: auto" v-if="is_batch">
+        <button
+          class="filter-btn btn-ori"
+          style="width: auto; padding: 0 10px"
+          v-if="is_batch"
+        >
           <el-checkbox
             v-model="checkPage"
             @change="handleCheckPage"
@@ -182,7 +190,7 @@
           <template #reference>
             <button
               class="filter-btn btn-ori"
-              style="color: #f56c6c; width: auto"
+              style="color: #f56c6c; width: auto; padding: 0 10px"
               :style="{
                 cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
               }"
@@ -205,7 +213,7 @@
           <template #reference>
             <button
               class="filter-btn btn-ori"
-              style="color: #005187; width: auto"
+              style="color: #005187; width: auto; padding: 0 10px"
               :style="{
                 cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
               }"
@@ -235,9 +243,9 @@
     <div class="list" v-if="!shrinkPager">
       <div class="bar">
         <div style="flex: 3">次数</div>
-        <div style="flex: 20">内容性质</div>
+        <div style="flex: 18">内容性质</div>
         <div style="flex: 6">最近举报于</div>
-        <div style="flex: 20">举报原因</div>
+        <div style="flex: 22">举报原因</div>
         <div style="flex: 6">操作</div>
       </div>
       <div style="height: 3px; width: 100%" v-if="showLoad"></div>
@@ -257,7 +265,7 @@
                 {{ report.times }}
               </div>
             </div>
-            <div class="nature" style="flex: 20">
+            <div class="nature" style="flex: 18">
               <div class="abstract ellipsis-2">{{ report.abstract }}</div>
               <div style="display: flex; align-items: center">
                 <div class="type">
@@ -295,7 +303,7 @@
             </div>
             <div
               class="reasons"
-              style="flex: 20"
+              style="flex: 22"
               @click.stop="
                 report.reasons.length > 3
                   ? dialog('举报原因', report)
@@ -1103,6 +1111,7 @@ function detail(report: Report) {
     }
   }
   .nature,
+  .updated,
   .reasons {
     padding: 10px;
   }
