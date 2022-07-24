@@ -2,14 +2,14 @@
   <div class="page">
     <div class="operate-box" ref="search">
       <div class="button-box">
-        <el-button type="primary" class="goback-button" @click="goback">
-          <el-icon>
+        <button class="filter-btn btn-ori" @click="goback">
+          <el-icon style="margin-right: 3px">
             <ArrowLeftBold color="#ffffff" />
           </el-icon>
-          <span>返回上页</span>
-        </el-button>
-        <el-button type="primary" class="openbox-button" @click="openBox">
-          <el-icon>
+          <span>{{ isMobile ? "返回" : "返回上一级" }}</span>
+        </button>
+        <el-button class="filter-btn btn-ori" @click="openBox">
+          <el-icon style="margin-right: 3px">
             <View color="#ffffff" />
           </el-icon>
           <span>用户开盒</span>
@@ -456,6 +456,7 @@ function detail(post_id: number, floor_id: number) {
 
   .button-box {
     margin-left: 8px;
+    display: flex;
 
     .goback-button {
       background-color: rgb(0, 81, 135);
@@ -504,5 +505,35 @@ function detail(post_id: number, floor_id: number) {
   color: #005187;
   text-decoration: underline;
   cursor: pointer;
+}
+.filter-btn {
+  width: auto;
+  height: 37px;
+  box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
+  background-color: #005187;
+  margin: 5px;
+  padding: 0 11px 0 9px;
+  border-radius: 8px;
+  font-size: 14px;
+  .icon {
+    font-size: 16px;
+    margin: 0 5px;
+  }
+}
+.btn-ori {
+  font-size: 14px;
+  color: white;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+</style>
+<style lang="less">
+.el-switch__core {
+  border: 1px solid #005187 !important;
+  background-color: #005187 !important;
 }
 </style>

@@ -29,7 +29,7 @@
             </el-menu-item-group>
             <el-menu-item-group>
               <template #title><span>Sensitive</span></template>
-              <el-menu-item index="/tag">tag 标签管理</el-menu-item>
+              <el-menu-item index="/tag">tag 话题管理</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group>
               <template #title><span>Others</span></template>

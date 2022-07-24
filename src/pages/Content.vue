@@ -887,7 +887,6 @@ window.addEventListener("resize", () => adjustScrollHeight());
 .filter {
   padding: 15px 10px 5px;
   border-radius: 8px;
-  // background-color: rgb(239, 239, 239);
   user-select: none;
   .input {
     flex: 1;

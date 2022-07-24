@@ -1063,7 +1063,7 @@ function detail(report: Report) {
   // color: #005187;
   box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
   border-radius: 5px 5px 0 0;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: bold;
 }
 .report {

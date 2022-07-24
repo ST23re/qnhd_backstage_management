@@ -4,7 +4,7 @@
       <div class="input">
         <el-input
           v-model="tags_query.name"
-          placeholder="搜索Tag"
+          placeholder="搜索话题 🔍 ..."
           :clearable="true"
           @keyup.enter="showTags"
         />
@@ -16,19 +16,29 @@
       </div>
     </div>
     <el-scrollbar :max-height="scrollbarHeight">
-      <div v-for="tag in tagsList" :key="tag.id ?? tag.tag_id" class="tag">
+      <div
+        v-for="tag in tagsList"
+        :key="tag.id ?? tag.tag_id"
+        class="tag"
+        @click="searchTag(tag.id ?? tag.tag_id)"
+      >
         <div class="title">
           <div class="top">
             <div class="ellipsis">
-              <text>{{ tag.name }}</text>
+              {{ tag.name }}
             </div>
-            <div class="isHotTag" :class="tag.point ? 'hot_tag' : 'no_hot_tag'">
-              <text>{{ tag.point ? "热榜" : "" }}</text>
+            <div
+              class="isHotTag"
+              :class="tag.point ? 'hot_tag' : 'no_hot_tag'"
+              v-show="!isMobile"
+            >
+              <text>{{ tag.point ? "热搜" : "" }}</text>
             </div>
-            <div v-if="tag.point" class="">
+            <div v-if="tag.point" style="flex-shrink: 0">
               <font-awesome-icon
                 :icon="faFireAlt"
                 class="icon"
+                style="margin: 0 5px"
                 color="rgba(245, 65, 65, 0.915)"
               ></font-awesome-icon>
               <text>{{ tag?.point }}</text>
@@ -38,9 +48,10 @@
             <text>{{ "#id: " + (tag.id ?? tag.tag_id) }}</text>
           </div>
         </div>
-        <div class="operate">
+
+        <div class="operate" @click.stop="() => {}">
           <el-popconfirm
-            title="确定撤去该热搜吗？"
+            title="确定将话题撤出热榜？"
             @confirm="clearHot()"
             @cancel="refuse()"
           >
@@ -48,39 +59,65 @@
               <el-button
                 :disabled="!tag.point"
                 @click="tags_id.id = Number(tag.tag_id)"
+                style="width: auto !important; padding: 0 8px"
               >
-                <text :style="tag.point ? 'color:red;' : 'color:grey;'">
-                  <el-icon> <Warning /> </el-icon>撤去热搜
+                <text :style="{ color: tag.point ? 'red' : 'grey' }">
+                  <el-icon style="margin-right: 3px"> <Warning /> </el-icon
+                  >{{ isMobile ? "撤出" : "撤出热榜" }}
                 </text>
               </el-button>
             </template>
           </el-popconfirm>
           <el-popconfirm
-            title="确定删除该tag吗？"
+            title="确定删除该话题？"
             @confirm="deleteTags()"
             @cancel="refuse()"
           >
             <template #reference>
-              <el-button @click="tags_id.id = Number(tag.tag_id ?? tag.id)">
+              <el-button
+                @click="tags_id.id = Number(tag.tag_id ?? tag.id)"
+                style="width: auto !important; padding: 0 8px"
+              >
                 <text style="color: red">
-                  <el-icon> <Delete color="red" /> </el-icon>删除Tag
+                  <el-icon style="margin-right: 3px">
+                    <Delete color="red" /> </el-icon
+                  >删除
                 </text>
               </el-button>
             </template>
           </el-popconfirm>
-            <el-button @click="(drawer=true),(tags_id.id = Number(tag.id??tag.tag_id)),openBox()" v-show="!isMobile">
-              <text style="color:grey;">
-                <el-icon ><View color="grey" /></el-icon>用户开盒
-              </text>
-            </el-button>
-            <el-button @click="(dialogFormVisible2 = true),(tags_point.id = Number(tag.id??tag.tag_id))" v-show="!isMobile">
-              <text style="color:grey;">
-                <el-icon><Plus color="grey"/></el-icon>增加热度
-              </text>
-            </el-button>
+          <el-button
+            @click="
+              (drawer = true),
+                (tags_id.id = Number(tag.id ?? tag.tag_id)),
+                openBox()
+            "
+            style="width: auto !important; padding: 0 8px"
+            v-show="!isMobile"
+          >
+            <text style="color: #005187">
+              <el-icon style="margin-right: 3px"
+                ><View color="#005187" /></el-icon
+              >开盒
+            </text>
+          </el-button>
+          <el-button
+            @click="
+              (dialogFormVisible2 = true),
+                (tags_point.id = Number(tag.id ?? tag.tag_id))
+            "
+            style="width: auto !important; padding: 0 8px"
+            v-show="!isMobile"
+          >
+            <text style="color: #005187">
+              <el-icon style="margin-right: 3px"
+                ><Plus color="#005187" /></el-icon
+              >热度
+            </text>
+          </el-button>
           <div class="more" v-if="isMobile">
             <el-dropdown trigger="click">
-              <el-icon>
+              <el-icon class="icon">
                 <MoreFilled />
               </el-icon>
               <template #dropdown>
@@ -93,8 +130,10 @@
                     "
                   >
                     <el-dropdown-item>
-                      <el-icon ><View color="grey" /></el-icon>
-                      <text style="width: 100%; text-align: center">用户开盒</text>
+                      <el-icon><View color="grey" /></el-icon>
+                      <text style="width: 100%; text-align: center"
+                        >用户开盒</text
+                      >
                     </el-dropdown-item>
                   </div>
                   <div
@@ -104,7 +143,7 @@
                     "
                   >
                     <el-dropdown-item divided>
-                      <el-icon><Plus color="grey"/></el-icon>
+                      <el-icon><Plus color="grey" /></el-icon>
                       <span style="width:100%;text-align">增加热度</span>
                     </el-dropdown-item>
                   </div>
@@ -115,6 +154,7 @@
         </div>
       </div>
       <div class="pagination">
+        <div style="flex: 1"></div>
         <el-pagination
           background
           layout="prev,pager,next"
@@ -332,7 +372,8 @@ import {
   Star,
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useGlobalData } from "@/store";
+import { useGlobalData, usePost } from "@/store";
+import router from "@/router";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faFireAlt } from "@fortawesome/free-solid-svg-icons/faFireAlt";
 library.add(faFireAlt);
@@ -565,6 +606,26 @@ function openBox() {
     user_detail.userNumber = list.userNumber;
   });
 }
+
+const postParam = usePost();
+const query_init = {
+  type: 0,
+  search_mode: 1,
+  solved: null,
+  department_id: null,
+  content: "",
+  tag_id: null,
+  etag: "",
+  value_mode: 0,
+  commentable: null,
+  is_deleted: 0,
+};
+function searchTag(tag_id: any) {
+  postParam.$patch((state) => {
+    state.posts_query = { ...query_init, tag_id };
+  });
+  router.push("/content");
+}
 function adjustScrollHeight() {
   setTimeout(() => {
     let filterHeight = filter.value?.clientHeight as number;
@@ -597,14 +658,14 @@ window.addEventListener("resize", () => adjustScrollHeight());
 
 <style lang="less" scoped>
 .tag {
-  border-bottom: 1px solid #ebeef5;
+  border-top: 1px dashed hwb(222 92% 4%);
   margin: 3px 10px;
   padding: 5px 8px;
-  border-radius: 3px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  cursor: pointer;
   .title {
     font-size: 18px;
     font-weight: 500;
@@ -646,19 +707,26 @@ window.addEventListener("resize", () => adjustScrollHeight());
       color: white;
       border-radius: 8px;
       border: 0;
+      margin-left: 0;
+      background-color: transparent !important;
     }
-
     text {
       display: flex;
       align-items: center;
     }
 
     .more {
-      font-size: 14px;
+      width: 14px;
+      height: inherit;
       cursor: pointer;
-      margin: 0 8px 0 6px;
-      transform: rotate(90deg);
+      margin: 0 6px;
       opacity: 0.8;
+      display: flex;
+      align-items: center;
+      .icon {
+        font-size: 14px;
+        transform: rotate(90deg);
+      }
     }
   }
 }
@@ -669,35 +737,31 @@ window.addEventListener("resize", () => adjustScrollHeight());
   opacity: 0.8;
 }
 
-.tag:hover {
-  box-shadow: 0px 0px 3px #c9c9c9;
-}
-
 .filter {
-  padding: 5px 10px 0;
+  padding: 15px 10px 0;
   margin-bottom: 3px;
   border-radius: 8px;
   user-select: none;
 
   .input {
     flex: 1;
-    margin: 3px;
-    padding: 2.5px;
+    margin: 5px 5px 7px;
     min-width: 270px;
-    background-color: #005187;
-    box-shadow: 0 0 2px #7e9fcb;
+    height: 37px;
+    background-color: #f4f4f5;
+    box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
     border-radius: 8px;
     display: flex;
-
     .icon-holder {
       flex-grow: 0;
       flex-shrink: 0;
-      width: 48px;
+      width: 54px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: #005187;
       cursor: pointer;
-
       * {
         transform: scale(1.1);
       }
@@ -709,7 +773,7 @@ window.addEventListener("resize", () => adjustScrollHeight());
   display: flex;
   justify-content: center;
   position: relative;
-  margin: 10px 0;
+  margin: 10px;
 }
 
 .ellipsis {
@@ -719,5 +783,25 @@ window.addEventListener("resize", () => adjustScrollHeight());
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
+}
+@media all and (max-width: 500px) {
+  .filter {
+    .input {
+      height: 33.3px;
+    }
+    .icon-holder {
+      width: 45px !important;
+    }
+  }
+}
+</style>
+<style lang="less">
+.filter {
+  .el-input__inner {
+    border-radius: 8px;
+    box-shadow: none !important;
+    background-color: #f4f4f5;
+    height: inherit !important;
+  }
 }
 </style>

@@ -39,7 +39,7 @@
 
               <el-dropdown trigger="click" :hide-on-click="true">
                 <div
-                  class="sender"
+                  class="sender ellipsis"
                   :style="{
                     height: shrink ? '21px' : '24px',
                     lineHeight: shrink ? '21px' : '24px',
@@ -87,7 +87,9 @@
                     <div class="icon">
                       <img src="../assets/flag.svg" alt="" />
                     </div>
-                    <text>{{ detail.post.department?.name }}</text>
+                    <text class="ellipsis">{{
+                      detail.post.department?.name
+                    }}</text>
                   </div>
                   <template #dropdown>
                     <el-dropdown-menu>
@@ -99,11 +101,15 @@
                 </el-dropdown>
 
                 <el-dropdown trigger="click" :hide-on-click="false">
-                  <div class="tag" v-if="detail.post.tag" v-show="!shrink">
+                  <div
+                    class="tag"
+                    v-if="detail.post.tag"
+                    v-show="!shrink"
+                  >
                     <div class="icon">
                       <img src="../assets/tag.svg" alt="#" />
                     </div>
-                    <text>{{ detail.post.tag?.name }}</text>
+                    <text class="ellipsis">{{ detail.post.tag?.name }}</text>
                   </div>
                   <template #dropdown>
                     <el-dropdown-menu>
@@ -566,7 +572,7 @@
               >
                 <div class="header">
                   <el-dropdown trigger="click" :hide-on-click="false">
-                    <div class="sender">
+                    <div class="sender ellipsis">
                       <el-icon style="margin-right: 5px"><Avatar /></el-icon>
                       <text
                         >{{
@@ -741,7 +747,7 @@
                 >
                   <div class="header">
                     <el-dropdown trigger="click" :hide-on-click="false">
-                      <div class="sender">
+                      <div class="sender ellipsis">
                         <el-icon style="margin-right: 5px"><Avatar /></el-icon>
                         <text
                           >{{
@@ -1525,6 +1531,7 @@ function diary(uid: number) {
 .sender {
   height: 21px;
   padding: 0 15px 0 10px;
+  margin-right: 7px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -1891,6 +1898,14 @@ function diary(uid: number) {
   color: #005187;
   text-decoration: underline;
   cursor: pointer;
+}
+.ellipsis {
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 @media screen and (max-width: 500px) {
   .content {

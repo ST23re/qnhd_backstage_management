@@ -1,102 +1,115 @@
 <template>
   <div class="page">
-    <div class="search" ref="search">
-      <div class="search-input">
+    <div class="filter" ref="search">
+      <div class="input-shrink">
         <el-input
-          placeholder="搜索用户"
+          placeholder="uid 搜索用户 ..."
           :clearable="true"
           v-model="user_search.uid"
           @keyup.enter="showOneUser"
         />
-      </div>
-      <div class="search-icon" @click="showOneUser">
-        <el-icon class="icon">
-          <Search color="#ffffff"/>
-        </el-icon>
-      </div>
-    </div>
-    <div class="multiple-box">
-      <div class="multiple-button-wrapper">
-        <el-button
-          type="primary"
-          class="multiple-button"
-          @click="checkbox_show = !checkbox_show"
-        >
-          <el-icon v-show="!checkbox_show">
-            <CopyDocument color="#ffffff" />
+        <div class="icon-holder" @click="showOneUser">
+          <el-icon class="icon">
+            <Search color="#ffffff" />
           </el-icon>
-          <el-icon v-show="checkbox_show">
-            <DArrowLeft color="#ffffff"/>
-          </el-icon>
-          <span v-show="!checkbox_show">批量操作</span>
-          <span v-show="checkbox_show">取消操作</span>
-        </el-button>
-        <el-button
-          type="primary"
-          class="multiple-button"
-          style="marginleft: 10px; backgroundcolor: rgb(210, 79, 79)"
-          v-show="checkbox_show"
-          @click="createMultiple"
-        >
-          <el-icon><Mute color="#ffffff" /></el-icon>
-          <span>禁言</span>
-        </el-button>
-        <el-button
-          type="primary"
-          class="multiple-button"
-          style="marginleft: 10px"
-          v-show="checkbox_show"
-          @click="cleanMultiple"
-        >
-          <el-icon><Delete color="#ffffff" /></el-icon>
-          <span>清空</span>
-        </el-button>
+        </div>
       </div>
-      <div class="select-box" v-show="!checkbox_show">
-        <div class="condition-box">
-          <div class="change-all-condition" :style="block_style"></div>
-          <div
-            class="all"
-            @click="
-              (block_style.left = '0%'),
-                (text_normal_color.color = 'white'),
-                (text_blocked_color.color = 'black'),
-                (text_banned_color.color = 'black'),
-                (condition_now = 0),
-                showUsers(0, 1)
-            "
+      <div class="multiple-box">
+        <div class="multiple-button-wrapper">
+          <button
+            class="btn-ori filter-btn"
+            @click="checkbox_show = !checkbox_show"
           >
-            <span :style="text_normal_color">全部</span>
-          </div>
-          <div
-            class="blocked"
-            @click="
-              (block_style.left = '33.33%'),
-                (text_normal_color.color = 'black'),
-                (text_blocked_color.color = 'white'),
-                (text_banned_color.color = 'black'),
-                (condition_now = 1),
-                showUsers(1, 1)
-            "
+            <el-icon style="margin-right: 3px" v-show="!checkbox_show">
+              <CopyDocument color="#ffffff" />
+            </el-icon>
+            <el-icon style="margin-right: 3px" v-show="checkbox_show">
+              <DArrowLeft color="#ffffff" />
+            </el-icon>
+            <span v-show="!checkbox_show">批量操作</span>
+            <span v-show="checkbox_show">取消操作</span>
+          </button>
+          <button
+            class="btn-ori filter-btn"
+            v-show="checkbox_show"
+            @click="createMultiple"
           >
-            <span :style="text_blocked_color">禁言</span>
-          </div>
-          <div
-            class="banned"
-            @click="
-              (block_style.left = '66.66%'),
-                (text_normal_color.color = 'black'),
-                (text_blocked_color.color = 'black'),
-                (text_banned_color.color = 'white'),
-                (condition_now = 2),
-                showUsers(2, 1)
-            "
+            <el-icon style="margin-right: 3px"
+              ><Mute color="#ffffff"
+            /></el-icon>
+            <span>禁言</span>
+          </button>
+          <button
+            class="btn-ori filter-btn"
+            v-show="checkbox_show"
+            @click="cleanMultiple"
           >
-            <span :style="text_banned_color">封禁</span>
+            <el-icon style="margin-right: 3px"
+              ><Delete color="#ffffff"
+            /></el-icon>
+            <span>清空</span>
+          </button>
+        </div>
+        <div class="select-box" v-show="!checkbox_show">
+          <div class="condition-box">
+            <div class="change-all-condition" :style="block_style"></div>
+            <div
+              class="all"
+              @click="
+                (block_style.left = '0%'),
+                  (text_normal_color.color = 'white'),
+                  (text_blocked_color.color = 'black'),
+                  (text_banned_color.color = 'black'),
+                  (condition_now = 0),
+                  showUsers(0, 1)
+              "
+            >
+              <span :style="text_normal_color">全部</span>
+            </div>
+            <div
+              class="blocked"
+              @click="
+                (block_style.left = '32%'),
+                  (text_normal_color.color = 'black'),
+                  (text_blocked_color.color = 'white'),
+                  (text_banned_color.color = 'black'),
+                  (condition_now = 1),
+                  showUsers(1, 1)
+              "
+            >
+              <span :style="text_blocked_color">禁言</span>
+            </div>
+            <div
+              class="banned"
+              @click="
+                (block_style.left = '66.66%'),
+                  (text_normal_color.color = 'black'),
+                  (text_blocked_color.color = 'black'),
+                  (text_banned_color.color = 'white'),
+                  (condition_now = 2),
+                  showUsers(2, 1)
+              "
+            >
+              <span :style="text_banned_color">封禁</span>
+            </div>
           </div>
         </div>
       </div>
+      <div class="input">
+        <el-input
+          placeholder="uid 搜索用户 ..."
+          :clearable="true"
+          v-model="user_search.uid"
+          @keyup.enter="showOneUser"
+        />
+        <div class="icon-holder" @click="showOneUser">
+          <el-icon class="icon">
+            <Search color="#ffffff" />
+          </el-icon>
+        </div>
+      </div>
     </div>
+
     <div class="user-wrapper">
       <div class="user-list-header">
         <transition name="checkbox">
@@ -236,6 +249,7 @@
           </div>
         </div>
         <div class="pagination">
+          <div style="flex: 1"></div>
           <el-pagination
             background
             layout="prev,pager,next"
@@ -582,7 +596,7 @@ function refuseBanned() {
 function adjustScrollHeight() {
   setTimeout(() => {
     let searchHeight = search.value?.clientHeight as number;
-    scrollbarHeight.value = GlobalData.height - searchHeight - 127;
+    scrollbarHeight.value = GlobalData.height - searchHeight - 96;
   }, 50);
 }
 function enterUserRecord() {
@@ -651,42 +665,46 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-.search {
-  display: flex;
-  margin: 2px 8px;
-  padding: 1.5px;
-  border: 2px solid #005187;
-  background-color: #005187;
+.filter {
+  padding: 15px 10px 5px;
   border-radius: 8px;
-
-  .search-input {
-    flex-grow: 1;
-    outline: none;
-  }
-
-  .search-icon {
+  user-select: none;
+  display: flex;
+  flex-wrap: wrap;
+  .input,
+  .input-shrink {
+    flex: 1;
+    margin: 5px;
+    // min-width: 270px;
+    height: 37px;
+    background-color: #f4f4f5;
+    box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
+    border-radius: 8px;
     display: flex;
-    flex-shrink: 0;
-    color: white;
-    align-self: center;
-    width: 48px;
-    font-size: 20px;
-    cursor: pointer;
-
-    .icon {
-      position: relative;
-      left: 14px;
+    .icon-holder {
+      flex-grow: 0;
+      flex-shrink: 0;
+      width: 54px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #005187;
+      cursor: pointer;
+      * {
+        transform: scale(1.1);
+      }
     }
   }
+  .input-shrink {
+    display: none;
+  }
 }
-
 .multiple-box {
   display: flex;
-  margin: 5.5px 8px;
 
   .multiple-button-wrapper {
-    flex-grow: 1;
-
+    display: flex;
     .multiple-button {
       height: 37px;
       padding: 8px 13px;
@@ -717,9 +735,12 @@ onMounted(() => {
       border: none;
       outline: none;
       border-radius: 8px;
-
+      height: 37px;
+      background-color: #f4f4f5;
+      transform: scale(1);
+      margin: 5px;
       .change-all-condition {
-        position: absolute;
+        position: fixed;
         border-radius: 8px;
         background-color: #005187;
         height: 100%;
@@ -730,20 +751,19 @@ onMounted(() => {
       }
 
       .all {
-        height: 34px;
-        line-height: 34px;
         border: none;
         outline: none;
         padding: 0px 12px;
-        font-size: 16px;
+        font-size: 14px;
         border-radius: 8px;
         color: white;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .blocked {
-        height: 34px;
-        line-height: 34px;
         border: none;
         outline: none;
         padding: 0px 12px;
@@ -751,11 +771,12 @@ onMounted(() => {
         border-radius: 8px;
         color: #606266;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .banned {
-        height: 34px;
-        line-height: 34px;
         border: none;
         outline: none;
         padding: 0px 12px;
@@ -763,36 +784,32 @@ onMounted(() => {
         font-size: 16px;
         color: #606266;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }
 }
 
 .user-wrapper {
-  margin: 5.5px 8px;
+  margin: 5px 15px;
 
   .user-list-header {
     display: flex;
-    background: linear-gradient(
-      to right bottom,
-      rgba(238, 238, 238, 0.6),
-      rgba(238, 238, 238, 0.3),
-      rgba(238, 238, 238, 0.2)
-    );
-    backdrop-filter: blur(11px);
-    -webkit-backdrop-filter: blur(11px);
-    border-top: 1px solid rgba(238, 238, 238, 0.8);
-    border-left: 1px solid rgba(238, 238, 238, 0.8);
-    box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
-    opacity: 0.9;
-    border-radius: 8px 8px 0 0;
-    color: rgba(0, 0, 0, 0.5);
-    text-shadow: 0.2px 0.2px 0.2px;
+    height: 37px;
+    align-items: center;
+    text-align: center;
+    background-color: #f4f4f5;
+    box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
+    border-radius: 5px 5px 0 0;
+    font-size: 14px;
+    font-weight: bold;
 
     .user-uid-header {
       flex-grow: 1;
       width: 33.33%;
-      font-size: 18px;
+      font-size: 16px;
       text-align: center;
       margin: 3px 0;
       border-right: 1px solid white;
@@ -801,7 +818,7 @@ onMounted(() => {
     .user-condition-header {
       flex-grow: 1;
       width: 33.33%;
-      font-size: 18px;
+      font-size: 15px;
       text-align: center;
       margin: 3px 0;
     }
@@ -809,7 +826,7 @@ onMounted(() => {
     .operate-header {
       flex-grow: 1;
       width: 33.33%;
-      font-size: 18px;
+      font-size: 15px;
       text-align: center;
       margin: 3px 0;
       border-left: 1px solid white;
@@ -827,7 +844,7 @@ onMounted(() => {
       flex-grow: 1;
       width: 33.33%;
       text-align: center;
-      font-size: 18px;
+      font-size: 15px;
       border-right: 1px solid #ebeef5;
       display: flex;
       flex-direction: column;
@@ -851,7 +868,7 @@ onMounted(() => {
       width: 33.33%;
       align-self: center;
       text-align: center;
-      font-size: 18px;
+      font-size: 14px;
       .blocked-info {
         font-size: 14px;
         line-height: 14px;
@@ -892,12 +909,8 @@ onMounted(() => {
   .pagination {
     display: flex;
     justify-content: center;
-    margin: 10px 0;
+    margin: 10px;
   }
-}
-
-.user-box:hover {
-  box-shadow: 0px 0px 3px #c9c9c9;
 }
 
 .more {
@@ -921,5 +934,66 @@ onMounted(() => {
 .checkbox-leave {
   margin-left: 0px !important;
   margin-right: 0px !important;
+}
+.filter-btn {
+  width: auto;
+  height: 37px;
+  box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
+  background-color: #005187;
+  margin: 5px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  .icon {
+    font-size: 16px;
+    margin: 0 5px;
+  }
+}
+.btn-ori {
+  font-size: 14px;
+  color: white;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+@media all and (max-width: 400px) {
+  .filter {
+    padding: 10px 10px 0;
+    .input {
+      display: none;
+    }
+    .input-shrink {
+      display: flex;
+    }
+  }
+  .filter {
+    .input {
+      height: 33.3px;
+    }
+    .icon-holder {
+      width: 45px !important;
+    }
+  }
+  .filter-btn,
+  .condition-box {
+    transform: scale(0.9) translateX(-5%) !important;
+    margin-right: -5px;
+  }
+  .filter-btn:last-child {
+    margin-right: 0;
+  }
+}
+</style>
+<style lang="less">
+.filter {
+  .el-input__inner {
+    border-radius: 8px;
+    box-shadow: none !important;
+    background-color: #f4f4f5;
+    height: inherit !important;
+  }
 }
 </style>
