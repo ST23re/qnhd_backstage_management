@@ -533,11 +533,7 @@
           <div class="divider">
             <div>用户评论</div>
             <div style="flex: 1"></div>
-            <button
-              class="btn-ori btns modify"
-              :style="{ width: shrink ? '70px' : '100px' }"
-              @click="seeOwner"
-            >
+            <button class="btn-ori btns modify" @click="seeOwner">
               <el-icon style="margin-right: 5px"
                 ><View color="#ffffff" /></el-icon
               >{{
@@ -1849,8 +1845,9 @@ function diary(uid: number) {
   color: white;
 }
 .modify {
-  width: 100px;
+  width: auto;
   margin: 0 0 0 12px;
+  padding: 0 11px 0 9px;
 }
 .dropdown-btn {
   width: 100%;
