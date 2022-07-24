@@ -455,7 +455,6 @@ function detail(post_id: number, floor_id: number) {
   margin: 8px 8px;
 
   .button-box {
-    margin-left: 8px;
     display: flex;
 
     .goback-button {

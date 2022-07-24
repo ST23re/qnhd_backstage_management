@@ -961,7 +961,7 @@ onMounted(() => {
 }
 @media all and (max-width: 400px) {
   .filter {
-    padding: 10px 10px 0;
+    padding: 10px 7px 0;
     .input {
       display: none;
     }
@@ -970,7 +970,8 @@ onMounted(() => {
     }
   }
   .filter {
-    .input {
+    .input,
+    .input-shrink {
       height: 33.3px;
     }
     .icon-holder {

@@ -4,7 +4,7 @@
       <div class="input">
         <el-input
           v-model="tags_query.name"
-          placeholder="搜索话题 🔍 ..."
+          placeholder="搜索 #话题  ..."
           :clearable="true"
           @keyup.enter="showTags"
         />
