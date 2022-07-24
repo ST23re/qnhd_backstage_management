@@ -122,7 +122,7 @@ const router = createRouter({
 const Info = useInfo(pinia);
 router.beforeEach((to, from, next) => {
     Vnode.component?.exposed?.startLoading();
-    if (!Object.keys(to.meta).length) next('/')
+    if (!Object.keys(to.meta).length) next('/report')
     else if (!to.meta.requireAuth) next();
     else if (getToken()) {
         if (Info.auth.length) next();
