@@ -39,14 +39,14 @@
 
               <el-dropdown trigger="click" :hide-on-click="true">
                 <div
-                  class="sender ellipsis"
+                  class="sender"
                   :style="{
                     height: shrink ? '21px' : '24px',
                     lineHeight: shrink ? '21px' : '24px',
                   }"
                 >
-                  <el-icon style="margin-right: 5px"><Avatar /></el-icon>
-                  <text
+                  <el-icon class="icon"><Avatar /></el-icon>
+                  <text class="ellipsis"
                     >{{
                       `${
                         detail.post.nickname?.length
@@ -101,11 +101,7 @@
                 </el-dropdown>
 
                 <el-dropdown trigger="click" :hide-on-click="false">
-                  <div
-                    class="tag"
-                    v-if="detail.post.tag"
-                    v-show="!shrink"
-                  >
+                  <div class="tag" v-if="detail.post.tag" v-show="!shrink">
                     <div class="icon">
                       <img src="../assets/tag.svg" alt="#" />
                     </div>
@@ -572,9 +568,9 @@
               >
                 <div class="header">
                   <el-dropdown trigger="click" :hide-on-click="false">
-                    <div class="sender ellipsis">
-                      <el-icon style="margin-right: 5px"><Avatar /></el-icon>
-                      <text
+                    <div class="sender">
+                      <el-icon class="icon"><Avatar /></el-icon>
+                      <text class="ellipsis"
                         >{{
                           `${
                             floor.nickname?.length
@@ -747,9 +743,9 @@
                 >
                   <div class="header">
                     <el-dropdown trigger="click" :hide-on-click="false">
-                      <div class="sender ellipsis">
-                        <el-icon style="margin-right: 5px"><Avatar /></el-icon>
-                        <text
+                      <div class="sender">
+                        <el-icon class="icon"><Avatar /></el-icon>
+                        <text class="ellipsis"
                           >{{
                             `${
                               sub.nickname?.length
@@ -1529,16 +1525,18 @@ function diary(uid: number) {
   margin-left: -5px;
 }
 .sender {
-  height: 21px;
-  padding: 0 15px 0 10px;
+  padding: 0 15px 0 5px;
   margin-right: 7px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   font-size: 14px;
-  line-height: 21px;
   background-color: #f4f4f5;
   cursor: pointer;
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
 }
 .reply-sender {
   display: flex;
