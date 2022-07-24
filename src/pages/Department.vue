@@ -252,10 +252,12 @@ onMounted(() => {
   margin: 4px 8px;
 
   .operate-button {
+    height: 37px;
+    line-height: 37px;
     padding: 8px;
     color: white;
     background-color: #005187;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     border: none;
     font-size: 16px;

@@ -459,10 +459,16 @@ function detail(post_id: number, floor_id: number) {
 
     .goback-button {
       background-color: rgb(0, 81, 135);
+      height: 37px;
+      line-height: 37px;
+      border-radius: 8px;
     }
 
     .openbox-button {
       background-color: rgb(0, 81, 135);
+      height: 37px;
+      line-height: 37px;
+      border-radius: 8px;
     }
   }
 

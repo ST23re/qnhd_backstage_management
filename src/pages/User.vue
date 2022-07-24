@@ -11,7 +11,7 @@
       </div>
       <div class="search-icon" @click="showOneUser">
         <el-icon class="icon">
-          <Search />
+          <Search color="#ffffff"/>
         </el-icon>
       </div>
     </div>
@@ -26,7 +26,7 @@
             <CopyDocument color="#ffffff" />
           </el-icon>
           <el-icon v-show="checkbox_show">
-            <DArrowLeft />
+            <DArrowLeft color="#ffffff"/>
           </el-icon>
           <span v-show="!checkbox_show">批量操作</span>
           <span v-show="checkbox_show">取消操作</span>
@@ -688,14 +688,15 @@ onMounted(() => {
     flex-grow: 1;
 
     .multiple-button {
+      height: 37px;
       padding: 8px 13px;
       color: white;
       background-color: #005187;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
       border: none;
       font-size: 16px;
-      box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
+      box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
     }
   }
 
@@ -710,16 +711,16 @@ onMounted(() => {
     }
 
     .condition-box {
-      box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
+      box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
       position: relative;
       display: flex;
-      margin: 4px 0px 4px 8px;
-      border: 1px solid black;
-      border-radius: 5px;
+      border: none;
+      outline: none;
+      border-radius: 8px;
 
       .change-all-condition {
         position: absolute;
-        border-radius: 5px;
+        border-radius: 8px;
         background-color: #005187;
         height: 100%;
         width: 33.33%;
@@ -729,25 +730,38 @@ onMounted(() => {
       }
 
       .all {
-        padding: 0px 8px;
-        font-size: 18px;
-        border-right: 1px solid black;
-        border-radius: 5px;
+        height: 34px;
+        line-height: 34px;
+        border: none;
+        outline: none;
+        padding: 0px 12px;
+        font-size: 16px;
+        border-radius: 8px;
         color: white;
         cursor: pointer;
       }
 
       .blocked {
-        padding: 0px 8px;
-        font-size: 18px;
-        border-right: 1px solid black;
-        border-radius: 5px;
+        height: 34px;
+        line-height: 34px;
+        border: none;
+        outline: none;
+        padding: 0px 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        color: #606266;
         cursor: pointer;
       }
 
       .banned {
-        padding: 0px 8px;
-        font-size: 18px;
+        height: 34px;
+        line-height: 34px;
+        border: none;
+        outline: none;
+        padding: 0px 12px;
+        border-radius: 8px;
+        font-size: 16px;
+        color: #606266;
         cursor: pointer;
       }
     }
