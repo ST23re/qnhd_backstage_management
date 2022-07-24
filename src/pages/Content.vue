@@ -18,6 +18,7 @@
             <button
               @click="visible = !visible"
               class="filter-btn btn-ori modify"
+              style="width: auto; padding: 0 10px"
               v-if="!(shrinkPager && is_batch)"
             >
               <el-icon class="icon"><Filter color="#ffffff" /></el-icon>
@@ -114,6 +115,7 @@
         <!-- <div style="flex: 1"></div> -->
         <button
           class="filter-btn btn-ori modify"
+          style="width: auto; padding: 0 10px"
           @click="is_batch = true"
           v-if="!is_batch && !posts_query.query.is_deleted"
         >

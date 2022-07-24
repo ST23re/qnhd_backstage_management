@@ -1313,12 +1313,11 @@ function detail(report: Report) {
   }
 }
 .report_shrink {
-  margin: 5px 15px 10px;
+  margin: 10px 15px;
   padding: 10px 15px 0;
   font-size: 14px;
   line-height: 27px;
-  border-radius: 12px;
-  box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
+  border-top: 2px dashed #f4f4f5;
   transform: scale(1);
   .holder {
     width: 20px;
@@ -1331,7 +1330,7 @@ function detail(report: Report) {
     position: fixed;
     top: 0%;
     left: 0%;
-    transform: translate(-35%, -25%);
+    transform: translate(-35%, -50%);
   }
   .abstract,
   .status,

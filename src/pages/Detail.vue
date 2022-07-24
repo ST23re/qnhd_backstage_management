@@ -1891,6 +1891,11 @@ function diary(uid: number) {
   text-decoration: underline;
   cursor: pointer;
 }
+@media screen and (max-width: 500px) {
+  .content {
+    font-size: 14px;
+  }
+}
 </style>
 <style lang="less">
 .el-radio {
