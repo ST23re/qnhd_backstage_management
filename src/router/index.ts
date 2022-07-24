@@ -19,6 +19,7 @@ const routes:Array<RouteRecordRaw> = [
         name: 'home',
         alias: '/home',
         component: () => import('@/views/Home.vue'),
+        redirect: '/report',
         meta: {
             title: '主页',
             requireAuth: true,
