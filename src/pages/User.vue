@@ -767,7 +767,7 @@ onMounted(() => {
         border: none;
         outline: none;
         padding: 0px 12px;
-        font-size: 16px;
+        font-size: 14px;
         border-radius: 8px;
         color: #606266;
         cursor: pointer;
@@ -781,7 +781,7 @@ onMounted(() => {
         outline: none;
         padding: 0px 12px;
         border-radius: 8px;
-        font-size: 16px;
+        font-size: 14px;
         color: #606266;
         cursor: pointer;
         display: flex;
@@ -803,13 +803,13 @@ onMounted(() => {
     background-color: #f4f4f5;
     box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
     border-radius: 5px 5px 0 0;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
 
     .user-uid-header {
       flex-grow: 1;
       width: 33.33%;
-      font-size: 16px;
+      font-size: 15px;
       text-align: center;
       margin: 3px 0;
       border-right: 1px solid white;
