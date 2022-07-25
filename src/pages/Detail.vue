@@ -478,7 +478,13 @@
             >
               <div class="header">
                 <div class="reply-sender" v-if="reply.sender == 0">
-                  <div class="sender">
+                  <div
+                    class="sender"
+                    :style="{
+                      height: shrink ? '21px' : '24px',
+                      lineHeight: shrink ? '21px' : '24px',
+                    }"
+                  >
                     <el-icon style="margin-right: 5px"><Avatar /></el-icon>
                     <text>楼主</text>
                   </div>
@@ -568,7 +574,13 @@
               >
                 <div class="header">
                   <el-dropdown trigger="click" :hide-on-click="false">
-                    <div class="sender">
+                    <div
+                      class="sender"
+                      :style="{
+                        height: shrink ? '21px' : '24px',
+                        lineHeight: shrink ? '21px' : '24px',
+                      }"
+                    >
                       <el-icon class="icon"><Avatar /></el-icon>
                       <text class="ellipsis"
                         >{{
@@ -743,7 +755,13 @@
                 >
                   <div class="header">
                     <el-dropdown trigger="click" :hide-on-click="false">
-                      <div class="sender">
+                      <div
+                        class="sender"
+                        :style="{
+                          height: shrink ? '21px' : '24px',
+                          lineHeight: shrink ? '21px' : '24px',
+                        }"
+                      >
                         <el-icon class="icon"><Avatar /></el-icon>
                         <text class="ellipsis"
                           >{{
