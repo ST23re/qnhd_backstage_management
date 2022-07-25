@@ -603,6 +603,7 @@
                         </el-dropdown-item>
                         <el-dropdown-item
                           @click="resetName(floor.uid, floor.id)"
+                          divided
                         >
                           重置昵称
                         </el-dropdown-item>
@@ -663,7 +664,7 @@
                                 >
                               </button>
                             </el-dropdown-item>
-                            <el-dropdown-item v-else>
+                            <el-dropdown-item divided v-else>
                               <el-popconfirm
                                 title="确认恢复该评论？"
                                 @confirm="
@@ -784,6 +785,7 @@
                           </el-dropdown-item>
                           <el-dropdown-item
                             @click="resetName(sub.uid, floor.id)"
+                            divided
                           >
                             重置昵称
                           </el-dropdown-item>

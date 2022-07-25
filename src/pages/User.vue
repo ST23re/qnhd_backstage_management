@@ -675,7 +675,7 @@ onMounted(() => {
   .input-shrink {
     flex: 1;
     margin: 5px;
-    // min-width: 270px;
+    min-width: 201px;
     height: 37px;
     background-color: #f4f4f5;
     box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
@@ -959,7 +959,7 @@ onMounted(() => {
   justify-content: center;
   cursor: pointer;
 }
-@media all and (max-width: 400px) {
+@media all and (max-width: 500px) {
   .filter {
     padding: 10px 7px 0;
     .input {
@@ -973,6 +973,7 @@ onMounted(() => {
     .input,
     .input-shrink {
       height: 33.3px;
+      min-width: 218px;
     }
     .icon-holder {
       width: 45px !important;
