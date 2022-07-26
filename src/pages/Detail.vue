@@ -800,7 +800,7 @@
                           <el-icon class="icon"><MoreFilled /></el-icon>
                           <template #dropdown>
                             <el-dropdown-menu>
-                              <el-dropdown-item divided v-if="!sub.is_deleted">
+                              <el-dropdown-item v-if="!sub.is_deleted">
                                 <button
                                   class="dropdown-btn"
                                   @click="
