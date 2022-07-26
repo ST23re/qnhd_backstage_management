@@ -213,7 +213,7 @@ const showRoute = computed(() => {
 });
 
 const switchToSchoolAffairs = () => {
-  window.location.hash = `http://pamaforce.xyz/admin-beta/#/?token=${getToken()}`;
+  window.location.href = `http://pamaforce.xyz/admin-beta/#/?token=${getToken()}`;
 };
 </script>
 
