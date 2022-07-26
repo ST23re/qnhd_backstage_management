@@ -55,7 +55,7 @@
                   <div class="jump-to-detail" @click="() => detail(post.id, 0)">
                     {{ post.title }}
                   </div>
-                  <p class="elip">{{ post.content }}</p>
+                  <p class="ellipsis">{{ post.content }}</p>
                 </el-card>
               </el-timeline-item>
             </el-timeline>
@@ -395,7 +395,7 @@ function openBox() {
     user_detail.userNumber = list.userNumber;
   });
   getBlockedNum({ uid: uid.value }).then((res: any) => {
-    console.log(res);//这里面是用户的禁言记录，如果用户现在正在被禁言，就获取第0条然后显示禁言原因
+    console.log(res); //这里面是用户的禁言记录，如果用户现在正在被禁言，就获取第0条然后显示禁言原因
     user_detail.blocked_num = res.total;
   });
   getUserPosts(user_deletedPost).then((res: any) => {
@@ -505,7 +505,9 @@ function detail(post_id: number, floor_id: number) {
   text-decoration: underline;
   cursor: pointer;
 }
-.elip{
+.ellipsis {
+  word-break: break-all;
+  overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 1;

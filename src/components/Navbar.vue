@@ -70,7 +70,7 @@
           <el-icon class="icon" v-if="isCollapse"><Expand /></el-icon>
           <el-icon class="icon" v-else><Fold /></el-icon>
         </div>
-        <div class="route-tip" v-show="showRoute">
+        <div class="route-tip">
           <text class="title">{{ $route.meta.title }}</text>
           <text
             :class="['name', inAnimate ? 'animate' : '']"
@@ -91,9 +91,12 @@
           trigger="contextmenu"
           style="margin-right: 15px"
         >
-          <el-button class="el-dropdown-link" @click="dropdownClick">{{
-            Info.nickname
-          }}</el-button>
+          <el-button
+            class="el-dropdown-link"
+            @click="dropdownClick"
+            v-show="showAuth"
+            >{{ Info.nickname }}</el-button
+          >
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item disabled>
@@ -208,12 +211,12 @@ const showMask = computed(() => {
 const barHeight = computed(() => {
   return `${GlobalData.height - 52}px`;
 });
-const showRoute = computed(() => {
+const showAuth = computed(() => {
   return hor_width.value > 500;
 });
 
 const switchToSchoolAffairs = () => {
-  window.location.href = `http://pamaforce.xyz/admin-beta/#/?token=${getToken()}`;
+  window.location.href = `http://pamaforce.xyz/admin-beta/#/login?token=${getToken()}`;
 };
 </script>
 
