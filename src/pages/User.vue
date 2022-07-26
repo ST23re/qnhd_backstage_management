@@ -124,9 +124,10 @@
           :key="user.id"
           :style="
             user.is_blocked || user.is_banned
-              ? 'background-color:rgba(221,100,100,.3);'
+              ? 'background-color:rgba(221,100,100,.3);cursor:pointer;'
               : 'background-color:white;'
           "
+          @click="(user_uid.uid = String(user.id)),(showBlockedInfo(user.is_blocked))"
         >
           <transition name="checkbox">
             <input
@@ -320,6 +321,18 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog v-model="dialogFormVisible3" title="禁言时长及原因" width="320px" top="35vh" center>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>禁言时长：{{handleTime2(blocked_timrea.start)}}</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>————</span> &nbsp;<span>{{handleTime2(blocked_timrea.end)}}</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>禁言原因：{{blocked_timrea.reason}}</span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="dialogFormVisible3 = false"
+          >确定</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
   </div>
 </template>
 
@@ -342,6 +355,7 @@ import {
   postBlocked,
   postBanned,
   getOneUser,
+  getBlockedNum,
 } from "@/api/api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useGlobalData } from "@/store";
@@ -392,6 +406,11 @@ interface User_diary {
   condition: boolean;
   blocked_time: string;
 }
+interface Blocked_timrea{
+  start:string,
+  end:string,
+  reason:string
+}
 const GlobalData = useGlobalData();
 var user_query = reactive<User_query>({});
 var userList = reactive<Users_info[]>([]); //用于存放当页展示的用户
@@ -416,6 +435,11 @@ var user_banned = reactive<User_banned>({
   uid: "",
   reason: "",
 });
+var blocked_timrea = reactive<Blocked_timrea>({
+  start:"",
+  end:"",
+  reason:"",
+})
 var current_page = ref<number>(1);
 var search = ref<HTMLElement>();
 var scrollbarHeight = ref<number>(0);
@@ -424,6 +448,7 @@ var condition_now = ref<number>(0); //0表示全部,1表示禁言,2表示封禁
 var checkbox_show = ref<boolean>(false);
 var dialogFormVisible1 = ref<boolean>(false);
 var dialogFormVisible2 = ref<boolean>(false);
+var dialogFormVisible3 = ref<boolean>(false);
 var checkbox_allSelected = ref<boolean>(false);
 var multipleSelection = reactive<Users_info[]>([]);
 var isMul_flag = ref<number>(0);
@@ -603,13 +628,13 @@ function cleanMultiple() {
 function handleTime(start: string, over: string) {
   if (start != "" && over != "") {
     return (
-      JSON.stringify(new Date(start)).replace(/["Z]/g, "").split("T")[0] +
+      JSON.stringify(new Date(start)).replace(/["Z]/g, "").split("T")[0] + ' ' +
       JSON.stringify(new Date(start))
         .replace(/["Z]/g, "")
         .split("T")[1]
         .split(".")[0] +
       "——" +
-      JSON.stringify(new Date(over)).replace(/["Z]/g, "").split("T")[0] +
+      JSON.stringify(new Date(over)).replace(/["Z]/g, "").split("T")[0] + ' ' +
       JSON.stringify(new Date(over))
         .replace(/["Z]/g, "")
         .split("T")[1]
@@ -617,6 +642,30 @@ function handleTime(start: string, over: string) {
     );
   } else {
     return "0";
+  }
+}
+function handleTime2(start: string) {
+  if (start != "") {
+    return (
+      JSON.stringify(new Date(start)).replace(/["Z]/g, "").split("T")[0] +' '+
+      JSON.stringify(new Date(start))
+        .replace(/["Z]/g, "")
+        .split("T")[1]
+        .split(".")[0]
+    );
+  } else {
+    return "0";
+  }
+}
+function showBlockedInfo(condition:boolean){
+  if(condition){
+    getBlockedNum({uid:user_uid.uid}).then((res:any)=>{
+      console.log(res);
+      blocked_timrea.start = res.list[0].created_at;
+      blocked_timrea.end = res.list[0].expired_at;
+      blocked_timrea.reason = res.list[0].reason;
+    })
+    dialogFormVisible3.value = true;
   }
 }
 watch(user_search, (newVal) => {
@@ -773,17 +822,11 @@ onMounted(() => {
 
   .user-list-header {
     display: flex;
-    background: linear-gradient(
-      to right bottom,
-      rgba(238, 238, 238, 0.6),
-      rgba(238, 238, 238, 0.3),
-      rgba(238, 238, 238, 0.2)
-    );
+    background-color: #f4f4f5;
     backdrop-filter: blur(11px);
     -webkit-backdrop-filter: blur(11px);
-    border-top: 1px solid rgba(238, 238, 238, 0.8);
-    border-left: 1px solid rgba(238, 238, 238, 0.8);
-    box-shadow: 0px 0px 1px rgb(0, 0, 0, 0.3);
+    border: none;
+    box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
     opacity: 0.9;
     border-radius: 8px 8px 0 0;
     color: rgba(0, 0, 0, 0.5);
