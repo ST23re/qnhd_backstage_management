@@ -140,7 +140,6 @@
               ? 'background-color:rgba(221,100,100,.3);cursor:pointer;'
               : 'background-color:white;'
           "
-          @click="(user_uid.uid = String(user.id)),(showBlockedInfo(user.is_blocked))"
         >
           <transition name="checkbox">
             <input
@@ -151,7 +150,7 @@
               @change="calCheckedNum"
             />
           </transition>
-          <div class="user-info">
+          <div class="user-info" @click="(user_uid.uid = String(user.id)),(showBlockedInfo(user.is_blocked))">
             <div class="user-nickname">
               <span>{{ user.nickname }}</span>
             </div>
@@ -159,7 +158,7 @@
               <span>{{ "uid: " + user.id }}</span>
             </div>
           </div>
-          <div class="user-condition">
+          <div class="user-condition" @click="(user_uid.uid = String(user.id)),(showBlockedInfo(user.is_blocked))">
             <div class="is-blocked">
               <span>{{
                 user.is_blocked ? "禁言" : user.is_banned ? "封禁" : "正常"
