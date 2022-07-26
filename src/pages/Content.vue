@@ -18,6 +18,7 @@
             <button
               @click="visible = !visible"
               class="filter-btn btn-ori modify"
+              style="width: auto; padding: 0 13px 0 7px"
               v-if="!(shrinkPager && is_batch)"
             >
               <el-icon class="icon"><Filter color="#ffffff" /></el-icon>
@@ -114,6 +115,7 @@
         <!-- <div style="flex: 1"></div> -->
         <button
           class="filter-btn btn-ori modify"
+          style="width: auto; padding: 0 13px 0 7px"
           @click="is_batch = true"
           v-if="!is_batch && !posts_query.query.is_deleted"
         >
@@ -121,7 +123,11 @@
           >批量操作
         </button>
         <div style="flex: 1" v-if="!(shrinkPager && is_batch)"></div>
-        <button class="filter-btn btn-ori" style="width: 85px" v-if="is_batch">
+        <button
+          class="filter-btn btn-ori"
+          style="width: auto; padding: 0 10px"
+          v-if="is_batch"
+        >
           <el-checkbox
             v-model="checkPage"
             :indeterminate="is_uncertain"
@@ -139,7 +145,7 @@
           <template #reference>
             <button
               class="filter-btn btn-ori"
-              style="width: 64px; color: #f56c6c"
+              style="width: auto; padding: 0 10px; color: #f56c6c"
               :style="{
                 cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
               }"
@@ -156,7 +162,7 @@
 
         <button
           class="filter-btn btn-ori"
-          style="width: 64px; color: #005187"
+          style="width: auto; padding: 0 10px; color: #005187"
           :style="{
             cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
           }"
@@ -169,7 +175,7 @@
         </button>
         <button
           class="filter-btn btn-ori"
-          style="width: 64px"
+          style="width: auto; padding: 0 15px"
           @click="cancelBatch"
           v-if="is_batch"
         >
@@ -228,13 +234,18 @@
             <img src="../assets/forbid.svg" alt="" />
             <text class="forbid">{{ post.comment_count }}</text>
           </div>
-          <div class="operate" style="margin-right: 6px" v-if="is_batch">
+          <div
+            class="operate"
+            style="margin-right: 6px"
+            @click.stop="() => {}"
+            v-if="is_batch"
+          >
             <el-checkbox
               v-model="post.chosen"
               @change="(val: boolean) => handleBatch(val, post.id)"
             />
           </div>
-          <div class="operate" v-else>
+          <div class="operate" @click.stop="() => {}" v-else>
             <button
               class="btn-ori"
               @click.stop="dialog(post, '标签')"
@@ -254,12 +265,14 @@
                 >移动</text
               >
             </button>
-            <div class="more" @click.stop="() => {}">
+            <div class="more">
               <el-dropdown trigger="click" :hide-on-click="false">
                 <el-icon class="icon"><MoreFilled /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item>用户日志</el-dropdown-item>
+                    <el-dropdown-item @click="diary(post.uid)"
+                      >用户日志</el-dropdown-item
+                    >
 
                     <el-dropdown-item divided v-if="!post.is_deleted">
                       <button
@@ -709,6 +722,12 @@ function deleteHandler(type: string, is_deleted: boolean, itemId: number) {
       }).then(() => dialogClose());
   }
 }
+function diary(uid: number) {
+  router.push({
+    path: "/diary",
+    query: { uid },
+  });
+}
 
 const postParam = usePost();
 function detail(post_id: number) {
@@ -868,7 +887,6 @@ window.addEventListener("resize", () => adjustScrollHeight());
 .filter {
   padding: 15px 10px 5px;
   border-radius: 8px;
-  // background-color: rgb(239, 239, 239);
   user-select: none;
   .input {
     flex: 1;

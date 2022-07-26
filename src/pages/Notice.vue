@@ -11,6 +11,7 @@
           <div class="NoticeTitle">公告标题</div>
           <div class="Poster">发送人</div>
           <div class="PostTime">发送时间</div>
+          <div class="DeleteBtn"></div>
         </div>
         <div
           v-for="(item, index) in historyNotice_list"
@@ -24,13 +25,15 @@
               currentPage = 'page2';
               currentIndex = index;
             "
-            >{{ item.title }}</a
+            ><FullView :content='item.title' /></a
           >
-          <div class="Poster_Info">{{ item.sender }}</div>
-          <div class="PostTime_Info">
-            {{ item.created_at.split("T")[0].replace(/-/g, "/") }}
+          <div class="Poster_Info">
+            <FullView :content='item.sender' />
           </div>
-          <a class="DeleteBtn" href="" @click.prevent="DeleteNotice(index)"
+          <div class="PostTime_Info">
+            <FullView :content='item.created_at.split("T")[0].replace(/-/g, "/")' />
+          </div>
+          <a class="DeleteBtn flexCenter" href="" @click.prevent="DeleteNotice(index)"
             >删除</a
           >
         </div>
@@ -159,9 +162,9 @@
         <input type="text" placeholder="非必填" v-model="val_url" />
       </div>
       <div class="FlexAround">
-        <div class="Btn_publish" @click="EditNotice">修改公告并保存</div>
-        <div class="Btn_delete" @click="DeleteNotice(currentIndex)">删除</div>
-        <div class="Btn_cancle" @click="currentPage = 'page0'">取消</div>
+        <div class="Btn_publish btn" @click="EditNotice">修改公告并保存</div>
+        <div class="Btn_delete btn" @click="DeleteNotice(currentIndex)">删除</div>
+        <div class="Btn_cancle btn" @click="currentPage = 'page0'">取消</div>
       </div>
     </div>
     <!-- </transition-group> -->
@@ -182,12 +185,14 @@ import {
 import axios from "axios";
 import MdEditor from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
+import FullView from "../components/FullView.vue"
 // let Myindex,id
 
 export default {
   name: "NoticeControl",
   components: {
     MdEditor,
+    FullView
   },
   data() {
     return {
@@ -350,7 +355,7 @@ export default {
 .Title_s_left {
   padding: 12px 8px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   color: #444;
 }
 .TitlesBox {
@@ -359,33 +364,53 @@ export default {
   width: 100%;
   height: 44px;
   border-radius: 6px;
+  display: flex;
+  align-items: center;
 }
 .TitlesBox > div,
 .ItemBox > * {
-  position: absolute;
-  top: 50%;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #333;
-  transform: translate(-50%, -50%);
 }
 .NoticeTitle,
 .NoticeTitle_Info {
-  left: 14%;
+  /* left: 14%; */
+  flex: 1.7;
+  overflow: hidden;
+  padding-left: 16px;
 }
 .Poster,
 .Poster_Info {
-  left: 46%;
+  /* left: 46%; */
+  flex: 1;
+  overflow: hidden;
+  padding-left: 16px;
 }
 .PostTime,
 .PostTime_Info {
-  left: 70%;
+  /* left: 70%; */
+  flex: 1;
+  overflow: hidden;
+  padding-left: 16px;
+}
+.DeleteBtn {
+  /* left: 90%; */
+  flex: .6;
+  color: rgb(210, 20, 20);
+  padding-left: 16px;
+}
+.flexCenter{
+  display: flex;
+  justify-content: center;
 }
 .ItemBox {
   position: relative;
   width: 100%;
   height: 48px;
   border-bottom: solid 1.2px #ccc;
+  display: flex;
+  align-items: center;
 }
 .ItemBox:hover {
   background-color: #f7f7f7;
@@ -393,14 +418,7 @@ export default {
 .NoticeTitle_Info {
   color: rgb(70, 155, 191);
 }
-.Poster_Info {
-}
-.PostTime_Info {
-}
-.DeleteBtn {
-  left: 90%;
-  color: rgb(210, 20, 20);
-}
+
 .ani1-enter-active,
 .ani1-leave-active {
   transition: all 0.6s;
@@ -427,7 +445,7 @@ export default {
   margin: 10px;
 }
 .FlexBoth > .title {
-  font-size: 12px;
+  font-size: 14px;
   color: #444;
   margin-right: 6px;
   font-weight: 600;
@@ -480,6 +498,7 @@ export default {
   transition: all 0.2s;
   background-color: rgb(70, 155, 191);
   box-shadow: 0px 0px 4px 0px #bbb;
+  max-width: 40% !important;
   user-select: none;
 }
 .Btn_publish:hover {
@@ -493,11 +512,21 @@ export default {
   color: rgb(255, 240, 240);
   background-color: rgb(104, 202, 212);
 }
+.btn{
+  max-width: 20%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 100px;
+  padding: 0;
+  white-space: nowrap;
+}
 .Btn_delete {
   color: white;
   font-size: 13px;
   font-weight: 600;
-  padding: 8px 36px;
   border-radius: 4px;
   transition: all 0.2s;
   background-color: rgb(208, 39, 39);

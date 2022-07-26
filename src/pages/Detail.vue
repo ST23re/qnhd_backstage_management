@@ -45,8 +45,8 @@
                     lineHeight: shrink ? '21px' : '24px',
                   }"
                 >
-                  <el-icon style="margin-right: 5px"><Avatar /></el-icon>
-                  <text
+                  <el-icon class="icon"><Avatar /></el-icon>
+                  <text class="ellipsis"
                     >{{
                       `${
                         detail.post.nickname?.length
@@ -65,7 +65,10 @@
                     <el-dropdown-item @click="diary(detail.post.uid)">
                       用户日志
                     </el-dropdown-item>
-                    <el-dropdown-item @click="resetName(detail.post.uid, 0)">
+                    <el-dropdown-item
+                      @click="resetName(detail.post.uid, 0)"
+                      divided
+                    >
                       重置昵称
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -84,7 +87,9 @@
                     <div class="icon">
                       <img src="../assets/flag.svg" alt="" />
                     </div>
-                    <text>{{ detail.post.department?.name }}</text>
+                    <text class="ellipsis">{{
+                      detail.post.department?.name
+                    }}</text>
                   </div>
                   <template #dropdown>
                     <el-dropdown-menu>
@@ -100,7 +105,7 @@
                     <div class="icon">
                       <img src="../assets/tag.svg" alt="#" />
                     </div>
-                    <text>{{ detail.post.tag?.name }}</text>
+                    <text class="ellipsis">{{ detail.post.tag?.name }}</text>
                   </div>
                   <template #dropdown>
                     <el-dropdown-menu>
@@ -432,6 +437,7 @@
                   :preview-src-list="cal_images(detail.post.image_urls)"
                   :initial-index="index"
                   fit="cover"
+                  preview-teleported="true"
                 />
               </div>
             </div>
@@ -472,7 +478,13 @@
             >
               <div class="header">
                 <div class="reply-sender" v-if="reply.sender == 0">
-                  <div class="sender">
+                  <div
+                    class="sender"
+                    :style="{
+                      height: shrink ? '21px' : '24px',
+                      lineHeight: shrink ? '21px' : '24px',
+                    }"
+                  >
                     <el-icon style="margin-right: 5px"><Avatar /></el-icon>
                     <text>楼主</text>
                   </div>
@@ -506,6 +518,7 @@
                     :preview-src-list="cal_images(reply.image_urls)"
                     :initial-index="index"
                     fit="cover"
+                    preview-teleported="true"
                   />
                 </div>
               </div>
@@ -528,11 +541,7 @@
           <div class="divider">
             <div>用户评论</div>
             <div style="flex: 1"></div>
-            <button
-              class="btn-ori btns modify"
-              :style="{ width: shrink ? '70px' : '100px' }"
-              @click="seeOwner"
-            >
+            <button class="btn-ori btns modify" @click="seeOwner">
               <el-icon style="margin-right: 5px"
                 ><View color="#ffffff" /></el-icon
               >{{
@@ -565,9 +574,15 @@
               >
                 <div class="header">
                   <el-dropdown trigger="click" :hide-on-click="false">
-                    <div class="sender">
-                      <el-icon style="margin-right: 5px"><Avatar /></el-icon>
-                      <text
+                    <div
+                      class="sender"
+                      :style="{
+                        height: shrink ? '21px' : '24px',
+                        lineHeight: shrink ? '21px' : '24px',
+                      }"
+                    >
+                      <el-icon class="icon"><Avatar /></el-icon>
+                      <text class="ellipsis"
                         >{{
                           `${
                             floor.nickname?.length
@@ -588,6 +603,7 @@
                         </el-dropdown-item>
                         <el-dropdown-item
                           @click="resetName(floor.uid, floor.id)"
+                          divided
                         >
                           重置昵称
                         </el-dropdown-item>
@@ -648,7 +664,7 @@
                                 >
                               </button>
                             </el-dropdown-item>
-                            <el-dropdown-item v-else>
+                            <el-dropdown-item divided v-else>
                               <el-popconfirm
                                 title="确认恢复该评论？"
                                 @confirm="
@@ -699,6 +715,7 @@
                       :initial-index="0"
                       fit="cover"
                       :infinite="false"
+                      preview-teleported="true"
                     />
                   </div>
                 </div>
@@ -739,9 +756,15 @@
                 >
                   <div class="header">
                     <el-dropdown trigger="click" :hide-on-click="false">
-                      <div class="sender">
-                        <el-icon style="margin-right: 5px"><Avatar /></el-icon>
-                        <text
+                      <div
+                        class="sender"
+                        :style="{
+                          height: shrink ? '21px' : '24px',
+                          lineHeight: shrink ? '21px' : '24px',
+                        }"
+                      >
+                        <el-icon class="icon"><Avatar /></el-icon>
+                        <text class="ellipsis"
                           >{{
                             `${
                               sub.nickname?.length
@@ -762,6 +785,7 @@
                           </el-dropdown-item>
                           <el-dropdown-item
                             @click="resetName(sub.uid, floor.id)"
+                            divided
                           >
                             重置昵称
                           </el-dropdown-item>
@@ -847,6 +871,7 @@
                         :initial-index="0"
                         fit="cover"
                         :infinite="false"
+                        preview-teleported="true"
                       />
                     </div>
                   </div>
@@ -1520,15 +1545,18 @@ function diary(uid: number) {
   margin-left: -5px;
 }
 .sender {
-  height: 21px;
-  padding: 0 15px 0 10px;
+  padding: 0 15px 0 5px;
+  margin-right: 7px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   font-size: 14px;
-  line-height: 21px;
   background-color: #f4f4f5;
   cursor: pointer;
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
 }
 .reply-sender {
   display: flex;
@@ -1842,8 +1870,9 @@ function diary(uid: number) {
   color: white;
 }
 .modify {
-  width: 100px;
+  width: auto;
   margin: 0 0 0 12px;
+  padding: 0 11px 0 9px;
 }
 .dropdown-btn {
   width: 100%;
@@ -1871,9 +1900,6 @@ function diary(uid: number) {
   box-shadow: 0 0 1px #3b60ec;
   opacity: 0.8;
 }
-.el-image {
-  border-radius: 5px;
-}
 .is-deleted {
   text {
     text-decoration: line-through;
@@ -1890,6 +1916,19 @@ function diary(uid: number) {
   color: #005187;
   text-decoration: underline;
   cursor: pointer;
+}
+.ellipsis {
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+@media screen and (max-width: 500px) {
+  .content {
+    font-size: 14px;
+  }
 }
 </style>
 <style lang="less">

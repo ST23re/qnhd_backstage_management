@@ -1,32 +1,27 @@
 <template>
   <div class="page">
-    <div class="search" ref="search">
-      <div class="search-input">
+    <div class="filter" ref="search">
+      <div class="input">
         <el-input
           v-model="department_query.name"
-          placeholder="搜索部门"
+          placeholder="搜索部门 ..."
           :clearable="true"
           @keyup.enter="searchDepartments"
         />
+        <div class="icon-holder" @click="searchDepartments">
+          <el-icon color="white" class="icon">
+            <Search color="#ffffff" />
+          </el-icon>
+        </div>
       </div>
-      <div class="search-icon" @click="searchDepartments">
-        <el-icon color="white" class="icon">
-          <Search color="#ffffff" />
-        </el-icon>
-      </div>
-    </div>
-    <div class="operate" ref="operate">
-      <el-button
-        type="primary"
-        class="operate-button"
-        @click="dialogFormVisible = true"
-      >
-        <el-icon>
+      <button class="filter-btn btn-ori" @click="dialogFormVisible = true">
+        <el-icon class="icon">
           <Plus color="#ffffff" />
         </el-icon>
         <span>新增分区</span>
-      </el-button>
+      </button>
     </div>
+
     <div class="department-list">
       <el-scrollbar :max-height="scrollbarHeight">
         <el-collapse v-model="activeName" accordion>
@@ -144,7 +139,6 @@ var department_delete = reactive<Department_delete>({
 });
 var scrollbarHeight = ref<number>(0);
 var search = ref<HTMLElement>();
-var operate = ref<HTMLElement>();
 var dialogFormVisible = ref<Boolean>(false);
 function showDepartments() {
   department_list.length = 0;
@@ -197,9 +191,7 @@ const refuse = () => {
 function adjustScrollHeight() {
   setTimeout(() => {
     let searchHeight = search.value?.clientHeight as number;
-    let operateHeight = operate.value?.clientHeight as number;
-    scrollbarHeight.value =
-      GlobalData.height - searchHeight - operateHeight - 10;
+    scrollbarHeight.value = GlobalData.height - searchHeight - 50;
   }, 50);
 }
 function searchDepartments() {
@@ -249,7 +241,6 @@ onMounted(() => {
 
 .operate {
   display: flex;
-  margin: 4px 8px;
 
   .operate-button {
     height: 37px;
@@ -270,7 +261,7 @@ onMounted(() => {
 }
 
 .department-list {
-  margin: 4px 8px;
+  margin: 0 15px;
 
   .department-tag {
     display: flex;
@@ -308,6 +299,84 @@ onMounted(() => {
 
   :hover {
     transform: scale(1.1);
+  }
+}
+.filter {
+  padding: 15px 10px 5px;
+  border-radius: 8px;
+  user-select: none;
+  .input {
+    flex: 1;
+    margin: 5px 5px 10px;
+    min-width: 270px;
+    height: 37px;
+    background-color: #f4f4f5;
+    box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
+    border-radius: 8px;
+    display: flex;
+    .icon-holder {
+      flex-grow: 0;
+      flex-shrink: 0;
+      width: 54px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #005187;
+      cursor: pointer;
+      * {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+.filter-btn {
+  width: auto;
+  height: 37px;
+  box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
+  background-color: #005187;
+  margin: 5px 5px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  .icon {
+    font-size: 16px;
+    margin: 0 5px;
+  }
+}
+.btn-ori {
+  font-size: 14px;
+  color: white;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+@media all and (max-width: 500px) {
+  .filter {
+    padding: 10px 8px 5px;
+    .input {
+      height: 33.3px;
+    }
+    .icon-holder {
+      width: 45px !important;
+    }
+  }
+  .filter-btn {
+    transform: scale(0.9) translateX(-5%);
+    margin-right: -5px;
+  }
+}
+</style>
+<style lang="less">
+.filter {
+  .el-input__inner {
+    border-radius: 8px;
+    box-shadow: none !important;
+    background-color: #f4f4f5;
+    height: inherit !important;
   }
 }
 </style>

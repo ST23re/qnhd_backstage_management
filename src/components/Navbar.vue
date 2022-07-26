@@ -2,13 +2,12 @@
   <div id="Nav" ref="nav">
     <div :class="['vertical', isHide ? 'move' : '']" ref="ver">
       <el-menu
-        default-active="2"
+        :default-active="route.path"
         class="el-menu-vertical-demo"
         :collapse="isCollapse"
         @open="handleOpen"
         @close="handleClose"
         :router="true"
-        defaultActive="/report"
         @select="handleSelect"
       >
         <div :class="['header', isCollapse ? 'collapse' : 'extend']">
@@ -30,7 +29,7 @@
             </el-menu-item-group>
             <el-menu-item-group>
               <template #title><span>Sensitive</span></template>
-              <el-menu-item index="/tag">tag 标签管理</el-menu-item>
+              <el-menu-item index="/tag">tag 话题管理</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group>
               <template #title><span>Others</span></template>
@@ -123,9 +122,9 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
 import { useInfo, useGlobalData } from "@/store";
 import router from "@/router";
-// import { useRoute } from "vue-router";
 import { removeToken } from "@/utils/cookies";
 import {
   Document,
@@ -139,6 +138,7 @@ import {
   InfoFilled,
 } from "@element-plus/icons-vue";
 
+const route = useRoute();
 const Info = useInfo();
 const GlobalData = useGlobalData();
 
