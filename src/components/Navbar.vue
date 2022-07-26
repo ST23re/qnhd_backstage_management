@@ -79,7 +79,11 @@
           >
         </div>
         <div style="flex: 1"></div>
-        <div class="switch">
+        <div
+          class="switch"
+          @click="switchToSchoolAffairs"
+          v-if="Info.auth === 'double'"
+        >
           <img src="../assets/change.svg" alt="" />
         </div>
         <el-dropdown
@@ -125,7 +129,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useInfo, useGlobalData } from "@/store";
 import router from "@/router";
-import { removeToken } from "@/utils/cookies";
+import { getToken, removeToken } from "@/utils/cookies";
 import {
   Document,
   Menu as IconMenu,
@@ -207,6 +211,10 @@ const barHeight = computed(() => {
 const showRoute = computed(() => {
   return hor_width.value > 500;
 });
+
+const switchToSchoolAffairs = () => {
+  window.location.hash = `http://pamaforce.xyz/admin-beta/#/?token=${getToken()}`;
+};
 </script>
 
 <style lang="less" scoped>
