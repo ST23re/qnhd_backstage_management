@@ -122,7 +122,11 @@
                   </template>
                 </el-dropdown>
 
-                <el-dropdown trigger="click" :hide-on-click="false">
+                <el-dropdown
+                  trigger="click"
+                  :hide-on-click="false"
+                  style="flex-shrink: 0"
+                >
                   <div class="part" v-show="!shrink">
                     <div class="icon">
                       <img src="../assets/hive.svg" alt="" />
@@ -369,7 +373,11 @@
                 </template>
               </el-dropdown>
 
-              <el-dropdown trigger="click" :hide-on-click="false">
+              <el-dropdown
+                trigger="click"
+                :hide-on-click="false"
+                style="flex-shrink: 0"
+              >
                 <div class="part">
                   <div class="icon">
                     <img src="../assets/hive.svg" alt="" />
@@ -1662,10 +1670,15 @@ function diary(uid: number) {
     }
   }
 }
+.campus {
+  flex-shrink: 0;
+}
 .part {
+  flex-shrink: 0;
   cursor: pointer;
 }
 .extra-tag {
+  flex-shrink: 0;
   cursor: pointer;
   img {
     width: 14px;
