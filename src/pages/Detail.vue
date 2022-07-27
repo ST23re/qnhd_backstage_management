@@ -334,7 +334,9 @@
                   <div class="icon">
                     <img src="../assets/flag.svg" alt="" />
                   </div>
-                  <text>{{ detail.post.department?.name }}</text>
+                  <text class="ellipsis">{{
+                    detail.post.department?.name
+                  }}</text>
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -350,7 +352,7 @@
                   <div class="icon">
                     <img src="../assets/tag.svg" alt="#" />
                   </div>
-                  <text>{{ detail.post.tag?.name }}</text>
+                  <text class="ellipsis">{{ detail.post.tag?.name }}</text>
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
