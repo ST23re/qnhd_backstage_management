@@ -137,7 +137,7 @@
           :key="user.id"
           :style="
             user.is_blocked || user.is_banned
-              ? 'background-color:rgba(221,100,100,.3);cursor:pointer;'
+              ? 'background-color:white;cursor:pointer;'
               : 'background-color:white;'
           "
         >
@@ -150,15 +150,35 @@
               @change="calCheckedNum"
             />
           </transition>
-          <div class="user-info" @click="(user_uid.uid = String(user.id)),(showBlockedInfo(user.is_blocked))">
-            <div class="user-nickname">
-              <span>{{ user.nickname }}</span>
-            </div>
-            <div class="user-uid">
-              <span>{{ "uid: " + user.id }}</span>
+          <div
+            class="user-info"
+            @click="
+              (user_uid.uid = String(user.id)), showBlockedInfo(user.is_blocked)
+            "
+          >
+            <div
+              :class="[
+                'decro',
+                user.is_banned ? 'decro-banned' : '',
+                user.is_blocked ? 'decro-blocked' : '',
+              ]"
+              v-if="user.is_banned || user.is_blocked"
+            />
+            <div style="flex: 1; display: flex; flex-direction: column">
+              <div class="user-nickname">
+                <span>{{ user.nickname }}</span>
+              </div>
+              <div class="user-uid">
+                <span>{{ "uid: " + user.id }}</span>
+              </div>
             </div>
           </div>
-          <div class="user-condition" @click="(user_uid.uid = String(user.id)),(showBlockedInfo(user.is_blocked))">
+          <div
+            class="user-condition"
+            @click="
+              (user_uid.uid = String(user.id)), showBlockedInfo(user.is_blocked)
+            "
+          >
             <div class="is-blocked">
               <span>{{
                 user.is_blocked ? "禁言" : user.is_banned ? "封禁" : "正常"
@@ -187,7 +207,7 @@
               </el-button>
             </div>
             <div class="has-blocked" v-if="user.is_blocked || user.is_banned">
-              <span>已禁言</span>
+              <span>{{ user.is_blocked ? "已禁言" : "已封禁" }}</span>
             </div>
             <div class="more">
               <el-dropdown trigger="click">
@@ -235,7 +255,7 @@
                           (user_banned.uid = String(user.id))
                       "
                     >
-                      <el-dropdown-item divided>
+                      <el-dropdown-item :disabled="user.is_banned" divided>
                         <el-icon>
                           <CircleClose />
                         </el-icon>
@@ -334,18 +354,30 @@
         </span>
       </template>
     </el-dialog>
-    <el-dialog v-model="dialogFormVisible3" title="禁言时长及原因" width="320px" top="35vh" center>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>禁言时长：{{handleTime2(blocked_timrea.start)}}</span><br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>————</span> &nbsp;<span>{{handleTime2(blocked_timrea.end)}}</span><br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>禁言原因：{{blocked_timrea.reason}}</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="dialogFormVisible3 = false"
-          >确定</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
+    <el-dialog
+      v-model="dialogFormVisible3"
+      title="禁言信息"
+      width="320px"
+      top="35vh"
+      center
+    >
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+        >禁言时长：{{ handleTime2(blocked_timrea.start) }}</span
+      ><br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>————</span>
+      &nbsp;<span>{{ handleTime2(blocked_timrea.end) }}</span
+      ><br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+        >禁言原因：{{ blocked_timrea.reason }}</span
+      >
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="dialogFormVisible3 = false"
+            >确定</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -419,10 +451,10 @@ interface User_diary {
   condition: boolean;
   blocked_time: string;
 }
-interface Blocked_timrea{
-  start:string,
-  end:string,
-  reason:string
+interface Blocked_timrea {
+  start: string;
+  end: string;
+  reason: string;
 }
 const GlobalData = useGlobalData();
 var user_query = reactive<User_query>({});
@@ -449,10 +481,10 @@ var user_banned = reactive<User_banned>({
   reason: "",
 });
 var blocked_timrea = reactive<Blocked_timrea>({
-  start:"",
-  end:"",
-  reason:"",
-})
+  start: "",
+  end: "",
+  reason: "",
+});
 var current_page = ref<number>(1);
 var search = ref<HTMLElement>();
 var scrollbarHeight = ref<number>(0);
@@ -641,13 +673,15 @@ function cleanMultiple() {
 function handleTime(start: string, over: string) {
   if (start != "" && over != "") {
     return (
-      JSON.stringify(new Date(start)).replace(/["Z]/g, "").split("T")[0] + ' ' +
+      JSON.stringify(new Date(start)).replace(/["Z]/g, "").split("T")[0] +
+      " " +
       JSON.stringify(new Date(start))
         .replace(/["Z]/g, "")
         .split("T")[1]
         .split(".")[0] +
       "——" +
-      JSON.stringify(new Date(over)).replace(/["Z]/g, "").split("T")[0] + ' ' +
+      JSON.stringify(new Date(over)).replace(/["Z]/g, "").split("T")[0] +
+      " " +
       JSON.stringify(new Date(over))
         .replace(/["Z]/g, "")
         .split("T")[1]
@@ -660,7 +694,8 @@ function handleTime(start: string, over: string) {
 function handleTime2(start: string) {
   if (start != "") {
     return (
-      JSON.stringify(new Date(start)).replace(/["Z]/g, "").split("T")[0] +' '+
+      JSON.stringify(new Date(start)).replace(/["Z]/g, "").split("T")[0] +
+      " " +
       JSON.stringify(new Date(start))
         .replace(/["Z]/g, "")
         .split("T")[1]
@@ -670,14 +705,14 @@ function handleTime2(start: string) {
     return "0";
   }
 }
-function showBlockedInfo(condition:boolean){
-  if(condition){
-    getBlockedNum({uid:user_uid.uid}).then((res:any)=>{
+function showBlockedInfo(condition: boolean) {
+  if (condition) {
+    getBlockedNum({ uid: user_uid.uid }).then((res: any) => {
       console.log(res);
       blocked_timrea.start = res.list[0].created_at;
       blocked_timrea.end = res.list[0].expired_at;
       blocked_timrea.reason = res.list[0].reason;
-    })
+    });
     dialogFormVisible3.value = true;
   }
 }
@@ -857,7 +892,7 @@ onMounted(() => {
     .user-uid-header {
       flex-grow: 1;
       width: 33.33%;
-      font-size: 15px;
+      font-size: inherit;
       text-align: center;
       margin: 3px 0;
       border-right: 1px solid white;
@@ -866,7 +901,7 @@ onMounted(() => {
     .user-condition-header {
       flex-grow: 1;
       width: 33.33%;
-      font-size: 15px;
+      font-size: inherit;
       text-align: center;
       margin: 3px 0;
     }
@@ -874,7 +909,7 @@ onMounted(() => {
     .operate-header {
       flex-grow: 1;
       width: 33.33%;
-      font-size: 15px;
+      font-size: inherit;
       text-align: center;
       margin: 3px 0;
       border-left: 1px solid white;
@@ -895,7 +930,7 @@ onMounted(() => {
       font-size: 15px;
       border-right: 1px solid #ebeef5;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       .user-uid {
         height: 14px;
         line-height: 14px;
@@ -1035,6 +1070,23 @@ onMounted(() => {
   .filter-btn:last-child {
     margin-right: 0;
   }
+  .user-list-header {
+    height: 32px !important;
+    font-size: 14px !important;
+  }
+}
+.decro {
+  width: 4px;
+  height: 50%;
+  background-color: none;
+  border-radius: 2px;
+  margin-left: 3px;
+}
+.decro-blocked {
+  background-color: orange;
+}
+.decro-banned {
+  background-color: red;
 }
 </style>
 <style lang="less">

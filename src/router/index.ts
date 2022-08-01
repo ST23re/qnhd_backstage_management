@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router"
 import Vnode from '@/components/Loadingbar/index'
-import { getToken } from '@/utils/cookies'
+import { getToken, setToken } from '@/utils/cookies'
 import { estimateAuth } from "@/utils/auth"
 import pinia from '@/store/store'
 import { useInfo } from "@/store"
@@ -123,22 +123,18 @@ const router = createRouter({
 const Info = useInfo(pinia);
 router.beforeEach((to, from, next) => {
     Vnode.component?.exposed?.startLoading();
-    if (!Object.keys(to.meta).length) next('/report')
-    else if (!to.meta.requireAuth) next();
-    else if (getToken()) {
+    let token = getToken() || to.query.token as string;
+    if (!to.meta.requireAuth) next();
+    else if (token) {
+        setToken(token);
         if (Info.auth.length) next();
-        else getInfo({ token: getToken()})
+        else getInfo({ token })
             .then((res: any) => {
                 if (res) {
                     let auth = estimateAuth(res.user_info);
                     Info.$patch({...res.user_info, auth});
                     next();
-                } else next({
-                    path: '/login',
-                    query: {
-                        redirect: to.fullPath
-                    }
-                })
+                } else next('/login');
             })
     }
     else next({

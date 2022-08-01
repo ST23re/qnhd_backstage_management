@@ -311,14 +311,15 @@
               "
             >
               <div class="ellipsis-3">
-                <div
+                <text
                   v-for="(item, index) in report.reasons"
                   :key="`${index}.${item.reporter_uid}`"
                   class="reason"
                 >
                   <text>{{ item.reason }}</text>
                   <text>uid: {{ item.reporter_uid }}</text>
-                </div>
+                  <br />
+                </text>
               </div>
               <button
                 class="btn-ori"
@@ -474,14 +475,15 @@
               <div class="title">原因：</div>
               <div>
                 <div class="ellipsis-3">
-                  <div
+                  <text
                     v-for="(item, index) in report.reasons"
                     :key="`${index}.${item.reporter_uid}`"
                     class="reason"
                   >
                     <text>{{ item.reason }}</text>
                     <text>uid: {{ item.reporter_uid }}</text>
-                  </div>
+                    <br />
+                  </text>
                 </div>
                 <button
                   class="btn-ori"

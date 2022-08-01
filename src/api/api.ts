@@ -2,7 +2,7 @@ import { request } from "@/utils/request";
 
 export function login_twt(data: any) {
   return request({
-    url: "/auth/passwd/",
+    url: "/auth/passwd",
     method: "get",
     params: data,
   });

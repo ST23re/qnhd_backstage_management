@@ -70,12 +70,15 @@ const handler = (res: any) => {
   if (res) {
     let auth = estimateAuth(res.user);
     console.log(auth);
-    if (auth !== "user") {
+    if (auth === "double" || auth === "stu-sole") {
       setToken(res.token);
       Info.$patch({ ...res.user, auth });
       ElMessage.success("登录成功");
       router.push("/report");
-    } else
+    } else if (auth === "sch-sole") {
+      setToken(res.token);
+      window.location.href = `https://qnhdmanage.twt.edu.cn/#/login?token=${res.token}`;
+    } else if (auth === "user")
       ElMessage({
         message: "账号无权限",
         type: "error",
