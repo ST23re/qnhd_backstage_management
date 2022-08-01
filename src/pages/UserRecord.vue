@@ -38,9 +38,30 @@
       <div :class="box_isMobile" v-if="!isUserCriti">
         <el-card class="box-card">
           <template #header>
-            <div class="card-header">
-              <el-icon><Document /></el-icon>
-              <span>用户发帖记录</span>
+            <div class="header-wrapper">
+              <div class="card-header">
+                <el-icon><Document /></el-icon>
+                <span>用户发帖记录</span>
+              </div>
+              <div class="select-header">
+                <div class="block" :style="block_style1"></div>
+                <div class="select-button" @click="
+                  (block_style1.left = '0%'),
+                  (text_color1.color = 'white'),
+                  (text_color2.color = '#606266'),
+                  (condition_now_post = 0)
+                ">
+                  <span :style="text_color1">全部</span>
+                </div>
+                <div class="select-button" @click="
+                  (block_style1.left = '50%'),
+                  (text_color1.color = '#606266'),
+                  (text_color2.color = 'white'),
+                  (condition_now_post = 1)
+                ">
+                  <span :style="text_color2">已删</span>
+                </div>
+              </div>
             </div>
           </template>
           <el-scrollbar :max-height="scrollbarHeight">
@@ -65,9 +86,30 @@
       <div :class="box_isMobile" v-if="!isMobile || isUserCriti">
         <el-card class="box-card">
           <template #header>
-            <div class="card-header">
-              <el-icon class="icon"><ChatDotRound /></el-icon>
-              <span>用户评论记录</span>
+            <div class="header-wrapper">
+              <div class="card-header">
+                <el-icon class="icon"><ChatDotRound /></el-icon>
+                <span>用户评论记录</span>
+              </div>
+              <div class="select-header">
+                  <div class="block" :style="block_style2"></div>
+                  <div class="select-button" @click="
+                    (block_style2.left = '0%'),
+                    (text_color1_.color = 'white'),
+                    (text_color2_.color = '#606266'),
+                    (condition_now_criti = 0)
+                  ">
+                    <span :style="text_color1_">全部</span>
+                  </div>
+                  <div class="select-button" @click="
+                    (block_style2.left = '50%'),
+                    (text_color1_.color = '#606266'),
+                    (text_color2_.color = 'white'),
+                    (condition_now_criti = 1)
+                  ">
+                    <span :style="text_color2_">已删</span>
+                  </div>
+              </div>
             </div>
           </template>
           <el-scrollbar :max-height="scrollbarHeight">
@@ -264,7 +306,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, reactive, onMounted, computed,watch } from "vue";
 import {
   ArrowLeftBold,
   View,
@@ -346,9 +388,19 @@ var post_history = reactive({
   type: "0",
   page_disable: "1",
 });
+var post_history_deleted = reactive({
+  uid: uid.value,
+  type: "1",
+  page_disable: "1",
+});
 var criti_history = reactive({
   uid: uid.value,
   type: "0",
+  page_disable: "1",
+});
+var criti_history_deleted = reactive({
+  uid: uid.value,
+  type: "1",
   page_disable: "1",
 });
 var user_deletedPost = reactive({
@@ -373,6 +425,26 @@ var box_isMobile = ref({
     return !isMobile;
   },
 });
+var text_color1 = reactive({
+  color: "white",
+})
+var text_color2 = reactive({
+  color: "#606266",
+})
+var text_color1_ = reactive({
+  color: "white",
+})
+var text_color2_ = reactive({
+  color: "#606266",
+})
+var block_style1 = reactive({
+  left: "0%",
+})
+var block_style2 = reactive({
+  left: "0%",
+})
+var condition_now_post = ref(0);
+var condition_now_criti = ref(0);
 function goback() {
   router.go(-1);
 }
@@ -419,6 +491,40 @@ function adjustScrollHeight() {
     scrollbarHeight.value = GlobalData.height - searchHeight - 140;
   }, 50);
 }
+watch(condition_now_post,(newVal)=>{
+  if(newVal){
+    postList.length = 0;
+    getUserPosts(post_history_deleted).then((res: any) => {
+      res.list.forEach((post: any) => {
+        postList.push(post);
+      });
+    });
+  }else{
+    postList.length = 0;
+    getUserPosts(post_history).then((res: any) => {
+      res.list.forEach((post: any) => {
+        postList.push(post);
+      });
+    });
+  }
+})
+watch(condition_now_criti,(newVal)=>{
+  if(newVal){
+    critiList.length = 0;
+    getUserCriti(criti_history_deleted).then((res: any) => {
+      res.list.forEach((criti: any) => {
+        critiList.push(criti);
+      });
+    });
+  }else{
+    critiList.length = 0;
+    getUserCriti(criti_history).then((res: any) => {
+      res.list.forEach((criti: any) => {
+        critiList.push(criti);
+      });
+    });
+  }
+})
 window.addEventListener("resize", () => adjustScrollHeight());
 onMounted(() => {
   adjustScrollHeight();
@@ -490,6 +596,37 @@ function detail(post_id: number, floor_id: number) {
 .info-box {
   display: flex;
   justify-content: space-around;
+
+  .header-wrapper{
+    display: flex;
+    justify-content: space-between;
+    .select-header{
+      position: relative;
+      display: flex;
+      background-color: #f4f4f5;
+      box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
+      border-radius: 8px;
+      transform: scale(1);//加上这个会让文字显示在最顶层
+    }
+
+    .block{
+      position: absolute;
+      border-radius: 8px;
+      background-color: #005187;
+      height: 100%;
+      width: 50%;
+      z-index: -1;
+      left: 0%;
+      transition: all 0.7s;
+    }
+    .select-button{
+      border: none;
+      border-radius: 8px;
+      padding: 3px 7px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  }
   .not-mobile-box {
     width: 48%;
     height: 80%;
