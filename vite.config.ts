@@ -6,6 +6,7 @@ import { resolve } from 'path'
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd());
   return defineConfig({
+    base: './',// https://xxx/forum
     plugins: [vue()],
     server: {
       host: '0.0.0.0',

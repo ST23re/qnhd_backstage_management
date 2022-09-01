@@ -195,7 +195,7 @@
           :class="['post', post.is_deleted ? 'is-deleted' : '']"
           @click="detail(post.id)"
         >
-          <div>
+          <div style="cursor: pointer">
             <div class="title">
               <div class="ellipsis">
                 <text>{{ post.title }}</text>
@@ -215,7 +215,7 @@
               <text class="pt">#{{ postType(post.type) }}</text>
             </div>
           </div>
-          <div style="flex: 1"></div>
+          <div style="flex: 1; cursor: pointer"></div>
           <div class="fav">
             <el-icon :size="16"><Star /></el-icon>
             <text>{{ post.fav_count }}</text>
