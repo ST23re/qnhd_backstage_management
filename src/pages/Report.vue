@@ -998,6 +998,9 @@ function batchSolveReports() {
   is_batch.value = false;
   refresh();
 }
+function chooseCustom() {
+  deleteReason.value = customizedReason.value;
+}
 function deleteHandler() {
   if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
   else if (!deleteReason.value.length)
