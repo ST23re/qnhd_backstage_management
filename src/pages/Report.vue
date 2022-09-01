@@ -623,6 +623,14 @@
     <div v-else-if="dialogTitle == '删除原因'" class="delete">
       <el-radio-group v-model="deleteReason">
         <el-radio v-for="reason in GlobalData.reasons" :label="reason" />
+        <el-radio :label="customizedReason" class="custom">
+          <el-input
+            v-model="customizedReason"
+            placeholder="自定义原因"
+            @focus="chooseCustom"
+            @input="chooseCustom"
+          />
+        </el-radio>
       </el-radio-group>
     </div>
     <template #footer>
@@ -710,7 +718,8 @@ var reportsFiltered = reactive({
 var checkPage = ref<boolean>(false);
 var is_batch = ref<boolean>(false);
 var batchList = ref<BatchItem[]>([]);
-var deleteReason = ref<string>("");
+var customizedReason = ref<string>("");
+var deleteReason = ref<string | null>("");
 var showLoad = ref<boolean>(false);
 
 onMounted(() => {
@@ -990,7 +999,9 @@ function batchSolveReports() {
   refresh();
 }
 function deleteHandler() {
-  if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+  if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+  else if (!deleteReason.value.length)
+    ElMessage.warning("自定义原因不能为空！");
   else {
     if (_report.value?.type == 1)
       deletePost({
@@ -1011,7 +1022,9 @@ function deleteHandler() {
   }
 }
 function batchDeleteConts() {
-  if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+  if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+  else if (!deleteReason.value.length)
+    ElMessage.warning("自定义原因不能为空！");
   else {
     let i,
       flag = false;
@@ -1295,6 +1308,15 @@ function detail(report: Report) {
     display: block;
     .el-radio {
       margin-bottom: 15px;
+    }
+  }
+  .custom {
+    width: 100%;
+    padding: 5px 0;
+    margin: -5px 0;
+    transform: translateY(10px);
+    .el-input {
+      width: 250px;
     }
   }
 }

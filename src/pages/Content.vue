@@ -394,6 +394,14 @@
     <div v-else-if="dialogTitle == '删除原因'" class="delete">
       <el-radio-group v-model="deleteReason">
         <el-radio v-for="reason in GlobalData.reasons" :label="reason" />
+        <el-radio :label="customizedReason" class="custom">
+          <el-input
+            v-model="customizedReason"
+            placeholder="自定义原因"
+            @focus="chooseCustom"
+            @input="chooseCustom"
+          />
+        </el-radio>
       </el-radio-group>
     </div>
     <div v-else>hahahaha</div>
@@ -587,7 +595,8 @@ var showDialog = ref<boolean>(false);
 var dialogTitle = ref<string>("");
 var refineMode = ref<number | null>(0);
 var transferType = ref<number | string>(0);
-var deleteReason = ref<string>("");
+var customizedReason = ref<string>("");
+var deleteReason = ref<string | null>("");
 
 var checkPage = ref<boolean>(false);
 var is_batch = ref<boolean>(false);
@@ -620,7 +629,9 @@ function cancelBatch() {
 }
 function batchDel() {
   //if (batchList.value.length == 0) ElMessage.warning("尚未勾选条目！");
-  if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+  if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+  else if (!deleteReason.value.length)
+    ElMessage.warning("自定义原因不能为空！");
   else {
     let i,
       flag = false;
@@ -656,7 +667,7 @@ function dialog(post: Post, title: string) {
         ? 2
         : null;
   else if (title == "移动分区") transferType.value = post.type;
-  else if (title == "删除原因") deleteReason.value = "";
+  else if (title == "删除原因") deleteReason.value = null;
   showDialog.value = true;
 }
 function dialogClose() {
@@ -708,10 +719,15 @@ function transferHandler() {
     dialogClose();
   }
 }
+function chooseCustom() {
+  deleteReason.value = customizedReason.value;
+}
 function deleteHandler(type: string, is_deleted: boolean, itemId: number) {
   if (type == "post") {
     if (!is_deleted) {
-      if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+      if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+      else if (!deleteReason.value.length)
+        ElMessage.warning("自定义原因不能为空！");
       else
         deletePost({ id: itemId, reason: deleteReason.value }).then(() =>
           dialogClose()
@@ -999,6 +1015,15 @@ window.addEventListener("resize", () => adjustScrollHeight());
     display: block;
     .el-radio {
       margin-bottom: 15px;
+    }
+  }
+  .custom {
+    width: 100%;
+    padding: 5px 0;
+    margin: -5px 0;
+    transform: translateY(10px);
+    .el-input {
+      width: 250px;
     }
   }
 }

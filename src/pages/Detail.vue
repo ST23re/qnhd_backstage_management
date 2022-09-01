@@ -1011,6 +1011,14 @@
     <div v-else-if="dialogTitle == '删除原因'" class="delete">
       <el-radio-group v-model="deleteReason">
         <el-radio v-for="reason in GlobalData.reasons" :label="reason" />
+        <el-radio :label="customizedReason" class="custom">
+          <el-input
+            v-model="customizedReason"
+            placeholder="自定义原因"
+            @focus="chooseCustom"
+            @input="chooseCustom"
+          />
+        </el-radio>
       </el-radio-group>
     </div>
     <div v-else>hahahaha</div>
@@ -1243,7 +1251,8 @@ var deleteInfo = ref<DeleteInfo | null>({
   itemId: 0,
   option: 0,
 });
-var deleteReason = ref<string>("");
+var customizedReason = ref<string>("");
+var deleteReason = ref<string | null>("");
 
 function dialog(title: string, actionObj: any) {
   dialogTitle.value = title;
@@ -1324,11 +1333,16 @@ function tagHandler() {
     });
 }
 
+function chooseCustom() {
+  deleteReason.value = customizedReason.value;
+}
 function deleteHandler() {
   showLoad.value = true;
   if (deleteInfo.value?.type == "post") {
     if (!deleteInfo.value.is_deleted) {
-      if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+      if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+      else if (!deleteReason.value.length)
+        ElMessage.warning("自定义原因不能为空！");
       else
         deletePost({
           id: deleteInfo.value.itemId,
@@ -1345,7 +1359,9 @@ function deleteHandler() {
     }
   } else if (deleteInfo.value?.type == "floor") {
     if (!deleteInfo.value.is_deleted) {
-      if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+      if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+      else if (!deleteReason.value.length)
+        ElMessage.warning("自定义原因不能为空！");
       else
         deleteFloor({
           floor_id: deleteInfo.value.itemId,
@@ -1368,7 +1384,9 @@ function deleteHandler() {
     }
   } else if (deleteInfo.value?.type == "sub") {
     if (!deleteInfo.value.is_deleted) {
-      if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+      if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+      else if (!deleteReason.value.length)
+        ElMessage.warning("自定义原因不能为空！");
       else
         deleteFloor({ floor_id: deleteInfo.value.itemId }).then(() => {
           showDialog.value = false;
@@ -1730,6 +1748,15 @@ function diary(uid: number) {
     display: block;
     .el-radio {
       margin-bottom: 15px;
+    }
+  }
+  .custom {
+    width: 100%;
+    padding: 5px 0;
+    margin: -5px 0;
+    transform: translateY(10px);
+    .el-input {
+      width: 250px;
     }
   }
 }
