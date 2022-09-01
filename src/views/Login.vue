@@ -77,7 +77,7 @@ const handler = (res: any) => {
       router.push("/report");
     } else if (auth === "sch-sole") {
       setToken(res.token);
-      window.location.href = `https://qnhdmanage.twt.edu.cn/#/login?token=${res.token}`;
+      window.location.href = `https://qnhdmanage.twt.edu.cn/#?token=${res.token}`;
     } else if (auth === "user")
       ElMessage({
         message: "账号无权限",
