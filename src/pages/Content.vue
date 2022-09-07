@@ -480,6 +480,12 @@ var _post = ref<Post>({
   title: "",
   content: "",
   nickname: "",
+  user_info: {
+    avatar: "",
+    level: 0,
+    cur_level_point: 0,
+    next_level_point: 0,
+  },
   fav_count: 0,
   like_count: 0,
   rating: 0,

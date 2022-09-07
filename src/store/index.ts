@@ -197,10 +197,12 @@ export interface Post {
     content: string;
     image_urls: string[];
     nickname: string;
-    // user_info: {
-    //     avatar: string;
-    //     level: number;
-    // },
+    user_info: {
+        avatar: string;
+        level: number;
+        cur_level_point: number;
+        next_level_point: number;
+    },
     fav_count: number;
     like_count: number;
     comment_count: number;
@@ -237,6 +239,12 @@ export interface SubFloor {
     content: string;
     image_url: string;
     nickname: string;
+    user_info: {
+        avatar: string;
+        level: number;
+        cur_level_point: number;
+        next_level_point: number;
+    },
     like_count: number;
     sub_floor_cnt: number;
     reply_to: number; //floor_id
@@ -254,6 +262,12 @@ export interface Floor {
     content: string;
     image_url: string;
     nickname: string;
+    user_info: {
+        avatar: string;
+        level: number;
+        cur_level_point: number;
+        next_level_point: number;
+    },
     like_count: number;
     sub_floor_cnt: number;
     reply_to: number;

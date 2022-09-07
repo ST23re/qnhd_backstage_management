@@ -164,7 +164,31 @@
               ]"
               v-if="user.is_banned || user.is_blocked"
             />
-            <div style="flex: 1; display: flex; flex-direction: column">
+            <div
+              style="
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                transform: scale(1);
+              "
+              @click.stop="() => {}"
+            >
+              <el-image
+                style="
+                  width: 32px;
+                  height: 32px;
+                  position: fixed;
+                  top: 50%;
+                  left: 15px;
+                  transform: translateY(-50%);
+                "
+                :src="cal_image(user.avatar)"
+                :preview-src-list="cal_images([user.avatar])"
+                :initial-index="0"
+                fit="cover"
+                preview-teleported="true"
+                v-if="user?.avatar.trim().length && !isMobile"
+              />
               <div class="user-nickname">
                 <span>{{ user.nickname }}</span>
               </div>
@@ -247,6 +271,17 @@
                           <RefreshRight />
                         </el-icon>
                         <text style="width:100%;text-align">重置昵称</text>
+                      </el-dropdown-item>
+                    </div>
+                    <div @click="(user_uid.uid = String(user.id)), resetImg()">
+                      <el-dropdown-item
+                        divided
+                        v-if="user?.avatar.trim().length && !isMobile"
+                      >
+                        <el-icon>
+                          <RefreshRight />
+                        </el-icon>
+                        <text style="width:100%;text-align">重置头像</text>
                       </el-dropdown-item>
                     </div>
                     <div
@@ -401,6 +436,7 @@ import {
   postBanned,
   getOneUser,
   getBlockedNum,
+  resetAvatar,
 } from "@/api/api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useGlobalData } from "@/store";
@@ -408,6 +444,7 @@ import router from "@/router/index";
 interface Users_info {
   id: number;
   nickname: string;
+  avatar: "";
   phone_number: string;
   checkedBtn: boolean;
   is_super: boolean;
@@ -580,6 +617,17 @@ function refreshNickname() {
     showUsers(0, current_page.value);
   });
 }
+function resetImg() {
+  resetAvatar(user_uid).then((res: any) => {
+    ElMessage({
+      showClose: true,
+      message: "重置头像成功",
+      type: "success",
+      duration: 1000,
+    });
+    showUsers(0, current_page.value);
+  });
+}
 function createBlocked() {
   if (!isMul_flag.value) {
     postBlocked(user_blocked).then((res: any) => {
@@ -745,6 +793,18 @@ onMounted(() => {
   adjustScrollHeight();
   showUsers(0, 1);
 });
+
+function cal_image(url: string) {
+  return import.meta.env.VITE_IMAGE_BASE_URL + "/download/origin/" + url;
+}
+function cal_images(urls: string[]) {
+  let arr: string[] = [];
+  let baseUrl = import.meta.env.VITE_IMAGE_BASE_URL;
+  urls.forEach((url) => {
+    arr.push(baseUrl + "/download/origin/" + url);
+  });
+  return arr;
+}
 </script>
 
 <style lang="less" scoped>
