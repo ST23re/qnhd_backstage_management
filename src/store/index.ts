@@ -166,6 +166,25 @@ export interface Reports_query {
     content: string;
     page: number;
 }
+export type Reason = {
+    reason: string;
+    reporter_uid: number;
+};
+export type Report = {
+    type: number;
+    post_id: number;
+    floor_id: number;
+    abstract: string; //content
+    sender_uid: number;
+    is_deleted: boolean;
+    commentable: boolean;
+    solved: boolean;
+    updated_at: string;
+    date: number;
+    times: number;
+    reasons: Reason[];
+    chosen: boolean;
+  };
 
 export interface Post {
     id: number;
@@ -178,6 +197,10 @@ export interface Post {
     content: string;
     image_urls: string[];
     nickname: string;
+    // user_info: {
+    //     avatar: string;
+    //     level: number;
+    // },
     fav_count: number;
     like_count: number;
     comment_count: number;
@@ -245,6 +268,10 @@ export const usePost = defineStore(Names.UsePost, {
     state: () => ({
         posts_query: <Posts_query | {}>{},
         reports_query: <Reports_query | {}>{},
+        reports: {
+            list: <Report[]>[],
+            total: <number>0,
+        },
         prosecuted_post_id: <number>0,
         prosecuted_floor_id: <number>0,
         user_record_post_id: <number>(0),

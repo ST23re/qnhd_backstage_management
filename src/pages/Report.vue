@@ -252,6 +252,7 @@
       <div
         style="height: calc(100vh - 162px); z-index: 2 !important"
         v-loading.lock="showLoad"
+        element-loading-text="正在全力加载..."
       >
         <el-scrollbar style="height: 100%" v-show="reportsFiltered.list.length">
           <div
@@ -652,7 +653,7 @@
 import { ref, reactive, onMounted, computed, watch } from "vue";
 import { getReports, solveReport, deletePost, deleteFloor } from "@/api/api";
 import { useRouter } from "vue-router";
-import { useGlobalData, usePost, Reports_query } from "@/store";
+import { useGlobalData, usePost, Reports_query, Report, Reason } from "@/store";
 import { timeFromNow, cTime } from "@/utils/time";
 import {
   Search,
@@ -665,25 +666,7 @@ import { ElMessage } from "element-plus";
 const router = useRouter();
 const GlobalData = useGlobalData();
 const postParam = usePost();
-type Reason = {
-  reason: string;
-  reporter_uid: number;
-};
-type Report = {
-  type: number;
-  post_id: number;
-  floor_id: number;
-  abstract: string; //content
-  sender_uid: number;
-  is_deleted: boolean;
-  commentable: boolean;
-  solved: boolean;
-  updated_at: string;
-  date: number;
-  times: number;
-  reasons: Reason[];
-  chosen: boolean;
-};
+
 type ReportsFilter = {
   sort: number;
   solved: number;
@@ -693,7 +676,7 @@ type BatchItem = {
   type: number;
   id: number;
 };
-const page_size: number = 500;
+const page_size: number = 100;
 var page_for_rp = ref<number>(1);
 var rp_finished = ref<boolean>(false);
 var page_for_rf = ref<number>(1);
@@ -735,12 +718,26 @@ onMounted(() => {
       state.reports_query = {};
     });
     showLoad.value = true;
-    getReports_post();
-    getReports_floor();
+    if (postParam.reports.total) {
+      reports = postParam.reports;
+      setTimeout(() => {
+        filterHandler();
+      }, 200);
+    } else {
+      getReports_post();
+      getReports_floor();
+    }
   } else {
     showLoad.value = true;
-    getReports_post();
-    getReports_floor();
+    if (postParam.reports.total) {
+      reports = postParam.reports;
+      setTimeout(() => {
+        filterHandler();
+      }, 200);
+    } else {
+      getReports_post();
+      getReports_floor();
+    }
   }
 });
 
@@ -761,7 +758,12 @@ var shrinkPager = computed(() => {
 });
 
 watch([rp_finished, rf_finished], (newVal) => {
-  if (newVal[0] && newVal[1]) filterHandler();
+  if (newVal[0] && newVal[1]) {
+    filterHandler();
+    postParam.$patch((state) => {
+      state.reports = reports;
+    });
+  }
 });
 
 watch(filter.value, () => {
@@ -770,7 +772,9 @@ watch(filter.value, () => {
   _reports.list = [];
   reportsFiltered.list = [];
   page.value = 1;
-  filterHandler();
+  setTimeout(() => {
+    filterHandler();
+  }, 200);
 });
 
 function refresh() {
@@ -838,7 +842,9 @@ function getReports_post() {
           type,
           post_id,
           floor_id,
-          abstract: item.post.content,
+          abstract: item.post.content.trim().length
+            ? item.post.content
+            : item.post.title,
           sender_uid: item.post.uid,
           is_deleted: item.post.is_deleted,
           commentable: item.post.commentable,
@@ -851,6 +857,7 @@ function getReports_post() {
         });
         reports.total++;
       }
+      console.log("1:", res.total);
       if (res.total >= page_size) {
         page_for_rp.value++;
         getReports_post();
@@ -870,7 +877,9 @@ function getReports_floor() {
           type,
           post_id,
           floor_id,
-          abstract: item.floor.content,
+          abstract: item.floor.content.trim().length
+            ? item.floor.content
+            : "[图片]",
           sender_uid: item.floor.uid,
           is_deleted: item.floor.is_deleted,
           commentable: item.floor.commentable,
@@ -883,6 +892,8 @@ function getReports_floor() {
         });
         reports.total++;
       }
+      console.log("2:", res.total);
+      console.log(res);
       if (res.total >= page_size) {
         page_for_rf.value++;
         getReports_floor();
