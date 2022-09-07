@@ -69,9 +69,9 @@
                   <el-icon
                     class="icon"
                     style="
-                      width: 20px;
-                      height: 20px;
-                      transform: translateX(-5px);
+                      width: 17px;
+                      height: 17px;
+                      transform: translateX(-1px);
                     "
                     v-else
                     ><Avatar
@@ -653,9 +653,9 @@
                       <el-icon
                         class="icon"
                         style="
-                          width: 20px;
-                          height: 20px;
-                          transform: translateX(-5px);
+                          width: 17px;
+                          height: 17px;
+                          transform: translateX(-1px);
                         "
                         v-else
                         ><Avatar
@@ -877,9 +877,9 @@
                         <el-icon
                           class="icon"
                           style="
-                            width: 20px;
-                            height: 20px;
-                            transform: translateX(-5px);
+                            width: 17px;
+                            height: 17px;
+                            transform: translateX(-1px);
                           "
                           v-else
                           ><Avatar
