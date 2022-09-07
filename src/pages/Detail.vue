@@ -66,7 +66,14 @@
                       preview-teleported="true"
                     />
                   </el-icon>
-                  <el-icon class="icon" style="width: 20px; height: 20px" v-else
+                  <el-icon
+                    class="icon"
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      transform: translateX(-5px);
+                    "
+                    v-else
                     ><Avatar
                   /></el-icon>
 
@@ -645,7 +652,11 @@
                       </el-icon>
                       <el-icon
                         class="icon"
-                        style="width: 20px; height: 20px"
+                        style="
+                          width: 20px;
+                          height: 20px;
+                          transform: translateX(-5px);
+                        "
                         v-else
                         ><Avatar
                       /></el-icon>
@@ -865,7 +876,11 @@
                         </el-icon>
                         <el-icon
                           class="icon"
-                          style="width: 20px; height: 20px"
+                          style="
+                            width: 20px;
+                            height: 20px;
+                            transform: translateX(-5px);
+                          "
                           v-else
                           ><Avatar
                         /></el-icon>
