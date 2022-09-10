@@ -562,13 +562,8 @@ function adjustScrollHeight() {
     scrollbarHeight.value = GlobalData.height - searchHeight - 140;
   }, 50);
 }
-<<<<<<< HEAD
-watch(condition_now_post,(newVal)=>{//用于切换已删除和全部
-  if(newVal){
-=======
 watch(condition_now_post, (newVal) => {
   if (newVal) {
->>>>>>> 35150512f847e865951376c63e8b88d7302aac12
     postList.length = 0;
     getUserPosts(post_history_deleted).then((res: any) => {
       res.list.forEach((post: any) => {
