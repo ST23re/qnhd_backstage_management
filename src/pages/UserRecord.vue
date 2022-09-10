@@ -70,7 +70,7 @@
               </div>
             </div>
           </template>
-          <el-scrollbar :max-height="scrollbarHeight">
+          <el-scrollbar :max-height="scrollbarHeight" v-loading="loading_post" v-infinite-scroll="load_post" :infinite-scroll-disabled="disabled_post">
             <el-timeline>
               <el-timeline-item
                 :timestamp="handleTime(post.created_at)"
@@ -85,7 +85,7 @@
                   <p class="ellipsis">{{ post.content }}</p>
                 </el-card>
               </el-timeline-item>
-              <div class="pagination-wrapper">
+<!--               <div class="pagination-wrapper">
                 <div class="pagination">
                   <el-pagination
                     background
@@ -97,12 +97,12 @@
                     @current-change="pageHandler_post"
                   />
                 </div>
-              </div>
+              </div> -->
             </el-timeline>
           </el-scrollbar>
         </el-card>
       </div>
-      <div :class="box_isMobile" v-if="!isMobile || isUserCriti">
+      <div :class="box_isMobile" v-if="!isMobile || isUserCriti"  v-infinite-scroll="load_criti" :infinite-scroll-disabled="disabled_criti">
         <el-card class="box-card">
           <template #header>
             <div class="header-wrapper">
@@ -137,7 +137,7 @@
               </div>
             </div>
           </template>
-          <el-scrollbar :max-height="scrollbarHeight">
+          <el-scrollbar :max-height="scrollbarHeight"  v-loading="loading_criti">
             <el-timeline>
               <el-timeline-item
                 :timestamp="handleTime(criti.created_at)"
@@ -154,7 +154,7 @@
                   </div>
                 </el-card>
               </el-timeline-item>
-              <div class="pagination-wrapper">
+              <!--<div class="pagination-wrapper">
                 <div class="pagination">
                   <el-pagination
                     background
@@ -166,7 +166,7 @@
                     @current-change="pageHandler_criti"
                   />
                 </div>
-              </div>
+              </div>-->
             </el-timeline>
           </el-scrollbar>
         </el-card>
@@ -409,7 +409,36 @@ interface User_detail {
   blocked_num?: string;
   deleted_num?: string;
 }
+const loading_post = ref<boolean>(true);
+const loading_criti = ref<boolean>(true);
+const isBottom_criti = ref<boolean>(false);
+const disabled_criti = computed(()=>loading_criti.value||isBottom_criti.value);
+const disabled_post = computed(()=>loading_post.value);
 const GlobalData = useGlobalData();
+const load_post = () => {
+  setTimeout(()=>{
+    page_post.value ++;
+    post_history.page = String(page_post.value);
+    getUserPosts(post_history).then((res:any)=>{
+      res.list.forEach((post:any)=>{
+        postList.push(post);
+      })
+    })
+  },1000)
+}
+const load_criti = () => {
+  isBottom_criti.value = true;
+  setTimeout(()=>{
+    page_criti.value ++;
+    criti_history.page = String(page_criti.value);
+    getUserCriti(criti_history).then((res:any)=>{
+      res.list.forEach((criti:any)=>{
+        critiList.push(criti);
+      })
+      isBottom_criti.value = false;
+    })
+  },1000)
+}
 const iconStyle = computed(() => {
   const marginMap = {
     large: "8px",
@@ -420,11 +449,11 @@ const iconStyle = computed(() => {
     marginRight: marginMap.default,
   };
 });
+var page_post = ref<number>(1);
+var page_criti = ref<number>(1);
 var user_detail = reactive<User_detail>({});
 var search = ref<HTMLElement>();
 var isUserCriti = ref<boolean>(false);
-var total_num1 = ref<number>(0);
-var total_num2 = ref<number>(0);
 var postList = reactive<any[]>([]);
 var critiList = reactive<any[]>([]);
 var scrollbarHeight = ref<number>(0);
@@ -435,9 +464,10 @@ var uid = computed(() => {
 var post_history = reactive<Post_history>({//发过的帖子记录
   uid: String(uid.value),
   type: "0",
-  page_disable: "1",//先禁止分页，然后获取总数后再打开分页
+  page_disable: "0",
   page_size:"5",
   page:"1",
+  page_base:"1",
 });
 var post_history_deleted = reactive({
   uid: uid.value,
@@ -447,9 +477,10 @@ var post_history_deleted = reactive({
 var criti_history = reactive<Criti_historty>({//发过的评论记录
   uid: String(uid.value),
   type: "0",
-  page_disable: "1",
+  page_disable: "0",
   page_size:"5",
   page:"1",
+  page_base:"1",
 });
 var criti_history_deleted = reactive({
   uid: uid.value,
@@ -538,7 +569,7 @@ function handleTime(time: string) {
       .split(".")[0]
   );
 }
-function pageHandler_post(page:any){
+/* function pageHandler_post(page:any){
   post_history.page = page;
   getUserPosts(post_history).then((res:any)=>{
     postList.length = 0;
@@ -555,7 +586,7 @@ function pageHandler_criti(page:any){
       critiList.push(criti);
     })
   })
-}
+} */
 function adjustScrollHeight() {
   setTimeout(() => {
     let searchHeight = search.value?.clientHeight as number;
@@ -601,21 +632,23 @@ onMounted(() => {
   adjustScrollHeight();
   getUserPosts(post_history).then((res: any) => {
     //console.log(res);
-    total_num1.value = res.list.length;
-    post_history.page_disable = "0";
+    //total_num1.value = res.list.length;
+    //post_history.page_disable = "0";
     getUserPosts(post_history).then((res:any) => {
       res.list.forEach((post:any)=>{
+        loading_post.value = false;
         postList.push(post);
       })
     })
   });
   getUserCriti(criti_history).then((res: any) => {
     //console.log(res);
-    total_num2.value = res.list.length;
-    console.log(total_num2);
-    criti_history.page_disable = "0";
+    //total_num2.value = res.list.length;
+    //console.log(total_num2);
+    //criti_history.page_disable = "0";
     getUserCriti(criti_history).then((res:any) => {
       res.list.forEach((criti:any) => {
+        loading_criti.value = false;
         critiList.push(criti);
       })
     })
