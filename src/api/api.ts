@@ -263,6 +263,13 @@ export function resetNickname(data:any){
       data: data
   })
 }
+export function resetAvatar(data: any) {
+  return request({
+    url: '/user/avatar/reset',
+    method: 'post',
+    data,
+  })
+}
 export function postBlocked(data:any){
   return request({
       url: '/blocked',

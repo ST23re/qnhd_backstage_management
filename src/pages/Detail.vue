@@ -45,7 +45,38 @@
                     lineHeight: shrink ? '21px' : '24px',
                   }"
                 >
-                  <el-icon class="icon"><Avatar /></el-icon>
+                  <el-icon
+                    class="icon"
+                    style="
+                      width: 32px;
+                      height: 32px;
+                      transform: translateX(-7px);
+                    "
+                    v-if="detail.post.user_info?.avatar.trim().length"
+                    @click.stop="() => {}"
+                  >
+                    <el-image
+                      style="width: 32px; height: 32px; border-radius: 50%"
+                      :src="cal_image(detail.post.user_info.avatar)"
+                      :preview-src-list="
+                        cal_images([detail.post.user_info.avatar])
+                      "
+                      :initial-index="0"
+                      fit="cover"
+                      preview-teleported="true"
+                    />
+                  </el-icon>
+                  <el-icon
+                    class="icon"
+                    style="
+                      width: 17px;
+                      height: 17px;
+                      transform: translateX(-1px);
+                    "
+                    v-else
+                    ><Avatar
+                  /></el-icon>
+
                   <text class="ellipsis"
                     >{{
                       `${
@@ -70,6 +101,13 @@
                       divided
                     >
                       重置昵称
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      @click="resetImg(detail.post.uid)"
+                      v-if="detail.post.user_info?.avatar.trim().length"
+                      divided
+                    >
+                      重置头像
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -420,7 +458,7 @@
 
             <div
               class="content"
-              :style="{ margin: shrink ? '15px 0 20px' : '5px 0 10px' }"
+              :style="{ margin: shrink ? '15px 2px 20px' : '5px 2px 10px' }"
             >
               <text
                 v-for="(str, i) in textProcessing(detail.post.content)"
@@ -591,7 +629,38 @@
                         lineHeight: shrink ? '21px' : '24px',
                       }"
                     >
-                      <el-icon class="icon"><Avatar /></el-icon>
+                      <el-icon
+                        class="icon"
+                        style="
+                          width: 32px;
+                          height: 32px;
+                          transform: translateX(-7px);
+                        "
+                        v-if="floor.user_info?.avatar.trim().length"
+                        @click.stop="() => {}"
+                      >
+                        <el-image
+                          style="width: 32px; height: 32px; border-radius: 50%"
+                          :src="cal_image(floor.user_info.avatar)"
+                          :preview-src-list="
+                            cal_images([floor.user_info.avatar])
+                          "
+                          :initial-index="0"
+                          fit="cover"
+                          preview-teleported="true"
+                        />
+                      </el-icon>
+                      <el-icon
+                        class="icon"
+                        style="
+                          width: 17px;
+                          height: 17px;
+                          transform: translateX(-1px);
+                        "
+                        v-else
+                        ><Avatar
+                      /></el-icon>
+
                       <text class="ellipsis"
                         >{{
                           `${
@@ -616,6 +685,13 @@
                           divided
                         >
                           重置昵称
+                        </el-dropdown-item>
+                        <el-dropdown-item
+                          @click="resetImg(floor.uid)"
+                          v-if="floor.user_info?.avatar.trim().length"
+                          divided
+                        >
+                          重置头像
                         </el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
@@ -773,7 +849,42 @@
                           lineHeight: shrink ? '21px' : '24px',
                         }"
                       >
-                        <el-icon class="icon"><Avatar /></el-icon>
+                        <el-icon
+                          class="icon"
+                          style="
+                            width: 32px;
+                            height: 32px;
+                            transform: translateX(-7px);
+                          "
+                          v-if="sub.user_info?.avatar.trim().length"
+                          @click.stop="() => {}"
+                        >
+                          <el-image
+                            style="
+                              width: 32px;
+                              height: 32px;
+                              border-radius: 50%;
+                            "
+                            :src="cal_image(sub.user_info.avatar)"
+                            :preview-src-list="
+                              cal_images([sub.user_info.avatar])
+                            "
+                            :initial-index="0"
+                            fit="cover"
+                            preview-teleported="true"
+                          />
+                        </el-icon>
+                        <el-icon
+                          class="icon"
+                          style="
+                            width: 17px;
+                            height: 17px;
+                            transform: translateX(-1px);
+                          "
+                          v-else
+                          ><Avatar
+                        /></el-icon>
+
                         <text class="ellipsis"
                           >{{
                             `${
@@ -798,6 +909,13 @@
                             divided
                           >
                             重置昵称
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            @click="resetImg(sub.uid)"
+                            v-if="sub.user_info?.avatar.trim().length"
+                            divided
+                          >
+                            重置头像
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </template>
@@ -1011,6 +1129,14 @@
     <div v-else-if="dialogTitle == '删除原因'" class="delete">
       <el-radio-group v-model="deleteReason">
         <el-radio v-for="reason in GlobalData.reasons" :label="reason" />
+        <el-radio :label="customizedReason" class="custom">
+          <el-input
+            v-model="customizedReason"
+            placeholder="自定义原因"
+            @focus="chooseCustom"
+            @input="chooseCustom"
+          />
+        </el-radio>
       </el-radio-group>
     </div>
     <div v-else>hahahaha</div>
@@ -1070,6 +1196,7 @@ import {
   setEtag,
   transferPost,
   resetNickname,
+  resetAvatar,
 } from "@/api/api";
 import {
   Post,
@@ -1162,6 +1289,7 @@ function showPost() {
     let created_at = timeFromNow(res.post.created_at);
     let rating = res.post.rating / 2;
     detail.post = { ...res.post, created_at, rating };
+    // console.log(detail.post);
   });
 }
 function showReplies() {
@@ -1187,6 +1315,7 @@ function showFloors() {
         loadMoreTip.value = "--- 没有更多数据 ---";
     } else loadMoreTip.value = "--- 暂无用户评论 ---";
     showLoad.value = false;
+    // console.log(res.list);
   });
 }
 function updateFloor(floor_id: number) {
@@ -1243,7 +1372,8 @@ var deleteInfo = ref<DeleteInfo | null>({
   itemId: 0,
   option: 0,
 });
-var deleteReason = ref<string>("");
+var customizedReason = ref<string>("");
+var deleteReason = ref<string | null>("");
 
 function dialog(title: string, actionObj: any) {
   dialogTitle.value = title;
@@ -1324,11 +1454,16 @@ function tagHandler() {
     });
 }
 
+function chooseCustom() {
+  deleteReason.value = customizedReason.value;
+}
 function deleteHandler() {
   showLoad.value = true;
   if (deleteInfo.value?.type == "post") {
     if (!deleteInfo.value.is_deleted) {
-      if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+      if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+      else if (!deleteReason.value.length)
+        ElMessage.warning("自定义原因不能为空！");
       else
         deletePost({
           id: deleteInfo.value.itemId,
@@ -1345,7 +1480,9 @@ function deleteHandler() {
     }
   } else if (deleteInfo.value?.type == "floor") {
     if (!deleteInfo.value.is_deleted) {
-      if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+      if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+      else if (!deleteReason.value.length)
+        ElMessage.warning("自定义原因不能为空！");
       else
         deleteFloor({
           floor_id: deleteInfo.value.itemId,
@@ -1368,7 +1505,9 @@ function deleteHandler() {
     }
   } else if (deleteInfo.value?.type == "sub") {
     if (!deleteInfo.value.is_deleted) {
-      if (!deleteReason.value.length) ElMessage.warning("请选择一个删除原因！");
+      if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+      else if (!deleteReason.value.length)
+        ElMessage.warning("自定义原因不能为空！");
       else
         deleteFloor({ floor_id: deleteInfo.value.itemId }).then(() => {
           showDialog.value = false;
@@ -1403,6 +1542,13 @@ function resetName(uid: number, belongId: number) {
       showPost();
       showLoad.value = false;
     });
+}
+function resetImg(uid: number) {
+  showLoad.value = true;
+  resetAvatar({ uid }).then(() => {
+    ElMessage.success("重置头像成功");
+    initPage();
+  });
 }
 
 function cal_type(typeId: number) {
@@ -1545,14 +1691,14 @@ function diary(uid: number) {
 
 <style lang="less" scoped>
 .post {
-  padding: 12px 12px 8px;
+  padding: 15px 12px 8px;
   margin: 0 8px;
   border-radius: 12px;
   box-shadow: 0 0px 4px rgb(0 21 41 / 5%);
 }
 .header {
   display: flex;
-  margin-left: -5px;
+  margin-left: -3px;
 }
 .sender {
   padding: 0 15px 0 5px;
@@ -1564,15 +1710,16 @@ function diary(uid: number) {
   background-color: #f4f4f5;
   cursor: pointer;
   .icon {
-    width: 24px;
-    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #f4f4f5;
+    background-color: #f4f4f5;
   }
 }
 .reply-sender {
   display: flex;
   align-items: center;
   img {
-    width: 45px;
+    width: 50px;
     height: auto;
     margin-right: 5px;
   }
@@ -1732,6 +1879,15 @@ function diary(uid: number) {
       margin-bottom: 15px;
     }
   }
+  .custom {
+    width: 100%;
+    padding: 5px 0;
+    margin: -5px 0;
+    transform: translateY(10px);
+    .el-input {
+      width: 250px;
+    }
+  }
 }
 .more {
   width: 14px;
@@ -1777,7 +1933,7 @@ function diary(uid: number) {
   }
 }
 .content {
-  margin: 5px 5px 10px;
+  margin: 5px 2px 10px;
   font-size: 16px;
   word-break: break-all;
 }
@@ -1809,7 +1965,7 @@ function diary(uid: number) {
 .floor,
 .sub {
   .content {
-    margin: 10px 0;
+    margin: 12px 2px;
   }
 }
 .showTotalSubs {

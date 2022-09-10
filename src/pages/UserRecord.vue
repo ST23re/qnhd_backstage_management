@@ -45,20 +45,26 @@
               </div>
               <div class="select-header">
                 <div class="block" :style="block_style1"></div>
-                <div class="select-button" @click="
-                  (block_style1.left = '0%'),
-                  (text_color1.color = 'white'),
-                  (text_color2.color = '#606266'),
-                  (condition_now_post = 0)
-                ">
+                <div
+                  class="select-button"
+                  @click="
+                    (block_style1.left = '0%'),
+                      (text_color1.color = 'white'),
+                      (text_color2.color = '#606266'),
+                      (condition_now_post = 0)
+                  "
+                >
                   <span :style="text_color1">全部</span>
                 </div>
-                <div class="select-button" @click="
-                  (block_style1.left = '50%'),
-                  (text_color1.color = '#606266'),
-                  (text_color2.color = 'white'),
-                  (condition_now_post = 1)
-                ">
+                <div
+                  class="select-button"
+                  @click="
+                    (block_style1.left = '50%'),
+                      (text_color1.color = '#606266'),
+                      (text_color2.color = 'white'),
+                      (condition_now_post = 1)
+                  "
+                >
                   <span :style="text_color2">已删</span>
                 </div>
               </div>
@@ -105,23 +111,29 @@
                 <span>用户评论记录</span>
               </div>
               <div class="select-header">
-                  <div class="block" :style="block_style2"></div>
-                  <div class="select-button" @click="
+                <div class="block" :style="block_style2"></div>
+                <div
+                  class="select-button"
+                  @click="
                     (block_style2.left = '0%'),
-                    (text_color1_.color = 'white'),
-                    (text_color2_.color = '#606266'),
-                    (condition_now_criti = 0)
-                  ">
-                    <span :style="text_color1_">全部</span>
-                  </div>
-                  <div class="select-button" @click="
+                      (text_color1_.color = 'white'),
+                      (text_color2_.color = '#606266'),
+                      (condition_now_criti = 0)
+                  "
+                >
+                  <span :style="text_color1_">全部</span>
+                </div>
+                <div
+                  class="select-button"
+                  @click="
                     (block_style2.left = '50%'),
-                    (text_color1_.color = '#606266'),
-                    (text_color2_.color = 'white'),
-                    (condition_now_criti = 1)
-                  ">
-                    <span :style="text_color2_">已删</span>
-                  </div>
+                      (text_color1_.color = '#606266'),
+                      (text_color2_.color = 'white'),
+                      (condition_now_criti = 1)
+                  "
+                >
+                  <span :style="text_color2_">已删</span>
+                </div>
               </div>
             </div>
           </template>
@@ -332,7 +344,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed,watch } from "vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 import {
   ArrowLeftBold,
   View,
@@ -468,22 +480,22 @@ var box_isMobile = ref({
 });
 var text_color1 = reactive({
   color: "white",
-})
+});
 var text_color2 = reactive({
   color: "#606266",
-})
+});
 var text_color1_ = reactive({
   color: "white",
-})
+});
 var text_color2_ = reactive({
   color: "#606266",
-})
+});
 var block_style1 = reactive({
   left: "0%",
-})
+});
 var block_style2 = reactive({
   left: "0%",
-})
+});
 var condition_now_post = ref(0);
 var condition_now_criti = ref(0);
 function goback() {
@@ -550,15 +562,20 @@ function adjustScrollHeight() {
     scrollbarHeight.value = GlobalData.height - searchHeight - 140;
   }, 50);
 }
+<<<<<<< HEAD
 watch(condition_now_post,(newVal)=>{//用于切换已删除和全部
   if(newVal){
+=======
+watch(condition_now_post, (newVal) => {
+  if (newVal) {
+>>>>>>> 35150512f847e865951376c63e8b88d7302aac12
     postList.length = 0;
     getUserPosts(post_history_deleted).then((res: any) => {
       res.list.forEach((post: any) => {
         postList.push(post);
       });
     });
-  }else{
+  } else {
     postList.length = 0;
     getUserPosts(post_history).then((res: any) => {
       res.list.forEach((post: any) => {
@@ -566,16 +583,16 @@ watch(condition_now_post,(newVal)=>{//用于切换已删除和全部
       });
     });
   }
-})
-watch(condition_now_criti,(newVal)=>{
-  if(newVal){
+});
+watch(condition_now_criti, (newVal) => {
+  if (newVal) {
     critiList.length = 0;
     getUserCriti(criti_history_deleted).then((res: any) => {
       res.list.forEach((criti: any) => {
         critiList.push(criti);
       });
     });
-  }else{
+  } else {
     critiList.length = 0;
     getUserCriti(criti_history).then((res: any) => {
       res.list.forEach((criti: any) => {
@@ -583,7 +600,7 @@ watch(condition_now_criti,(newVal)=>{
       });
     });
   }
-})
+});
 window.addEventListener("resize", () => adjustScrollHeight());
 onMounted(() => {
   adjustScrollHeight();
@@ -667,19 +684,20 @@ function detail(post_id: number, floor_id: number) {
   display: flex;
   justify-content: space-around;
 
-  .header-wrapper{
+  .header-wrapper {
     display: flex;
     justify-content: space-between;
-    .select-header{
+    .select-header {
+      padding: 2px 3px;
       position: relative;
       display: flex;
       background-color: #f4f4f5;
       box-shadow: 1px 1px 3px rgba(125, 159, 204, 0.5);
       border-radius: 8px;
-      transform: scale(1);//加上这个会让文字显示在最顶层
+      transform: scale(1); //加上这个会让文字显示在最顶层
     }
 
-    .block{
+    .block {
       position: absolute;
       border-radius: 8px;
       background-color: #005187;
@@ -687,9 +705,10 @@ function detail(post_id: number, floor_id: number) {
       width: 50%;
       z-index: -1;
       left: 0%;
+      transform: translateY(-2px);
       transition: all 0.7s;
     }
-    .select-button{
+    .select-button {
       border: none;
       border-radius: 8px;
       padding: 3px 7px;

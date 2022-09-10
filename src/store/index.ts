@@ -136,10 +136,10 @@ export const useGlobalData = defineStore(Names.UseGlobalData, {
         reasons: [
             '散布宗教、迷信、谣言与虚假信息',
             '含有淫秽色情、赌博传销、血腥暴力信息',
-            '侵犯他人肖像权或隐私权、恶意辱骂他人进行人身攻击',
-            '发布敏感话题',
-            '干扰论坛正常运营，侵犯其他用户权益或第三方合法权益',
             '违反相关法律法规或违反《普通高等学校学生管理规定》和天津大学学生管理规定',
+            '发布敏感话题',
+            '侵犯他人肖像权或隐私权、恶意辱骂他人进行人身攻击',
+            '干扰论坛正常运营，侵犯其他用户权益或第三方合法权益',
         ]
     })
 })
@@ -166,6 +166,25 @@ export interface Reports_query {
     content: string;
     page: number;
 }
+export type Reason = {
+    reason: string;
+    reporter_uid: number;
+};
+export type Report = {
+    type: number;
+    post_id: number;
+    floor_id: number;
+    abstract: string; //content
+    sender_uid: number;
+    is_deleted: boolean;
+    commentable: boolean;
+    solved: boolean;
+    updated_at: string;
+    date: number;
+    times: number;
+    reasons: Reason[];
+    chosen: boolean;
+  };
 
 export interface Post {
     id: number;
@@ -178,6 +197,12 @@ export interface Post {
     content: string;
     image_urls: string[];
     nickname: string;
+    user_info: {
+        avatar: string;
+        level: number;
+        cur_level_point: number;
+        next_level_point: number;
+    },
     fav_count: number;
     like_count: number;
     comment_count: number;
@@ -214,6 +239,12 @@ export interface SubFloor {
     content: string;
     image_url: string;
     nickname: string;
+    user_info: {
+        avatar: string;
+        level: number;
+        cur_level_point: number;
+        next_level_point: number;
+    },
     like_count: number;
     sub_floor_cnt: number;
     reply_to: number; //floor_id
@@ -231,6 +262,12 @@ export interface Floor {
     content: string;
     image_url: string;
     nickname: string;
+    user_info: {
+        avatar: string;
+        level: number;
+        cur_level_point: number;
+        next_level_point: number;
+    },
     like_count: number;
     sub_floor_cnt: number;
     reply_to: number;
@@ -245,6 +282,10 @@ export const usePost = defineStore(Names.UsePost, {
     state: () => ({
         posts_query: <Posts_query | {}>{},
         reports_query: <Reports_query | {}>{},
+        reports: {
+            list: <Report[]>[],
+            total: <number>0,
+        },
         prosecuted_post_id: <number>0,
         prosecuted_floor_id: <number>0,
         user_record_post_id: <number>(0),

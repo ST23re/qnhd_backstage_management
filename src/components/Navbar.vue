@@ -216,7 +216,7 @@ const showAuth = computed(() => {
 });
 
 const switchToSchoolAffairs = () => {
-  window.location.href = `https://qnhdmanage.twt.edu.cn/#/login?token=${getToken()}`;
+  window.location.href = `https://qnhdmanage.twt.edu.cn/#?token=${getToken()}`;
 };
 </script>
 
