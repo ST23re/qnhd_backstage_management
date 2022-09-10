@@ -79,6 +79,19 @@
                   <p class="ellipsis">{{ post.content }}</p>
                 </el-card>
               </el-timeline-item>
+              <div class="pagination-wrapper">
+                <div class="pagination">
+                  <el-pagination
+                    background
+                    layout="prev,pager,next"
+                    :total="total_num1"
+                    :pager-count="5"
+                    small
+                    hide-on-single-page
+                    @current-change="pageHandler_post"
+                  />
+                </div>
+              </div>
             </el-timeline>
           </el-scrollbar>
         </el-card>
@@ -129,6 +142,19 @@
                   </div>
                 </el-card>
               </el-timeline-item>
+              <div class="pagination-wrapper">
+                <div class="pagination">
+                  <el-pagination
+                    background
+                    layout="prev,pager,next"
+                    :total="total_num2"
+                    :pager-count="5"
+                    small
+                    hide-on-single-page
+                    @current-change="pageHandler_criti"
+                  />
+                </div>
+              </div>
             </el-timeline>
           </el-scrollbar>
         </el-card>
@@ -336,7 +362,16 @@ import {
 } from "@/api/api";
 import router from "@/router";
 import { useGlobalData, usePost } from "@/store";
+import { ElPagination } from "element-plus"; 
 interface Post_history {
+  uid: string;
+  type: string;
+  page_disable: string;
+  page?: string;
+  page_size?: string;
+  page_base?: string;
+}
+interface Criti_historty{
   uid: string;
   type: string;
   page_disable: string;
@@ -376,6 +411,8 @@ const iconStyle = computed(() => {
 var user_detail = reactive<User_detail>({});
 var search = ref<HTMLElement>();
 var isUserCriti = ref<boolean>(false);
+var total_num1 = ref<number>(0);
+var total_num2 = ref<number>(0);
 var postList = reactive<any[]>([]);
 var critiList = reactive<any[]>([]);
 var scrollbarHeight = ref<number>(0);
@@ -383,20 +420,24 @@ var drawer = ref<boolean>(false);
 var uid = computed(() => {
   return router.currentRoute.value.query.uid;
 });
-var post_history = reactive({
-  uid: uid.value,
+var post_history = reactive<Post_history>({//发过的帖子记录
+  uid: String(uid.value),
   type: "0",
-  page_disable: "1",
+  page_disable: "1",//先禁止分页，然后获取总数后再打开分页
+  page_size:"5",
+  page:"1",
 });
 var post_history_deleted = reactive({
   uid: uid.value,
   type: "1",
   page_disable: "1",
 });
-var criti_history = reactive({
-  uid: uid.value,
+var criti_history = reactive<Criti_historty>({//发过的评论记录
+  uid: String(uid.value),
   type: "0",
   page_disable: "1",
+  page_size:"5",
+  page:"1",
 });
 var criti_history_deleted = reactive({
   uid: uid.value,
@@ -485,13 +526,31 @@ function handleTime(time: string) {
       .split(".")[0]
   );
 }
+function pageHandler_post(page:any){
+  post_history.page = page;
+  getUserPosts(post_history).then((res:any)=>{
+    postList.length = 0;
+    res.list.forEach((post:any)=>{
+      postList.push(post);
+    })
+  })
+}
+function pageHandler_criti(page:any){
+  criti_history.page = page;
+  getUserCriti(criti_history).then((res:any)=>{
+    critiList.length = 0;
+    res.list.forEach((criti:any)=>{
+      critiList.push(criti);
+    })
+  })
+}
 function adjustScrollHeight() {
   setTimeout(() => {
     let searchHeight = search.value?.clientHeight as number;
     scrollbarHeight.value = GlobalData.height - searchHeight - 140;
   }, 50);
 }
-watch(condition_now_post,(newVal)=>{
+watch(condition_now_post,(newVal)=>{//用于切换已删除和全部
   if(newVal){
     postList.length = 0;
     getUserPosts(post_history_deleted).then((res: any) => {
@@ -529,14 +588,25 @@ window.addEventListener("resize", () => adjustScrollHeight());
 onMounted(() => {
   adjustScrollHeight();
   getUserPosts(post_history).then((res: any) => {
-    res.list.forEach((post: any) => {
-      postList.push(post);
-    });
+    //console.log(res);
+    total_num1.value = res.list.length;
+    post_history.page_disable = "0";
+    getUserPosts(post_history).then((res:any) => {
+      res.list.forEach((post:any)=>{
+        postList.push(post);
+      })
+    })
   });
   getUserCriti(criti_history).then((res: any) => {
-    res.list.forEach((criti: any) => {
-      critiList.push(criti);
-    });
+    //console.log(res);
+    total_num2.value = res.list.length;
+    console.log(total_num2);
+    criti_history.page_disable = "0";
+    getUserCriti(criti_history).then((res:any) => {
+      res.list.forEach((criti:any) => {
+        critiList.push(criti);
+      })
+    })
   });
 });
 
@@ -673,6 +743,15 @@ function detail(post_id: number, floor_id: number) {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+.pagination-wrapper{
+  display: flex;
+  justify-content: center;
+  .pagination{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
 }
 </style>
 <style lang="less">
