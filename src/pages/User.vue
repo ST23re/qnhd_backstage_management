@@ -330,12 +330,12 @@
           }"
         >
           <el-select v-model="user_blocked.last" placeholder="请选择禁言天数">
-            <el-option label="One day" value="1" class="Select"></el-option>
-            <el-option label="Three days" value="3" class="Select"></el-option>
-            <el-option label="One week" value="7" class="Select"></el-option>
-            <el-option label="Two weeks" value="14" class="Select"></el-option>
+            <el-option label="一天" value="1" class="Select"></el-option>
+            <el-option label="三天" value="3" class="Select"></el-option>
+            <el-option label="一周" value="7" class="Select"></el-option>
+            <el-option label="两周" value="14" class="Select"></el-option>
             <el-option
-              label="Three weeks"
+              label="三周"
               value="21"
               class="Select"
             ></el-option>
