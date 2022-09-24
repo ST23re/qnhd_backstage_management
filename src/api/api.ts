@@ -341,3 +341,51 @@ export function notice_notice(data:any){
       data,
   })
 }
+export function getSetting(){
+  return request({
+    url:'/setting',
+    method:'get',
+  })
+}
+export function postSetting(data:any){
+  return request({
+    url:'/setting',
+    method:'post',
+    data,
+  })
+}
+export function deleteBlocked(data:any){
+  return request({
+    url:'/blocked/delete',
+    method:'get',
+    params:data,
+  })
+}
+/* export function newPosts(data:any){
+  return request({
+    url:'/statistic/posts/count',
+    method:'get',
+    params:data,
+  })
+}
+export function getPostsRep(data:any){
+  return request({
+    url:'/statistic/post_reply_excel',
+    method:'get',
+    params:data,
+  })
+}
+export function getNewDepart(data:any){
+  return request({
+    url:'/statistic/floors/count',
+    method:'get',
+    params:data,
+  })
+}
+export function getPostsVisits(data:any){
+  return request({
+    url:'/statistic/posts/visit/count',
+    method:'get',
+    params:data,
+  })
+} */

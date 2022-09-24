@@ -37,6 +37,7 @@
                 <template #title><span>更多</span></template>
                 <el-menu-item index="/department">校务 | 部门管理</el-menu-item>
                 <el-menu-item index="/dispatch">权限分配</el-menu-item>
+                <el-menu-item index="/access">访问设置</el-menu-item>
                 <el-menu-item index="/game">游戏管理</el-menu-item>
               </el-sub-menu>
             </el-menu-item-group>

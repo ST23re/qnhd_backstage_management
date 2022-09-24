@@ -85,6 +85,11 @@ const routes:Array<RouteRecordRaw> = [
                 path: 'game',
                 name: '游戏管理',
                 component: () => import('@/pages/Game.vue')
+            },
+            {
+                path: 'access',
+                name: '访问设置',
+                component: () => import('@/pages/Access.vue')
             }
         ]
     },
