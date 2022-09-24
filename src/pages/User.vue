@@ -230,8 +230,8 @@
                 <span>禁言</span>
               </el-button>
             </div>
-            <div class="has-blocked" v-if="user.is_blocked || user.is_banned">
-              <span>{{ user.is_blocked ? "已禁言" : "已封禁" }}</span>
+            <div class="has-blocked" v-if="user.is_blocked || user.is_banned" @click="user_uid.uid = String(user.id),delBlocked(user.is_blocked)">
+              <span>{{ user.is_blocked ? "取消禁言" : "已封禁" }}</span>
             </div>
             <div class="more">
               <el-dropdown trigger="click">
@@ -433,6 +433,7 @@ import {
   getOneUser,
   getBlockedNum,
   resetAvatar,
+  deleteBlocked
 } from "@/api/api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useGlobalData } from "@/store";
@@ -659,6 +660,32 @@ function createBlocked() {
     checkbox_show.value = false;
     isMul_flag.value = 0;
     showUsers(0, current_page.value);
+  }
+}
+function delBlocked(is_blocked:boolean){
+  if(is_blocked){
+    ElMessageBox.confirm(
+      "确定取消该用户禁言吗？",
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    ).then(()=>{
+      deleteBlocked(user_uid).then((res:any)=>{
+        console.log(res);
+        ElMessage({
+          type:'success',
+          message:'解除禁言成功',
+        })
+        showUsers(0, current_page.value);
+      })
+    }).catch(()=>{
+      ElMessage({
+        type:'info',
+        message:'取消操作',
+      })
+    })
   }
 }
 function refuseBlocked() {
@@ -1035,6 +1062,7 @@ function cal_images(urls: string[]) {
         span {
           color: grey;
           font-size: 16px;
+          text-decoration-line: underline;
           margin: 0 15px;
           overflow: hidden;
           display: -webkit-box;
@@ -1153,5 +1181,8 @@ function cal_images(urls: string[]) {
     background-color: #f4f4f5;
     height: inherit !important;
   }
+}
+.el-message-box{
+  --el-messagebox-width: 250px !important;
 }
 </style>
