@@ -63,7 +63,7 @@
                       "
                       :initial-index="0"
                       fit="cover"
-                      preview-teleported="true"
+                      :preview-teleported="true"
                     />
                   </el-icon>
                   <el-icon
@@ -93,11 +93,14 @@
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
+                    <el-dropdown-item @click="openBox(detail.post.uid)">
+                      <div class="open-box">开盒</div>
+                    </el-dropdown-item>
                     <el-dropdown-item @click="diary(detail.post.uid)">
                       用户日志
                     </el-dropdown-item>
                     <el-dropdown-item
-                      @click="resetName(detail.post.uid, 0)"
+                      @click="resetName(detail.post.uid)"
                       divided
                     >
                       重置昵称
@@ -105,7 +108,6 @@
                     <el-dropdown-item
                       @click="resetImg(detail.post.uid)"
                       v-if="detail.post.user_info?.avatar.trim().length"
-                      divided
                     >
                       重置头像
                     </el-dropdown-item>
@@ -485,7 +487,7 @@
                   :preview-src-list="cal_images(detail.post.image_urls)"
                   :initial-index="index"
                   fit="cover"
-                  preview-teleported="true"
+                  :preview-teleported="true"
                 />
               </div>
             </div>
@@ -566,7 +568,7 @@
                     :preview-src-list="cal_images(reply.image_urls)"
                     :initial-index="index"
                     fit="cover"
-                    preview-teleported="true"
+                    :preview-teleported="true"
                   />
                 </div>
               </div>
@@ -647,7 +649,7 @@
                           "
                           :initial-index="0"
                           fit="cover"
-                          preview-teleported="true"
+                          :preview-teleported="true"
                         />
                       </el-icon>
                       <el-icon
@@ -677,19 +679,18 @@
                     </div>
                     <template #dropdown>
                       <el-dropdown-menu>
+                        <el-dropdown-item @click="openBox(floor.uid)">
+                          <div class="open-box">开盒</div>
+                        </el-dropdown-item>
                         <el-dropdown-item @click="diary(floor.uid)">
                           用户日志
                         </el-dropdown-item>
-                        <el-dropdown-item
-                          @click="resetName(floor.uid, floor.id)"
-                          divided
-                        >
+                        <el-dropdown-item @click="resetName(floor.uid)" divided>
                           重置昵称
                         </el-dropdown-item>
                         <el-dropdown-item
                           @click="resetImg(floor.uid)"
                           v-if="floor.user_info?.avatar.trim().length"
-                          divided
                         >
                           重置头像
                         </el-dropdown-item>
@@ -801,7 +802,7 @@
                       :initial-index="0"
                       fit="cover"
                       :infinite="false"
-                      preview-teleported="true"
+                      :preview-teleported="true"
                     />
                   </div>
                 </div>
@@ -871,7 +872,7 @@
                             "
                             :initial-index="0"
                             fit="cover"
-                            preview-teleported="true"
+                            :preview-teleported="true"
                           />
                         </el-icon>
                         <el-icon
@@ -901,19 +902,18 @@
                       </div>
                       <template #dropdown>
                         <el-dropdown-menu>
+                          <el-dropdown-item @click="openBox(sub.uid)">
+                            <div class="open-box">开盒</div>
+                          </el-dropdown-item>
                           <el-dropdown-item @click="diary(sub.uid)">
                             用户日志
                           </el-dropdown-item>
-                          <el-dropdown-item
-                            @click="resetName(sub.uid, floor.id)"
-                            divided
-                          >
+                          <el-dropdown-item @click="resetName(sub.uid)" divided>
                             重置昵称
                           </el-dropdown-item>
                           <el-dropdown-item
                             @click="resetImg(sub.uid)"
                             v-if="sub.user_info?.avatar.trim().length"
-                            divided
                           >
                             重置头像
                           </el-dropdown-item>
@@ -999,7 +999,7 @@
                         :initial-index="0"
                         fit="cover"
                         :infinite="false"
-                        preview-teleported="true"
+                        :preview-teleported="true"
                       />
                     </div>
                   </div>
@@ -1025,6 +1025,9 @@
           </div>
           <div class="loadmore" v-if="loadMoreTip">
             {{ loadMoreTip }}
+          </div>
+          <div class="loadmore" v-else-if="!detail.floors.length">
+            --- 暂无用户评论 ---
           </div>
         </div>
       </el-scrollbar>
@@ -1171,10 +1174,167 @@
       </span>
     </template>
   </el-dialog>
+  <el-drawer v-model="drawer" :size="size" :show-close="false">
+    <template #title>
+      <el-descriptions class="margin-top" :column="1" border>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <User />
+              </el-icon>
+              姓名
+            </div>
+          </template>
+          {{ user.info.realname }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <Reading />
+              </el-icon>
+              学号
+            </div>
+          </template>
+          {{ user.info.userNumber }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle" v-if="user.info.gender == '男'">
+                <Male />
+              </el-icon>
+              <el-icon :style="iconStyle" v-if="user.info.gender == '女'">
+                <Female />
+              </el-icon>
+              性别
+            </div>
+          </template>
+          {{ user.info.gender }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <iphone />
+              </el-icon>
+              电话
+            </div>
+          </template>
+          {{ user.info.telephone }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <Message />
+              </el-icon>
+              邮箱
+            </div>
+          </template>
+          {{ user.info.email }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <location />
+              </el-icon>
+              住址
+            </div>
+          </template>
+          {{ user.info.campus }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <tickets />
+              </el-icon>
+              专业
+            </div>
+          </template>
+          <el-tag size="small">{{ user.info.major }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <office-building />
+              </el-icon>
+              学院
+            </div>
+          </template>
+          {{ user.info.department }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <Postcard />
+              </el-icon>
+              身份证号
+            </div>
+          </template>
+          {{ user.info.idNumber }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <UserFilled />
+              </el-icon>
+              昵称
+            </div>
+          </template>
+          {{ user.info.nickname }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <Star />
+              </el-icon>
+              身份
+            </div>
+          </template>
+          {{ user.info.role }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <School />
+              </el-icon>
+              学生类型
+            </div>
+          </template>
+          {{ user.info.stuType }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">
+              <el-icon :style="iconStyle">
+                <Mute />
+              </el-icon>
+              历史禁言次数
+            </div>
+          </template>
+          {{ user.info.blocked_num }}
+        </el-descriptions-item>
+      </el-descriptions>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <el-button type="primary" @click="drawer = false">确定</el-button>
+      </div>
+    </template>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted } from "vue";
+import { ref, reactive, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   getPost,
@@ -1197,6 +1357,8 @@ import {
   transferPost,
   resetNickname,
   resetAvatar,
+  getUserDetail, // 以下用于开盒
+  getBlockedNum,
 } from "@/api/api";
 import {
   Post,
@@ -1205,6 +1367,7 @@ import {
   useGlobalData,
   usePost,
   Posts_query,
+  User_detail,
 } from "@/store";
 import { timeFromNow } from "@/utils/time";
 import {
@@ -1220,6 +1383,22 @@ import {
   Sort,
   Top,
   Switch,
+  CircleClose,
+  User,
+  UserFilled,
+  Iphone,
+  Location,
+  Tickets,
+  OfficeBuilding,
+  Mute,
+  Message,
+  Male,
+  Female,
+  Postcard,
+  Reading,
+  School,
+  ChatDotRound,
+  Document,
 } from "@element-plus/icons-vue";
 import { ElMessage, ElScrollbar } from "element-plus";
 const route = useRoute();
@@ -1227,6 +1406,7 @@ const router = useRouter();
 const GlobalData = useGlobalData();
 const postParam = usePost();
 
+var post_id = ref<unknown>();
 var detail = reactive({
   post: <Post>{},
   replies: <Reply[]>[],
@@ -1242,13 +1422,22 @@ interface Floors_query {
   page_base?: number; //	从第n个开始获取
   page_disable?: number | null; //为1取消分页
 }
+var floors_query = reactive<Floors_query>({
+  post_id: 0,
+  order: 1,
+  only_owner: null,
+  page: 1,
+  page_size: 10,
+});
 
-var post_id: unknown;
 watch(
   route,
   () => {
+    console.log(route.path);
     if (route.path == "/detail") {
-      post_id = route.query.id;
+      let newId = route.query.id;
+      post_id.value = newId;
+      floors_query.post_id = newId;
       setTimeout(() => {
         initPage();
       }, 100);
@@ -1259,14 +1448,6 @@ watch(
     immediate: true,
   }
 );
-
-var floors_query = reactive<Floors_query>({
-  post_id,
-  order: 1,
-  only_owner: null,
-  page: 1,
-  page_size: 10,
-});
 
 var scrollbarHeight = ref<number>(0);
 var shrink = ref<boolean>(false);
@@ -1285,7 +1466,7 @@ function initPage() {
   showFloors();
 }
 function showPost() {
-  getPost({ id: post_id }).then((res: any) => {
+  getPost({ id: post_id.value }).then((res: any) => {
     let created_at = timeFromNow(res.post.created_at);
     let rating = res.post.rating / 2;
     detail.post = { ...res.post, created_at, rating };
@@ -1293,8 +1474,8 @@ function showPost() {
   });
 }
 function showReplies() {
-  getReplies({ post_id }).then((res: any) => {
-    console.log(res);
+  getReplies({ post_id: post_id.value }).then((res: any) => {
+    // console.log(res);
     if (res.list != null)
       res.list.forEach((reply: Reply) => {
         let created_at = timeFromNow(reply.created_at);
@@ -1313,7 +1494,7 @@ function showFloors() {
       });
       if (res.total < floors_query.page_size)
         loadMoreTip.value = "--- 没有更多数据 ---";
-    } else loadMoreTip.value = "--- 暂无用户评论 ---";
+    }
     showLoad.value = false;
     // console.log(res.list);
   });
@@ -1442,7 +1623,7 @@ function remoteSearchTags(query: string) {
 function tagHandler() {
   if (typeof newTag.value != "number") ElMessage.warning("请选择一个已有话题!");
   else
-    deleteTag({ post_id }).then(() => {
+    deleteTag({ post_id: post_id.value }).then(() => {
       setTag({
         post_id: detail.post.id,
         tag_id: newTag.value,
@@ -1468,13 +1649,17 @@ function deleteHandler() {
         deletePost({
           id: deleteInfo.value.itemId,
           reason: deleteReason.value,
-        }).then(() => router.go(-1));
+        }).then(() => {
+          showDialog.value = false;
+          initPage();
+          showLoad.value = false;
+        });
     } else {
       recoverPost({
         post_id: deleteInfo.value.itemId,
       }).then(() => {
         showDialog.value = false;
-        showPost();
+        initPage();
         showLoad.value = false;
       });
     }
@@ -1528,20 +1713,12 @@ function deleteHandler() {
   } else showLoad.value = false;
 }
 
-function resetName(uid: number, belongId: number) {
+function resetName(uid: number) {
   showLoad.value = true;
-  if (belongId)
-    resetNickname({ uid }).then(() => {
-      ElMessage.success("重置昵称成功");
-      updateFloor(belongId);
-      showLoad.value = false;
-    });
-  else
-    resetNickname({ uid }).then(() => {
-      ElMessage.success("重置昵称成功");
-      showPost();
-      showLoad.value = false;
-    });
+  resetNickname({ uid }).then(() => {
+    ElMessage.success("重置昵称成功");
+    initPage();
+  });
 }
 function resetImg(uid: number) {
   showLoad.value = true;
@@ -1681,6 +1858,49 @@ function searchPart() {
   router.push("/content");
 }
 
+var drawer = ref<boolean>(false);
+var user = reactive({
+  info: <User_detail>{},
+});
+var size = computed(() => {
+  if (GlobalData.width > 650) {
+    return 650;
+  } else {
+    return "100";
+  }
+});
+const iconStyle = computed(() => {
+  const marginMap = {
+    large: "8px",
+    default: "6px",
+    small: "4px",
+  };
+  return {
+    marginRight: marginMap.default,
+  };
+});
+function openBox(uid: number) {
+  drawer.value = true;
+  getUserDetail({ uid }).then((res: any) => {
+    console.log(res);
+    let list = res.detail;
+    user.info.campus = list.campus;
+    user.info.department = list.department;
+    user.info.email = list.email;
+    user.info.gender = list.gender;
+    user.info.idNumber = list.idNumber;
+    user.info.major = list.major;
+    user.info.nickname = list.nickname;
+    user.info.realname = list.realname;
+    user.info.role = list.role;
+    user.info.stuType = list.stuType;
+    user.info.telephone = list.telephone;
+    user.info.userNumber = list.userNumber;
+  });
+  getBlockedNum({ uid }).then((res: any) => {
+    user.info.blocked_num = res.total;
+  });
+}
 function diary(uid: number) {
   router.push({
     path: "/diary",
@@ -2055,6 +2275,10 @@ function diary(uid: number) {
   outline: none;
   background-color: transparent;
   padding: 0;
+}
+.open-box {
+  width: 100%;
+  text-align: center;
 }
 .top {
   background-image: linear-gradient(to right bottom, #ef6947, #cf4624);

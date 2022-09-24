@@ -292,3 +292,22 @@ export const usePost = defineStore(Names.UsePost, {
         user_record_floor_id: <number>(0),
     })
 })
+
+export interface User_detail {
+    avatar?: string;
+    campus?: string;
+    department?: string;
+    email?: string;
+    gender?: string;
+    idNumber?: string;
+    major?: string;
+    nickname?: string;
+    realname?: string;
+    role?: string;
+    stuType?: string;
+    telephone?: string;
+    token?: string;
+    userNumber?: string;
+    blocked_num?: string;
+    // deleted_num?: string;
+  }

@@ -334,11 +334,7 @@
             <el-option label="三天" value="3" class="Select"></el-option>
             <el-option label="一周" value="7" class="Select"></el-option>
             <el-option label="两周" value="14" class="Select"></el-option>
-            <el-option
-              label="三周"
-              value="21"
-              class="Select"
-            ></el-option>
+            <el-option label="三周" value="21" class="Select"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item
