@@ -236,7 +236,9 @@
                       class="jump-to-detail"
                       @click="() => detail(criti.post_id, criti.id)"
                     >
-                      {{ criti.content }}
+                      {{
+                        criti.content?.trim().length ? criti.content : "[图片]"
+                      }}
                     </div>
                   </el-card>
                 </el-timeline-item>
