@@ -40,11 +40,53 @@
           <template #header>
             <div class="header-wrapper">
               <div class="card-header">
-                <el-icon><Document /></el-icon>
+                <el-icon style="margin-right: 5px"><Document /></el-icon>
                 <span>用户发帖记录</span>
               </div>
-              <div class="select-header">
+              <div style="flex: 1"></div>
+              <button
+                class="filter-btn btn-ori modify"
+                style="width: auto; padding: 0 10px 0 4px"
+                @click="is_batch = true"
+                v-if="!is_batch && !condition_now_post"
+              >
+                <el-icon class="icon"><CopyDocument color="#ffffff" /></el-icon
+                >批量
+              </button>
+              <el-popconfirm
+                :title="`确认删除这${batchList.length}个帖子？`"
+                @confirm="dialog('删除原因')"
+                :icon="InfoFilled"
+                icon-color="#626AEF"
+              >
+                <template #reference>
+                  <button
+                    class="filter-btn btn-ori modify-oppo"
+                    style="width: auto; padding: 0 10px; color: #f56c6c"
+                    :style="{
+                      cursor: batchList.length == 0 ? 'not-allowed' : 'pointer',
+                    }"
+                    :disabled="batchList.length == 0"
+                    v-if="is_batch"
+                  >
+                    <el-icon style="margin-right: 3px"
+                      ><Delete color="#f56c6c"
+                    /></el-icon>
+                    删除
+                  </button>
+                </template>
+              </el-popconfirm>
+              <button
+                class="filter-btn btn-ori modify-oppo"
+                style="width: auto; padding: 0 15px"
+                @click="cancelBatch"
+                v-if="is_batch"
+              >
+                取消
+              </button>
+              <div class="select-header" v-if="!is_batch">
                 <div class="block" :style="block_style1"></div>
+
                 <div
                   class="select-button"
                   @click="
@@ -70,22 +112,48 @@
               </div>
             </div>
           </template>
-          <el-scrollbar :max-height="scrollbarHeight">
-            <el-timeline>
-              <el-timeline-item
-                :timestamp="handleTime(post.created_at)"
-                placement="top"
-                v-for="post in postList"
-                :key="post.id"
-              >
-                <el-card>
-                  <div class="jump-to-detail" @click="() => detail(post.id, 0)">
-                    {{ post.title }}
-                  </div>
-                  <p class="ellipsis">{{ post.content }}</p>
-                </el-card>
-              </el-timeline-item>
-              <div class="pagination-wrapper">
+          <el-scrollbar
+            :max-height="scrollbarHeight"
+            v-loading.lock="showLoadPosts"
+          >
+            <div
+              v-infinite-scroll="loadMorePosts"
+              :infinite-scroll-immediate="false"
+              :infinite-scroll-distance="60"
+            >
+              <el-timeline>
+                <el-timeline-item
+                  :timestamp="handleTime(post.created_at)"
+                  placement="top"
+                  v-for="post in postList"
+                  :key="post.id"
+                >
+                  <el-card>
+                    <div style="display: flex">
+                      <div
+                        class="operate"
+                        style="margin: -6px 6px 0 -6px"
+                        v-if="is_batch"
+                      >
+                        <el-checkbox
+                          v-model="post.chosen"
+                          :disabled="post.is_deleted"
+                          @change="(val: boolean) => handleBatch(val, post.id)"
+                        />
+                      </div>
+                      <div>
+                        <div
+                          class="jump-to-detail"
+                          @click="() => detail(post.id, 0)"
+                        >
+                          {{ post.title }}
+                        </div>
+                        <p class="ellipsis">{{ post.content }}</p>
+                      </div>
+                    </div>
+                  </el-card>
+                </el-timeline-item>
+                <!-- <div class="pagination-wrapper">
                 <div class="pagination">
                   <el-pagination
                     background
@@ -97,8 +165,15 @@
                     @current-change="pageHandler_post"
                   />
                 </div>
+              </div> -->
+              </el-timeline>
+              <div class="loadmore" v-if="loadMorePostsTip">
+                {{ loadMorePostsTip }}
               </div>
-            </el-timeline>
+              <div class="loadmore" v-else-if="!postList.length">
+                --- 暂无记录 ---
+              </div>
+            </div>
           </el-scrollbar>
         </el-card>
       </div>
@@ -107,9 +182,12 @@
           <template #header>
             <div class="header-wrapper">
               <div class="card-header">
-                <el-icon class="icon"><ChatDotRound /></el-icon>
+                <el-icon class="icon" style="margin-right: 5px"
+                  ><ChatDotRound
+                /></el-icon>
                 <span>用户评论记录</span>
               </div>
+              <div style="flex: 1"></div>
               <div class="select-header">
                 <div class="block" :style="block_style2"></div>
                 <div
@@ -137,24 +215,32 @@
               </div>
             </div>
           </template>
-          <el-scrollbar :max-height="scrollbarHeight">
-            <el-timeline>
-              <el-timeline-item
-                :timestamp="handleTime(criti.created_at)"
-                placement="top"
-                v-for="criti in critiList"
-                :key="criti.id"
-              >
-                <el-card>
-                  <div
-                    class="jump-to-detail"
-                    @click="() => detail(criti.post_id, criti.id)"
-                  >
-                    {{ criti.content }}
-                  </div>
-                </el-card>
-              </el-timeline-item>
-              <div class="pagination-wrapper">
+          <el-scrollbar
+            :max-height="scrollbarHeight"
+            v-loading.lock="showLoadFloors"
+          >
+            <div
+              v-infinite-scroll="loadMoreFloors"
+              :infinite-scroll-immediate="false"
+              :infinite-scroll-distance="60"
+            >
+              <el-timeline>
+                <el-timeline-item
+                  :timestamp="handleTime(criti.created_at)"
+                  placement="top"
+                  v-for="criti in critiList"
+                  :key="criti.id"
+                >
+                  <el-card>
+                    <div
+                      class="jump-to-detail"
+                      @click="() => detail(criti.post_id, criti.id)"
+                    >
+                      {{ criti.content }}
+                    </div>
+                  </el-card>
+                </el-timeline-item>
+                <!-- <div class="pagination-wrapper">
                 <div class="pagination">
                   <el-pagination
                     background
@@ -166,8 +252,15 @@
                     @current-change="pageHandler_criti"
                   />
                 </div>
+              </div> -->
+              </el-timeline>
+              <div class="loadmore" v-if="loadMoreFloorsTip">
+                {{ loadMoreFloorsTip }}
               </div>
-            </el-timeline>
+              <div class="loadmore" v-else-if="!critiList.length">
+                --- 暂无记录 ---
+              </div>
+            </div>
           </el-scrollbar>
         </el-card>
       </div>
@@ -321,7 +414,7 @@
             </template>
             {{ user_detail.blocked_num }}
           </el-descriptions-item>
-          <el-descriptions-item>
+          <!-- <el-descriptions-item>
             <template #label>
               <div class="cell-item">
                 <el-icon :style="iconStyle">
@@ -331,7 +424,7 @@
               </div>
             </template>
             {{ user_detail.deleted_num }}
-          </el-descriptions-item>
+          </el-descriptions-item> -->
         </el-descriptions>
       </template>
       <template #footer>
@@ -341,6 +434,42 @@
       </template>
     </el-drawer>
   </div>
+  <el-dialog
+    v-model="showDialog"
+    :width="dialogTitle == '删除原因' ? '330px' : '300px'"
+    center
+    draggable
+  >
+    <template #title="{ titleId, titleClass }">
+      <div class="dialog-header">
+        <h4 :id="titleId" :class="titleClass">
+          <text style="margin-left: 10px">{{ dialogTitle }}</text>
+        </h4>
+      </div>
+    </template>
+    <div v-if="dialogTitle == '删除原因'" class="delete">
+      <el-radio-group v-model="deleteReason">
+        <el-radio v-for="reason in GlobalData.reasons" :label="reason" />
+        <el-radio :label="customizedReason" class="custom">
+          <el-input
+            v-model="customizedReason"
+            placeholder="自定义原因"
+            @focus="chooseCustom"
+            @input="chooseCustom"
+          />
+        </el-radio>
+      </el-radio-group>
+    </div>
+    <div v-else>hahahaha</div>
+    <template #footer>
+      <span class="dialog-footer" v-if="dialogTitle == '删除原因'">
+        <el-button @click="showDialog = false" style="border: 1px solid #dcdfe6"
+          >取消</el-button
+        >
+        <el-button @click="batchDel" type="primary">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -348,7 +477,7 @@ import { ref, reactive, onMounted, computed, watch } from "vue";
 import {
   ArrowLeftBold,
   View,
-  CircleClose,
+  // CircleClose,
   User,
   UserFilled,
   Iphone,
@@ -365,16 +494,20 @@ import {
   Star,
   ChatDotRound,
   Document,
+  CopyDocument,
+  InfoFilled,
+  Delete,
 } from "@element-plus/icons-vue";
 import {
   getUserPosts,
   getUserCriti,
   getUserDetail,
   getBlockedNum,
+  deletePost,
 } from "@/api/api";
 import router from "@/router";
-import { useGlobalData, usePost } from "@/store";
-import { ElPagination } from "element-plus"; 
+import { useGlobalData, usePost, User_detail } from "@/store";
+import { ElMessage } from "element-plus";
 interface Post_history {
   uid: string;
   type: string;
@@ -383,31 +516,13 @@ interface Post_history {
   page_size?: string;
   page_base?: string;
 }
-interface Criti_historty{
+interface Criti_historty {
   uid: string;
   type: string;
   page_disable: string;
   page?: string;
   page_size?: string;
   page_base?: string;
-}
-interface User_detail {
-  avatar?: string;
-  campus?: string;
-  department?: string;
-  email?: string;
-  gender?: string;
-  idNumber?: string;
-  major?: string;
-  nickname?: string;
-  realname?: string;
-  role?: string;
-  stuType?: string;
-  telephone?: string;
-  token?: string;
-  userNumber?: string;
-  blocked_num?: string;
-  deleted_num?: string;
 }
 const GlobalData = useGlobalData();
 const iconStyle = computed(() => {
@@ -423,8 +538,6 @@ const iconStyle = computed(() => {
 var user_detail = reactive<User_detail>({});
 var search = ref<HTMLElement>();
 var isUserCriti = ref<boolean>(false);
-var total_num1 = ref<number>(0);
-var total_num2 = ref<number>(0);
 var postList = reactive<any[]>([]);
 var critiList = reactive<any[]>([]);
 var scrollbarHeight = ref<number>(0);
@@ -432,35 +545,22 @@ var drawer = ref<boolean>(false);
 var uid = computed(() => {
   return router.currentRoute.value.query.uid;
 });
-var post_history = reactive<Post_history>({//发过的帖子记录
-  uid: String(uid.value),
-  type: "0",
-  page_disable: "1",//先禁止分页，然后获取总数后再打开分页
-  page_size:"5",
-  page:"1",
+
+var userPostsQuery = reactive({
+  uid,
+  type: 0,
+  page: 1,
+  page_size: 20,
+  page_disable: 0,
 });
-var post_history_deleted = reactive({
-  uid: uid.value,
-  type: "1",
-  page_disable: "1",
+var userFloorsQuery = reactive({
+  uid,
+  type: 0,
+  page: 1,
+  page_size: 20,
+  page_disable: 0,
 });
-var criti_history = reactive<Criti_historty>({//发过的评论记录
-  uid: String(uid.value),
-  type: "0",
-  page_disable: "1",
-  page_size:"5",
-  page:"1",
-});
-var criti_history_deleted = reactive({
-  uid: uid.value,
-  type: "1",
-  page_disable: "1",
-});
-var user_deletedPost = reactive({
-  uid: uid.value,
-  type: 1,
-  page_disable: 1,
-});
+
 var size = computed(() => {
   if (GlobalData.width > 650) {
     return 650;
@@ -523,10 +623,10 @@ function openBox() {
     console.log(res); //这里面是用户的禁言记录，如果用户现在正在被禁言，就获取第0条然后显示禁言原因
     user_detail.blocked_num = res.total;
   });
-  getUserPosts(user_deletedPost).then((res: any) => {
-    console.log(res);
-    user_detail.deleted_num = res.list.length;
-  });
+  // getUserPosts(user_deletedPost).then((res: any) => {
+  //   console.log(res);
+  //   user_detail.deleted_num = res.list.length;
+  // });
 }
 function handleTime(time: string) {
   return (
@@ -538,88 +638,142 @@ function handleTime(time: string) {
       .split(".")[0]
   );
 }
-function pageHandler_post(page:any){
-  post_history.page = page;
-  getUserPosts(post_history).then((res:any)=>{
-    postList.length = 0;
-    res.list.forEach((post:any)=>{
-      postList.push(post);
-    })
-  })
+function showUserPosts() {
+  showLoadPosts.value = true;
+  getUserPosts(userPostsQuery).then((res: any) => {
+    if (res.list.length) {
+      res.list.forEach((post: any) =>
+        postList.push({ ...post, chosen: false })
+      );
+      if (res.list.length < userPostsQuery.page_size)
+        loadMorePostsTip.value = "--- 没有更多记录 ---";
+    }
+    showLoadPosts.value = false;
+  });
 }
-function pageHandler_criti(page:any){
-  criti_history.page = page;
-  getUserCriti(criti_history).then((res:any)=>{
-    critiList.length = 0;
-    res.list.forEach((criti:any)=>{
-      critiList.push(criti);
-    })
-  })
+function showUserFloors() {
+  showLoadFloors.value = true;
+  getUserCriti(userFloorsQuery).then((res: any) => {
+    if (res.list.length) {
+      res.list.forEach((criti: any) => critiList.push(criti));
+
+      if (res.list.length < userFloorsQuery.page_size)
+        loadMoreFloorsTip.value = "--- 没有更多记录 ---";
+    }
+    showLoadFloors.value = false;
+  });
 }
+var showLoadPosts = ref<boolean>(false);
+var showLoadFloors = ref<boolean>(false);
+var loadMorePostsTip = ref<string>("");
+var loadMoreFloorsTip = ref<string>("");
+function loadMorePosts() {
+  loadMorePostsTip.value = "";
+  if (postList.length == userPostsQuery.page * 20) {
+    userPostsQuery.page++;
+    showUserPosts();
+  } else loadMorePostsTip.value = "--- 没有更多记录 ---";
+}
+function loadMoreFloors() {
+  loadMoreFloorsTip.value = "";
+  if (critiList.length == userFloorsQuery.page * 20) {
+    userFloorsQuery.page++;
+    showUserFloors();
+  } else loadMoreFloorsTip.value = "--- 没有更多记录 ---";
+}
+
+var dialogTitle = ref<string>("");
+var showDialog = ref<boolean>(false);
+var is_batch = ref<boolean>(false);
+var batchList = ref<number[]>([]);
+var customizedReason = ref<string>("");
+var deleteReason = ref<string | null>("");
+function dialog(title: string) {
+  dialogTitle.value = title;
+  if (title == "删除原因") deleteReason.value = null;
+  showDialog.value = true;
+}
+function chooseCustom() {
+  deleteReason.value = customizedReason.value;
+}
+function handleBatch(val: boolean, itemId: number) {
+  if (!val) {
+    let index = batchList.value?.indexOf(itemId) as number;
+    batchList.value?.splice(index, 1);
+  } else batchList.value?.push(itemId);
+  console.log(batchList.value);
+}
+function cancelBatch() {
+  is_batch.value = false;
+  batchList.value = [];
+  postList.forEach((post) => (post.chosen = false));
+}
+function refresh() {
+  postList.length = 0;
+  userPostsQuery.page = 1;
+  loadMorePostsTip.value = "";
+  userPostsQuery.type = 0;
+  showUserPosts();
+}
+function batchDel() {
+  if (deleteReason.value == null) ElMessage.warning("请选择一个删除原因！");
+  else if (!deleteReason.value.length)
+    ElMessage.warning("自定义原因不能为空！");
+  else {
+    let i,
+      flag = false;
+    for (i = batchList.value.length - 1; i >= 0; i--) {
+      deletePost({ id: batchList.value[i], reason: deleteReason.value });
+      if (i == 0) {
+        ElMessage.success("批量删除成功！");
+        flag = true;
+      }
+    }
+    if (!flag) ElMessage.error("批量删除失败，请稍后重试");
+    batchList.value = [];
+    is_batch.value = false;
+    showDialog.value = false;
+    setTimeout(() => {
+      refresh();
+    }, 100);
+  }
+}
+
 function adjustScrollHeight() {
   setTimeout(() => {
     let searchHeight = search.value?.clientHeight as number;
-    scrollbarHeight.value = GlobalData.height - searchHeight - 140;
+    scrollbarHeight.value = GlobalData.height - searchHeight - 190;
   }, 50);
 }
 watch(condition_now_post, (newVal) => {
+  postList.length = 0;
+  userPostsQuery.page = 1;
+  loadMorePostsTip.value = "";
   if (newVal) {
-    postList.length = 0;
-    getUserPosts(post_history_deleted).then((res: any) => {
-      res.list.forEach((post: any) => {
-        postList.push(post);
-      });
-    });
+    userPostsQuery.type = 1;
+    showUserPosts();
   } else {
-    postList.length = 0;
-    getUserPosts(post_history).then((res: any) => {
-      res.list.forEach((post: any) => {
-        postList.push(post);
-      });
-    });
+    userPostsQuery.type = 0;
+    showUserPosts();
   }
 });
 watch(condition_now_criti, (newVal) => {
+  critiList.length = 0;
+  userFloorsQuery.page = 1;
+  loadMoreFloorsTip.value = "";
   if (newVal) {
-    critiList.length = 0;
-    getUserCriti(criti_history_deleted).then((res: any) => {
-      res.list.forEach((criti: any) => {
-        critiList.push(criti);
-      });
-    });
+    userFloorsQuery.type = 1;
+    showUserFloors();
   } else {
-    critiList.length = 0;
-    getUserCriti(criti_history).then((res: any) => {
-      res.list.forEach((criti: any) => {
-        critiList.push(criti);
-      });
-    });
+    userFloorsQuery.type = 0;
+    showUserFloors();
   }
 });
 window.addEventListener("resize", () => adjustScrollHeight());
 onMounted(() => {
   adjustScrollHeight();
-  getUserPosts(post_history).then((res: any) => {
-    //console.log(res);
-    total_num1.value = res.list.length;
-    post_history.page_disable = "0";
-    getUserPosts(post_history).then((res:any) => {
-      res.list.forEach((post:any)=>{
-        postList.push(post);
-      })
-    })
-  });
-  getUserCriti(criti_history).then((res: any) => {
-    //console.log(res);
-    total_num2.value = res.list.length;
-    console.log(total_num2);
-    criti_history.page_disable = "0";
-    getUserCriti(criti_history).then((res:any) => {
-      res.list.forEach((criti:any) => {
-        critiList.push(criti);
-      })
-    })
-  });
+  showUserPosts();
+  showUserFloors();
 });
 
 const postParam = usePost();
@@ -681,7 +835,8 @@ function detail(post_id: number, floor_id: number) {
 
   .header-wrapper {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    // justify-content: space-between;
     .select-header {
       padding: 2px 3px;
       position: relative;
@@ -758,13 +913,57 @@ function detail(post_id: number, floor_id: number) {
   justify-content: center;
   cursor: pointer;
 }
-.pagination-wrapper{
+.modify {
+  height: 30.8px;
+  margin: 0 10px;
+}
+.modify-oppo {
+  height: 30.8px;
+  margin: 0 7px;
+  background-color: #f4f4f5;
+  color: #005187;
+}
+.pagination-wrapper {
   display: flex;
   justify-content: center;
-  .pagination{
+  .pagination {
     display: flex;
     justify-content: center;
     margin-bottom: 15px;
+  }
+}
+.loadmore {
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  color: #005187;
+}
+.dialog-header {
+  h4 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  img {
+    width: 18px;
+  }
+}
+.delete {
+  .el-radio-group {
+    display: block;
+    .el-radio {
+      margin-bottom: 15px;
+    }
+  }
+  .custom {
+    width: 100%;
+    padding: 5px 0;
+    margin: -5px 0;
+    transform: translateY(10px);
+    .el-input {
+      width: 250px;
+    }
   }
 }
 </style>
@@ -772,5 +971,22 @@ function detail(post_id: number, floor_id: number) {
 .el-switch__core {
   border: 1px solid #005187 !important;
   background-color: #005187 !important;
+}
+.operate {
+  .el-checkbox__inner {
+    border: 1px solid #b2b2b2;
+    background-color: #f4f4f5;
+  }
+}
+.el-radio {
+  margin-right: 10px;
+  .el-radio__inner {
+    border: 1px solid #dcdfe6;
+  }
+}
+.delete {
+  .el-radio__label {
+    white-space: pre-line;
+  }
 }
 </style>

@@ -518,6 +518,10 @@ var posts_query = reactive({
 var sort_mode = ref<number>(0);
 var status = ref<number>(0);
 var showLoad = ref<boolean>(false);
+
+var is_batch = ref<boolean>(false);
+var batchList = ref<number[]>([]);
+
 function showPosts(info?: string) {
   showLoad.value = true;
   let str = posts_query.query.content?.trim() as string;
@@ -605,8 +609,6 @@ var customizedReason = ref<string>("");
 var deleteReason = ref<string | null>("");
 
 var checkPage = ref<boolean>(false);
-var is_batch = ref<boolean>(false);
-var batchList = ref<number[]>([]);
 function handleCheckPage(val: boolean) {
   if (!val)
     posts.forEach((post) => {
